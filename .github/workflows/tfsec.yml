@@ -1,0 +1,21 @@
+name: Terraform
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  tfsec:
+    name: tfsec
+    runs-on: [self-hosted, amd64]
+
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout source code
+
+      - name: tfsec
+        uses: aquasecurity/tfsec-pr-commenter-action@v1.2.0
+        with:
+          tfsec_args: --force-all-dirs
+          tfsec_version: v1.28.1
+          github_token: ${{ secrets.GITHUB_TOKEN }}
