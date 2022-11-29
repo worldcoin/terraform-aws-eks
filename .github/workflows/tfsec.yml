@@ -18,7 +18,7 @@ jobs:
         name: Checkout source code
 
       - name: tfsec
-        uses: aquasecurity/tfsec-pr-commenter-action@v1.2.0
+        uses: aquasecurity/tfsec-pr-commenter-action@v1.3.1
         with:
           tfsec_version: v1.28.1
           github_token: ${{ github.token }}
