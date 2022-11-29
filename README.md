@@ -13,7 +13,7 @@ A minimal example of how to use this module.
 
 ```terraform
 module "orb" {
-    source       = "github.com/terraform-aws-modules/terraform-aws-eks"
+    source       = "github.com/worldcoin/terraform-aws-eks"
     cluster_name = "orb-${var.environment}-${var.region}"
 
     vpc_id          = module.vpc.id
