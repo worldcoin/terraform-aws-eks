@@ -1,7 +1,7 @@
 resource "aws_security_group" "cluster" {
   name        = "eks-cluster-${var.cluster_name}"
   description = "EKS cluster security group"
-  vpc_id      = var.vpc_id
+  vpc_id      = var.vpc_config.vpc_id
 
   tags = {
     Name = "eks-cluster-${var.cluster_name}"
@@ -11,7 +11,8 @@ resource "aws_security_group" "cluster" {
 resource "aws_security_group" "node" {
   name        = "eks-node-${var.cluster_name}"
   description = "EKS node security group"
-  vpc_id      = var.vpc_id
+  vpc_id      = var.vpc_config.vpc_id
+
 
   tags = {
     Name                     = "eks-node-${var.cluster_name}"

@@ -11,7 +11,7 @@ resource "aws_eks_cluster" "this" {
     endpoint_private_access = true
     endpoint_public_access  = true
     security_group_ids      = [aws_security_group.cluster.id]
-    subnet_ids              = var.public_subnets
+    subnet_ids              = var.vpc_config.public_subnets
   }
 
   timeouts {

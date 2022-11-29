@@ -9,19 +9,13 @@ variable "cluster_version" {
   default     = "1.23"
 }
 
-variable "vpc_id" {
-  description = "The VPC ID where the cluster should be created."
-  type        = string
-}
-
-variable "private_subnets" {
-  description = "The private subnets to use for the cluster nodes."
-  type        = list(string)
-}
-
-variable "public_subnets" {
-  description = "The public subnets to use for the cluster control plane."
-  type        = list(string)
+variable "vpc_config" {
+  description = "VPC configuration from aws/vps module"
+  type = object({
+    vpc_id          = string
+    private_subnets = list(string)
+    public_subnets  = list(string)
+  })
 }
 
 variable "vpc_cni_version_override" {

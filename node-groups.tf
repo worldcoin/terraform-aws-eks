@@ -56,7 +56,7 @@ resource "aws_launch_template" "this" {
 
 resource "aws_autoscaling_group" "this" {
   name                = "eks-node-${var.cluster_name}"
-  vpc_zone_identifier = var.private_subnets
+  vpc_zone_identifier = var.vpc_config.private_subnets
   desired_capacity    = 2
   min_size            = 1
   max_size            = 2
