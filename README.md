@@ -1,12 +1,19 @@
 # terraform-aws-eks
 - [terraform-aws-eks](#terraform-aws-eks)
   - [Description](#description)
+  - [Supported versions](#supported-versions)
   - [Example](#example)
   - [Cluster removal](#cluster-removal)
 
 ## Description 
 This module is used to create an EKS cluster on AWS with the support of the `vpc` 
 and `sso-roles` modules.
+
+## Supported versions
+The module is currently supporting the following versions of Kubernetes:
+- 1.22,
+- 1.23,
+- 1.24,
 
 ## Example
 A minimal example of how to use this module.
