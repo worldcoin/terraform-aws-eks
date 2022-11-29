@@ -63,8 +63,8 @@ resource "aws_autoscaling_group" "this" {
 
   mixed_instances_policy {
     instances_distribution {
-      on_demand_base_capacity                  = 1
-      on_demand_percentage_above_base_capacity = 20
+      on_demand_base_capacity                  = var.on_demand_base_capacity
+      on_demand_percentage_above_base_capacity = 0
       spot_allocation_strategy                 = "lowest-price"
     }
 

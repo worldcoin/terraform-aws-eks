@@ -30,6 +30,12 @@ variable "vpc_cni_version_override" {
   default     = ""
 }
 
+variable "on_demand_base_capacity" {
+  description = "The number of minimum on-demand instances to launch."
+  type        = number
+  default     = 1
+}
+
 variable "kubernetes_provider_enabled" {
   description = "Whether to create a Kubernetes provider for the cluster. Use as a prerequisite to cluster removal."
   type        = bool
