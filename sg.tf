@@ -29,6 +29,7 @@ resource "aws_security_group_rule" "cluster_from_node_ingress" {
   description              = "Allow nodes to communicate with the cluster API Server"
 }
 
+#tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group_rule" "cluster_egress" {
   security_group_id = aws_security_group.cluster.id
   type              = "egress"
@@ -59,6 +60,7 @@ resource "aws_security_group_rule" "node_to_node_ingress" {
   description       = "Allow worker nodes to communicate with each other"
 }
 
+#tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group_rule" "node_egress" {
   security_group_id = aws_security_group.node.id
   type              = "egress"
