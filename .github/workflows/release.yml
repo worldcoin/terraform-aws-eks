@@ -13,7 +13,7 @@ permissions:
 jobs:
   update_release_draft:
     name: Update Release Draft
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, amd64]
 
     permissions:
       contents: write
