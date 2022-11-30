@@ -1,7 +1,6 @@
 #tfsec:ignore:aws-eks-no-public-cluster-access-to-cidr
 #tfsec:ignore:aws-eks-no-public-cluster-access
 #tfsec:ignore:aws-eks-encrypt-secrets
-#tfsec:ignore:aws-eks-enable-control-plane-logging
 resource "aws_eks_cluster" "this" {
   name     = var.cluster_name
   version  = var.cluster_version
@@ -14,6 +13,14 @@ resource "aws_eks_cluster" "this" {
     subnet_ids              = var.vpc_config.public_subnets
   }
 
+  enabled_cluster_log_types = [
+    "api",
+    "authenticator",
+    "audit",
+    "scheduler",
+    "controllerManager"
+  ]
+
   timeouts {
     create = "30m"
     delete = "15m"
@@ -24,7 +31,8 @@ resource "aws_eks_cluster" "this" {
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.cluster
+    aws_iam_role_policy_attachment.cluster,
+    aws_cloudwatch_log_group.this
   ]
 }
 
