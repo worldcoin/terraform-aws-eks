@@ -1,6 +1,5 @@
 #tfsec:ignore:aws-eks-no-public-cluster-access-to-cidr
 #tfsec:ignore:aws-eks-no-public-cluster-access
-#tfsec:ignore:aws-eks-encrypt-secrets
 resource "aws_eks_cluster" "this" {
   name     = var.cluster_name
   version  = var.cluster_version
@@ -11,6 +10,13 @@ resource "aws_eks_cluster" "this" {
     endpoint_public_access  = true
     security_group_ids      = [aws_security_group.cluster.id]
     subnet_ids              = var.vpc_config.public_subnets
+  }
+
+  encryption_config {
+    resources = ["secrets"]
+    provider {
+      key_arn = aws_kms_key.this.arn
+    }
   }
 
   enabled_cluster_log_types = [
