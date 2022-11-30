@@ -25,21 +25,21 @@ locals {
 }
 
 resource "aws_eks_addon" "vpc_cni" {
-  cluster_name      = var.cluster_name
+  cluster_name      = aws_eks_cluster.this.id
   addon_name        = "vpc-cni"
   addon_version     = var.vpc_cni_version_override == "" ? local.vpc_cni_version[var.cluster_version] : var.vpc_cni_version_override
   resolve_conflicts = "OVERWRITE"
 }
 
 resource "aws_eks_addon" "coredns" {
-  cluster_name      = var.cluster_name
+  cluster_name      = aws_eks_cluster.this.id
   addon_name        = "coredns"
   addon_version     = local.coredns_version[var.cluster_version]
   resolve_conflicts = "OVERWRITE"
 }
 
 resource "aws_eks_addon" "kube_proxy" {
-  cluster_name      = var.cluster_name
+  cluster_name      = aws_eks_cluster.this.id
   addon_name        = "kube-proxy"
   addon_version     = local.kube_proxy_version[var.cluster_version]
   resolve_conflicts = "OVERWRITE"
