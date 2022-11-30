@@ -16,14 +16,6 @@ resource "aws_launch_template" "this" {
   ebs_optimized                        = true
   instance_initiated_shutdown_behavior = "terminate"
 
-  block_device_mappings {
-    device_name = "/dev/sda1"
-
-    ebs {
-      volume_size = 100
-    }
-  }
-
   iam_instance_profile {
     arn = aws_iam_instance_profile.node.arn
   }
@@ -32,16 +24,15 @@ resource "aws_launch_template" "this" {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
     http_put_response_hop_limit = 1
-    instance_metadata_tags      = "disabled"
+    instance_metadata_tags      = "enabled"
   }
 
   tag_specifications {
     resource_type = "instance"
 
     tags = {
-      Name                                         = "eks-node-${var.cluster_name}"
-      "kubernetes.io/cluster/${var.cluster_name}"  = "owned"
-      "karpenter.sh/discovery/${var.cluster_name}" = var.cluster_name
+      Name              = "eks-node-${var.cluster_name}"
+      KubernetesCluster = var.cluster_name
     }
   }
 
