@@ -45,3 +45,14 @@ variable "extra_role_mapping" {
   }))
   default = []
 }
+
+variable "snyk_integration_id" {
+  description = "The Snyk Integration ID. Stored in snyk-monitor namespace as a secret ."
+  type        = string
+}
+
+variable "datadog_api_key" {
+  description = "Datadog API key. Stored in kube-system namespace as a secret."
+  type        = string
+}
+
