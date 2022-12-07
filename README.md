@@ -3,6 +3,8 @@
   - [Description](#description)
   - [Supported versions](#supported-versions)
   - [Example](#example)
+  - [Datadog](#datadog)
+  - [Snyk](#snyk)
   - [Cluster removal](#cluster-removal)
 
 ## Description 
@@ -28,8 +30,17 @@ module "orb" {
     private_subnets = module.vpc.private_subnets
 
     extra_role_mapping = module.sso_roles.default_mappings
+
+    snyk_integration_id = var.snyk_integration_id
+    datadog_api_key     = var.datadog_api_key
 }
 ```
+
+## Datadog
+The module is creating a DataDog integration secret for the [apiKeyExistingSecret](https://github.com/DataDog/helm-charts/blob/main/charts/datadog/values.yaml#L38) of the DataDog helm chart.
+
+## Snyk
+The module is creating a Snyk integration secret for the [snyk-monitor](https://artifacthub.io/packages/helm/snyk/snyk-monitor#installing) Helm chart.
 
 ## Cluster removal
 To remove the cluster you have to set the flag `kubernetes_provider_enabled` to
