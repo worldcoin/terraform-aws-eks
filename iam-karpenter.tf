@@ -59,7 +59,6 @@ data "aws_iam_policy_document" "karpenter" {
   }
 
   statement {
-    sid    = ""
     effect = "Allow"
 
     resources = [
@@ -77,7 +76,6 @@ data "aws_iam_policy_document" "karpenter" {
   }
 
   statement {
-    sid    = ""
     effect = "Allow"
 
     resources = [
@@ -92,14 +90,12 @@ data "aws_iam_policy_document" "karpenter" {
   }
 
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = ["arn:aws:ssm:*:*:parameter/aws/service/*"]
     actions   = ["ssm:GetParameter"]
   }
 
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = [aws_iam_role.node.arn]
     actions   = ["iam:PassRole"]
