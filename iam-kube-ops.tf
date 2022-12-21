@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "kube_ops" {
     actions = ["ecr:DescribeImages"]
     # the kube-ops is deployed always on 1 region, so we can not use the current region
     resources = [
-      "arn:aws:ecr:us-east-1:${data.aws_caller_identity.current.account_id}:repository/kube-ops"
+      "arn:aws:ecr:us-east-1:${data.aws_caller_identity.account.id}:repository/kube-ops"
     ]
   }
 }

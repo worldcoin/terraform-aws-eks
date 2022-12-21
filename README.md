@@ -25,9 +25,7 @@ module "orb" {
     source       = "github.com/worldcoin/terraform-aws-eks"
     cluster_name = "orb-${var.environment}-${var.region}"
 
-    vpc_id          = module.vpc.id
-    public_subnets  = module.vpc.public_subnets
-    private_subnets = module.vpc.private_subnets
+    vpc_config = module.vpc.config
 
     extra_role_mapping = module.sso_roles.default_mappings
 
