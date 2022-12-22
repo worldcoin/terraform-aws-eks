@@ -67,7 +67,7 @@ resource "kubernetes_service" "traefik" {
 }
 
 module "nlb" {
-  source   = "github.com/worldcoin/terraform-aws-nlb.git?ref=v0.1.0"
+  source   = "git@github.com/worldcoin/terraform-aws-nlb.git?ref=v0.1.0"
   for_each = local.load_balancers
 
   name_suffix  = each.key

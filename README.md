@@ -22,7 +22,7 @@ A minimal example of how to use this module.
 
 ```terraform
 module "orb" {
-    source       = "github.com/worldcoin/terraform-aws-eks"
+    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v0.3.0"
     cluster_name = "orb-${var.environment}-${var.region}"
 
     vpc_config = module.vpc.config
@@ -31,6 +31,27 @@ module "orb" {
 
     snyk_integration_id = var.snyk_integration_id
     datadog_api_key     = var.datadog_api_key
+    traefik_cert_arn    = var.traefik_cert_arn
+}
+```
+
+Extra load balancers setup:
+```terraform
+module "orb" {
+    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v0.3.0"
+    cluster_name = "orb-${var.environment}-${var.region}"
+
+    vpc_config = module.vpc.config
+
+    extra_role_mapping = module.sso_roles.default_mappings
+
+    snyk_integration_id = var.snyk_integration_id
+    datadog_api_key     = var.datadog_api_key
+    traefik_cert_arn    = var.traefik_cert_arn
+
+    custom_load_balancers = {
+      internal = false
+    }
 }
 ```
 
