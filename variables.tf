@@ -56,3 +56,13 @@ variable "datadog_api_key" {
   type        = string
 }
 
+variable "custom_load_balancers" {
+  description = "Custom load balancers to create. Key is the name of the load balancer, value is whether it should be internet-facing or not."
+  type        = map(bool)
+  default     = {}
+}
+
+variable "traefik_cert_arn" {
+  description = "The ARN of the certificate to use for Traefik."
+  type        = string
+}
