@@ -62,7 +62,6 @@ data "aws_iam_policy_document" "karpenter" {
     effect = "Allow"
 
     resources = [
-      "arn:aws:ec2:*:${data.aws_caller_identity.account.id}:security-group/*",
       "arn:aws:ec2:*:${data.aws_caller_identity.account.id}:launch-template/*",
     ]
 
@@ -84,6 +83,8 @@ data "aws_iam_policy_document" "karpenter" {
       "arn:aws:ec2:*:${data.aws_caller_identity.account.id}:subnet/*",
       "arn:aws:ec2:*:${data.aws_caller_identity.account.id}:network-interface/*",
       "arn:aws:ec2:*:${data.aws_caller_identity.account.id}:instance/*",
+      "arn:aws:ec2:*:${data.aws_caller_identity.account.id}:security-group/*",
+      "arn:aws:ec2:*:${data.aws_caller_identity.account.id}:spot-instances-request/*",
     ]
 
     actions = ["ec2:RunInstances"]
