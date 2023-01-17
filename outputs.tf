@@ -4,11 +4,11 @@ output "name" {
 }
 
 output "nlb_dns_name" {
-  description = "value"
+  description = "A dns name of the main NLB (traefik)"
   value       = module.nlb["traefik"].dns_name
 }
 
 output "nlb_dns_names" {
-  description = "value"
-  value       = module.nlb[*].dns_name
+  description = "Map of dns names of the NLBs"
+  value       = { for k, v in module.nlb : k => v.dns_name }
 }
