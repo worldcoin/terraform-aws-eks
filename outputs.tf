@@ -12,3 +12,8 @@ output "nlb_dns_names" {
   description = "Map of dns names of the NLBs"
   value       = { for k, v in module.nlb : k => v.dns_name }
 }
+
+output "cluster_oidc_issuer_url" {
+  description = "The OIDC issuer URL for the EKS cluster"
+  value       = local.oidc
+}
