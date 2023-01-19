@@ -22,6 +22,12 @@ locals {
     "1.23" = "v1.23.8-eksbuild.2"
     "1.24" = "v1.24.7-eksbuild.2"
   }
+
+  ebs_csi_driver_version = {
+    "1.22" = "v1.14.1-eksbuild.1"
+    "1.23" = "v1.14.1-eksbuild.1"
+    "1.24" = "v1.14.1-eksbuild.1"
+  }
 }
 
 resource "aws_eks_addon" "vpc_cni" {
@@ -42,5 +48,12 @@ resource "aws_eks_addon" "kube_proxy" {
   cluster_name      = aws_eks_cluster.this.id
   addon_name        = "kube-proxy"
   addon_version     = local.kube_proxy_version[var.cluster_version]
+  resolve_conflicts = "OVERWRITE"
+}
+
+resource "aws_eks_addon" "ebs_csi" {
+  cluster_name      = aws_eks_cluster.this.id
+  addon_name        = "aws-ebs-csi-driver"
+  addon_version     = local.ebs_csi_driver_version[var.cluster_version]
   resolve_conflicts = "OVERWRITE"
 }
