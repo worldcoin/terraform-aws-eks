@@ -17,3 +17,8 @@ output "cluster_oidc_issuer_url" {
   description = "The OIDC issuer URL for the EKS cluster"
   value       = local.oidc
 }
+
+output "node_security_group_id" {
+  description = "The security group ID of the EKS nodes"
+  value       = aws_security_group.node.id
+}
