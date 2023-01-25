@@ -66,3 +66,9 @@ variable "traefik_cert_arn" {
   description = "The ARN of the certificate to use for Traefik."
   type        = string
 }
+
+variable "efs_csi_driver_enabled" {
+  description = "Whether to enable the EFS CSI driver (IAM Role & StorageClass)."
+  type        = bool
+  default     = false
+}

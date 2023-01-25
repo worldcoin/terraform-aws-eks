@@ -5,6 +5,7 @@
   - [Example](#example)
   - [Datadog](#datadog)
   - [Snyk](#snyk)
+  - [Amazon EFS CSI driver](#amazon-efs-csi-driver)
   - [Cluster removal](#cluster-removal)
 
 ## Description 
@@ -60,6 +61,9 @@ The module is creating a DataDog integration secret for the [apiKeyExistingSecre
 
 ## Snyk
 The module is creating a Snyk integration secret for the [snyk-monitor](https://artifacthub.io/packages/helm/snyk/snyk-monitor#installing) Helm chart.
+
+## Amazon EFS CSI driver
+The module comes with the IAM role for [Amazon EFS CSI driver](https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html), and can be enabled using `efs_csi_driver_enabled` variable. Also with the role, it will create an instance of Elastic File System (EFS) and mount it to the cluster as a StorageClass named `efs-sc`.
 
 ## Cluster removal
 To remove the cluster you have to set the flag `kubernetes_provider_enabled` to
