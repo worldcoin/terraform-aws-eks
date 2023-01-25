@@ -29,6 +29,7 @@ data "aws_iam_policy_document" "aws_efs_csi_driver" {
     ]
   }
 
+  # The driver does not apply any tags to the DeleteAccessPoint request
   statement {
     effect    = "Allow"
     resources = ["*"]
