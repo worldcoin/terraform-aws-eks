@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "aws_efs_csi_driver" {
 
   statement {
     effect    = "Allow"
-    resources = [aws_efs_file_system.persistent_volume[0].arn]
+    resources = var.efs_csi_driver_enabled ? [aws_efs_file_system.persistent_volume[0].arn] : []
     actions   = ["elasticfilesystem:CreateAccessPoint"]
 
     condition {
