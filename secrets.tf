@@ -8,8 +8,8 @@ module "dd_clusteragent_token" {
   source = "../../aws/secretmanager/put"
 
   environment = var.environment
-  application = "cluster-apps"
-  name        = var.cluster_name
+  application = var.cluster_name
+  name        = "datadog"
 
   values = {
     DD_CLUSTERAGENT_TOKEN = random_password.dd_clusteragent_token.result
