@@ -3,6 +3,11 @@ variable "cluster_name" {
   type        = string
 }
 
+variable "environment" {
+  description = "Environment of cluster"
+  type        = string
+}
+
 variable "cluster_version" {
   description = "The Kubernetes version to use for the cluster."
   type        = string
