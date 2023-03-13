@@ -18,7 +18,7 @@ resource "aws_secretsmanager_secret" "this" {
   description = "Secret created by terraform for ${var.environment}/${var.cluster_name}"
 
   tags = {
-    Name        = locals.dd_clusteragent_token_name
+    Name        = local.dd_clusteragent_token_name
     Application = var.cluster_name
   }
 
