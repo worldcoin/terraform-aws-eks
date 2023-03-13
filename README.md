@@ -12,6 +12,14 @@
 This module is used to create an EKS cluster on AWS with the support of the `vpc` 
 and `sso-roles` modules.
 
+## How to release
+
+New releases are created automagically by [Release Drafter GH action](https://github.com/worldcoin/terraform-aws-eks/actions/workflows/release.yml).
+
+Type of release bump is made of commits (tags feat/bugfix/etc...).
+
+Release is created as draft, so you have to edit it manually and change it to final.
+
 ## Supported versions
 The module is currently supporting the following versions of Kubernetes:
 - 1.22,
