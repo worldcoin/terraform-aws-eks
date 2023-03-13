@@ -20,6 +20,12 @@ resource "aws_launch_template" "this" {
     arn = aws_iam_instance_profile.node.arn
   }
 
+  block_device_mappings {
+    ebs {
+      volume_size = 100
+    }
+  }
+
   metadata_options {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
@@ -75,7 +81,7 @@ resource "aws_autoscaling_group" "this" {
 
           memory_mib {
             max = 8192
-            min = 2048
+            min = 4096
           }
 
           vcpu_count {
