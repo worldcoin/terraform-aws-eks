@@ -34,5 +34,5 @@ resource "aws_secretsmanager_secret" "this" {
 
 resource "aws_secretsmanager_secret_version" "this" {
   secret_id     = aws_secretsmanager_secret.this.id
-  secret_string = jsonencode(locals.dd_clusteragent_token_values)
+  secret_string = jsonencode(local.dd_clusteragent_token_values)
 }
