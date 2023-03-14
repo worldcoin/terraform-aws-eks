@@ -21,6 +21,8 @@ resource "aws_launch_template" "this" {
   }
 
   block_device_mappings {
+    device_name = "/dev/xdva"
+
     ebs {
       volume_size = 100
     }
