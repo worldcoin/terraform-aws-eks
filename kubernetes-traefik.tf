@@ -70,7 +70,8 @@ module "nlb" {
   source   = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v0.1.1"
   for_each = local.load_balancers
 
-  name_suffix  = each.key
+  # because of lenght limitation of LB name we need to remove prefix treafik from custom_load_balancers
+  name_suffix  = replace(each.key, "traefik-", "")
   cluster_name = var.cluster_name
 
   internal    = each.value ? false : true
