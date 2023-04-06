@@ -5,6 +5,7 @@ locals {
     "1.22" = "v1.11.4-eksbuild.1"
     "1.23" = "v1.11.4-eksbuild.1"
     "1.24" = "v1.11.4-eksbuild.1"
+    "1.25" = "v1.12.2-eksbuild.1"
   }
 
   # CoreDNS version deployed with each Amazon EKS supported cluster version
@@ -13,6 +14,7 @@ locals {
     "1.22" = "v1.8.7-eksbuild.1"
     "1.23" = "v1.8.7-eksbuild.2"
     "1.24" = "v1.8.7-eksbuild.3"
+    "1.25" = "v1.9.3-eksbuild.2"
   }
 
   # Latest available kube-proxy container image version for each Amazon EKS cluster version
@@ -21,6 +23,7 @@ locals {
     "1.22" = "v1.22.11-eksbuild.2"
     "1.23" = "v1.23.8-eksbuild.2"
     "1.24" = "v1.24.7-eksbuild.2"
+    "1.25" = "v1.25.6-eksbuild.1"
   }
 
   ebs_csi_driver_version = {
@@ -51,7 +54,13 @@ resource "aws_eks_addon" "kube_proxy" {
   resolve_conflicts = "OVERWRITE"
 }
 
+moved {
+  from = aws_eks_addon.ebs_csi
+  to   = aws_eks_addon.ebs_csi[0]
+}
 resource "aws_eks_addon" "ebs_csi" {
+  count = var.cluster_version == "1.22" || var.cluster_version == "1.23" || var.cluster_version == "1.24" ? 1 : 0
+
   cluster_name      = aws_eks_cluster.this.id
   addon_name        = "aws-ebs-csi-driver"
   addon_version     = local.ebs_csi_driver_version[var.cluster_version]
