@@ -5,6 +5,7 @@ locals {
     "1.22" = "v1.11.4-eksbuild.1"
     "1.23" = "v1.11.4-eksbuild.1"
     "1.24" = "v1.11.4-eksbuild.1"
+    "1.25" = "v1.12.6-eksbuild.1"
   }
 
   # CoreDNS version deployed with each Amazon EKS supported cluster version
@@ -13,6 +14,7 @@ locals {
     "1.22" = "v1.8.7-eksbuild.1"
     "1.23" = "v1.8.7-eksbuild.2"
     "1.24" = "v1.8.7-eksbuild.3"
+    "1.25" = "v1.9.3-eksbuild.2"
   }
 
   # Latest available kube-proxy container image version for each Amazon EKS cluster version
@@ -21,12 +23,14 @@ locals {
     "1.22" = "v1.22.11-eksbuild.2"
     "1.23" = "v1.23.8-eksbuild.2"
     "1.24" = "v1.24.7-eksbuild.2"
+    "1.25" = "v1.25.6-eksbuild.2"
   }
 
   ebs_csi_driver_version = {
     "1.22" = "v1.14.1-eksbuild.1"
     "1.23" = "v1.14.1-eksbuild.1"
     "1.24" = "v1.14.1-eksbuild.1"
+    "1.25" = "v1.17.0-eksbuild.1"
   }
 }
 
