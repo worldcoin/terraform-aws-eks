@@ -9,7 +9,7 @@ output "nlb_dns_name" {
 }
 
 output "nlb_arn" {
-  description = "A dns ARN of the main NLB (traefik)"
+  description = "An ARN of the main NLB (traefik)"
   value       = module.nlb["traefik"].arn
 }
 
