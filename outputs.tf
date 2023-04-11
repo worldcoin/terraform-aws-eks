@@ -18,7 +18,7 @@ output "nlb_dns_names" {
   value       = { for k, v in module.nlb : k => v.dns_name }
 }
 
-output "nlb_dns_arns" {
+output "nlb_arns" {
   description = "Map of ARNs of the NLBs"
   value       = { for k, v in module.nlb : k => v.arn }
 }
