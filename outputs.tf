@@ -8,9 +8,19 @@ output "nlb_dns_name" {
   value       = module.nlb["traefik"].dns_name
 }
 
+output "nlb_arn" {
+  description = "An ARN of the main NLB (traefik)"
+  value       = module.nlb["traefik"].arn
+}
+
 output "nlb_dns_names" {
   description = "Map of dns names of the NLBs"
   value       = { for k, v in module.nlb : k => v.dns_name }
+}
+
+output "nlb_arns" {
+  description = "Map of ARNs of the NLBs"
+  value       = { for k, v in module.nlb : k => v.arn }
 }
 
 output "cluster_oidc_issuer_url" {
