@@ -26,6 +26,7 @@ The module is currently supporting the following versions of Kubernetes:
 - 1.23,
 - 1.24,
 - 1.25,
+- 1.26,
 
 ## Example
 A minimal example of how to use this module.
