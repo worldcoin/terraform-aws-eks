@@ -74,7 +74,7 @@ module "orb" {
 
 ## Upgrading clusters
 
-Due to problems with [tf kubernetes provider](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs), this module can't update kubernetes version without help:
+Due to problems with [tf kubernetes provider](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs) handling configuration changes, this module can't update kubernetes version without help:
 
 1. Update cluster to desired version with CLI/console
 1. Run `terraform apply` to update the rest (eks addons etc).
