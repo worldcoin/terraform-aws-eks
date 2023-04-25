@@ -1,4 +1,5 @@
 # terraform-aws-eks
+
 - [terraform-aws-eks](#terraform-aws-eks)
   - [Description](#description)
   - [Supported versions](#supported-versions)
@@ -8,8 +9,9 @@
   - [Amazon EFS CSI driver](#amazon-efs-csi-driver)
   - [Cluster removal](#cluster-removal)
 
-## Description 
-This module is used to create an EKS cluster on AWS with the support of the `vpc` 
+## Description
+
+This module is used to create an EKS cluster on AWS with the support of the `vpc`
 and `sso-roles` modules.
 
 ## How to release
@@ -21,7 +23,9 @@ Type of release bump is made of commits (tags feat/bugfix/etc...).
 Release is created as draft, so you have to edit it manually and change it to final.
 
 ## Supported versions
+
 The module is currently supporting the following versions of Kubernetes:
+
 - 1.22,
 - 1.23,
 - 1.24,
@@ -29,6 +33,7 @@ The module is currently supporting the following versions of Kubernetes:
 - 1.26,
 
 ## Example
+
 A minimal example of how to use this module.
 
 ```terraform
@@ -47,6 +52,7 @@ module "orb" {
 ```
 
 Extra load balancers setup:
+
 ```terraform
 module "orb" {
     source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v0.3.0"
@@ -66,16 +72,30 @@ module "orb" {
 }
 ```
 
+## Upgrading clusters
+
+Due to problems with [tf kubernetes provider](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs) handling configuration changes, this module can't update kubernetes version without help:
+
+1. Update cluster to desired version with CLI/console
+
+    `aws eks update-cluster-version --region ... --name ... --kubernetes-version 1.26`
+
+1. Run `terraform apply` to update the rest (eks addons etc).
+
 ## Datadog
+
 The module is creating a DataDog integration secret for the [apiKeyExistingSecret](https://github.com/DataDog/helm-charts/blob/main/charts/datadog/values.yaml#L38) of the DataDog helm chart.
 
 ## Snyk
+
 The module is creating a Snyk integration secret for the [snyk-monitor](https://artifacthub.io/packages/helm/snyk/snyk-monitor#installing) Helm chart.
 
 ## Amazon EFS CSI driver
+
 The module comes with the IAM role for [Amazon EFS CSI driver](https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html), and can be enabled using `efs_csi_driver_enabled` variable. Also with the role, it will create an instance of Elastic File System (EFS) and mount it to the cluster as a StorageClass named `efs`.
 
 ## Cluster removal
+
 To remove the cluster you have to set the flag `kubernetes_provider_enabled` to
 `false`. The module will remove every usage of the Kubernetes provider and allow
 You to remove the cluster module without any errors.
