@@ -104,7 +104,7 @@ data "aws_iam_policy_document" "karpenter" {
 
   statement {
     effect    = "Allow"
-    resources = [aws_eks_cluster.this.endpoint]
+    resources = [aws_eks_cluster.this.arn]
     actions   = ["eks:DescribeCluster"]
   }
 }
