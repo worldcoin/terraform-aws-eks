@@ -101,6 +101,12 @@ data "aws_iam_policy_document" "karpenter" {
     resources = [aws_iam_role.node.arn]
     actions   = ["iam:PassRole"]
   }
+
+  statement {
+    effect    = "Allow"
+    resources = [aws_eks_cluster.this.endpoint]
+    actions   = ["eks:DescribeCluster"]
+  }
 }
 
 resource "aws_iam_role" "karpenter" {
