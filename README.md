@@ -105,7 +105,7 @@ You to remove the cluster module without any errors.
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~>1.3.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | ~>3.3 |
@@ -124,7 +124,7 @@ You to remove the cluster module without any errors.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_nlb"></a> [nlb](#module\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v0.1.0 |
+| <a name="module_nlb"></a> [nlb](#module\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v0.1.2 |
 
 ## Resources
 
@@ -196,7 +196,7 @@ You to remove the cluster module without any errors.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name of the cluster. Has to be unique per region per account. | `string` | n/a | yes |
-| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The Kubernetes version to use for the cluster. | `string` | `"1.23"` | no |
+| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The Kubernetes version to use for the cluster. | `string` | `"1.26"` | no |
 | <a name="input_custom_load_balancers"></a> [custom\_load\_balancers](#input\_custom\_load\_balancers) | Custom load balancers to create. Key is the name of the load balancer, value is whether it should be internet-facing or not. | `map(bool)` | `{}` | no |
 | <a name="input_datadog_api_key"></a> [datadog\_api\_key](#input\_datadog\_api\_key) | Datadog API key. Stored in kube-system namespace as a secret. | `string` | n/a | yes |
 | <a name="input_efs_csi_driver_enabled"></a> [efs\_csi\_driver\_enabled](#input\_efs\_csi\_driver\_enabled) | Whether to enable the EFS CSI driver (IAM Role & StorageClass). | `bool` | `false` | no |
@@ -215,6 +215,8 @@ You to remove the cluster module without any errors.
 |------|-------------|
 | <a name="output_cluster_oidc_issuer_url"></a> [cluster\_oidc\_issuer\_url](#output\_cluster\_oidc\_issuer\_url) | The OIDC issuer URL for the EKS cluster |
 | <a name="output_name"></a> [name](#output\_name) | The name of the cluster |
+| <a name="output_nlb_arn"></a> [nlb\_arn](#output\_nlb\_arn) | An ARN of the main NLB (traefik) |
+| <a name="output_nlb_arns"></a> [nlb\_arns](#output\_nlb\_arns) | Map of ARNs of the NLBs |
 | <a name="output_nlb_dns_name"></a> [nlb\_dns\_name](#output\_nlb\_dns\_name) | A dns name of the main NLB (traefik) |
 | <a name="output_nlb_dns_names"></a> [nlb\_dns\_names](#output\_nlb\_dns\_names) | Map of dns names of the NLBs |
 | <a name="output_node_security_group_id"></a> [node\_security\_group\_id](#output\_node\_security\_group\_id) | The security group ID of the EKS nodes |
