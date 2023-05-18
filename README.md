@@ -96,9 +96,32 @@ The module comes with the IAM role for [Amazon EFS CSI driver](https://docs.aws.
 
 ## Cluster removal
 
-To remove the cluster you have to set the flag `kubernetes_provider_enabled` to
-`false`. The module will remove every usage of the Kubernetes provider and allow
-You to remove the cluster module without any errors.
+To remove the cluster you have to:
+
+1. Remove LB deletion protection from AWS (both external and internal)
+1. Disable argocd install of kyverno in [`cluster-apps` repo](https://github.com/worldcoin/cluster-apps)
+
+    ```yaml
+    kyverno:
+      enabled: false
+    ```
+
+1. Delete traefik svc:
+
+    ```bash
+    kubectl -n traefik delete svc traefik --wait=false
+    kubectl -n traefik patch svc traefik -p '{"metadata":{"finalizers":null}}' --type=merge
+    ```
+
+1. Set these flags, the module will remove every usage of the Kubernetes provider and allow
+    you to remove the cluster module without any errors.
+
+    ```yaml
+      efs_csi_driver_enabled = false
+      kubernetes_provider_enabled = false
+    ```
+
+1. Remove module invocation to finally delete cluster itself.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
