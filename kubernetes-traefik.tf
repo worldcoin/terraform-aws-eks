@@ -67,7 +67,7 @@ resource "kubernetes_service" "traefik" {
 }
 
 module "nlb" {
-  source   = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v0.1.2"
+  source   = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v0.1.3"
   for_each = local.load_balancers
 
   # because of lenght limitation of LB name we need to remove prefix treafik from custom_load_balancers
