@@ -77,3 +77,15 @@ variable "efs_csi_driver_enabled" {
   type        = bool
   default     = false
 }
+
+variable "monitoring_enabled" {
+  description = "Whether to enable monitoring (Datadog)."
+  type        = bool
+  default     = true
+}
+
+variable "monitoring_notification_channel" {
+  description = "The Datadog notification channel to use for monitoring alerts."
+  type        = string
+  default     = "@slack-TFH-infrastructure-alerts"
+}
