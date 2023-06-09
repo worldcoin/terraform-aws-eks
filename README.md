@@ -2,12 +2,21 @@
 
 - [terraform-aws-eks](#terraform-aws-eks)
   - [Description](#description)
+  - [How to release](#how-to-release)
   - [Supported versions](#supported-versions)
   - [Example](#example)
+  - [Upgrading clusters](#upgrading-clusters)
   - [Datadog](#datadog)
+    - [Monitoring](#monitoring)
   - [Snyk](#snyk)
   - [Amazon EFS CSI driver](#amazon-efs-csi-driver)
   - [Cluster removal](#cluster-removal)
+  - [Requirements](#requirements)
+  - [Providers](#providers)
+  - [Modules](#modules)
+  - [Resources](#resources)
+  - [Inputs](#inputs)
+  - [Outputs](#outputs)
 
 ## Description
 
@@ -85,6 +94,10 @@ Due to problems with [tf kubernetes provider](https://registry.terraform.io/prov
 ## Datadog
 
 The module is creating a DataDog integration secret for the [apiKeyExistingSecret](https://github.com/DataDog/helm-charts/blob/main/charts/datadog/values.yaml#L38) of the DataDog helm chart.
+
+### Monitoring
+
+Monitoring the cluster using Datadog is also included, enabled by default, by using [terraform-datadog-kubernetes](https://github.com/kabisa/terraform-datadog-kubernetes).
 
 ## Snyk
 
