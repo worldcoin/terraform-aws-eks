@@ -102,5 +102,6 @@ module "alb" {
 
   backend_ingress_rules = each.value ? [] : concat([{
     security_groups = [aws_security_group.node.id]
+    description     = "Allow to reach internal LB by EKS nodes"
   }], var.internal_alb_ingress_rules)
 }
