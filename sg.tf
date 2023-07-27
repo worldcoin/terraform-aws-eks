@@ -81,7 +81,7 @@ resource "aws_security_group_rule" "nodeports_from_alb_traffic" {
   to_port                  = 8443
   protocol                 = "tcp"
   source_security_group_id = module.alb[each.key].sg_ids["backend"]
-  description              = "Allow ALB to have access to all NodePort Services"
+  description              = "Allow ALB to have access to 8443 ClusterIP with app"
 }
 
 resource "aws_security_group_rule" "nodeports_from_alb_metrics" {
@@ -93,5 +93,5 @@ resource "aws_security_group_rule" "nodeports_from_alb_metrics" {
   to_port                  = 9000
   protocol                 = "tcp"
   source_security_group_id = module.alb[each.key].sg_ids["backend"]
-  description              = "Allow ALB to have access to all NodePort Services"
+  description              = "Allow ALB to have access to 9000 CluterIP with metrics"
 }
