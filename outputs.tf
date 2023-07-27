@@ -23,6 +23,26 @@ output "nlb_arns" {
   value       = { for k, v in module.nlb : k => v.arn }
 }
 
+output "alb_dns_name" {
+  description = "A dns name of the main ALB (traefik)"
+  value       = module.alb["traefik"].dns_name
+}
+
+output "alb_arn" {
+  description = "An ARN of the main ALB (traefik)"
+  value       = module.alb["traefik"].arn
+}
+
+output "alb_dns_names" {
+  description = "Map of dns names of the ALBs"
+  value       = { for k, v in module.alb : k => v.dns_name }
+}
+
+output "alb_arns" {
+  description = "Map of ARNs of the ALBs"
+  value       = { for k, v in module.alb : k => v.arn }
+}
+
 output "cluster_oidc_issuer_url" {
   description = "The OIDC issuer URL for the EKS cluster"
   value       = local.oidc

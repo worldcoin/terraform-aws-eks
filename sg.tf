@@ -71,3 +71,15 @@ resource "aws_security_group_rule" "node_egress" {
   cidr_blocks       = ["0.0.0.0/0"]
   description       = "Allow worker nodes to communicate with all"
 }
+
+resource "aws_security_group_rule" "nodeports_from_alb" {
+  for_each = var.kubernetes_provider_enabled ? local.load_balancers : {}
+
+  security_group_id        = aws_security_group.node.id
+  type                     = "ingress"
+  from_port                = 30000
+  to_port                  = 32767
+  protocol                 = "tcp"
+  source_security_group_id = module.alb[each.key].sg_ids["backend"]
+  description              = "Allow nodes to communicate with the cluster API Server"
+}
