@@ -85,8 +85,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
 }
 
 module "alb" {
-  #source = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.2.0"
-  source   = "../terraform-aws-alb"
+  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.2.0"
   for_each = local.load_balancers
 
   # because of lenght limitation of LB name we need to remove prefix treafik from custom_load_balancers
