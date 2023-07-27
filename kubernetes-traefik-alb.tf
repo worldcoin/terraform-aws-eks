@@ -10,7 +10,6 @@ resource "kubernetes_service" "traefik_alb" {
       "app.kubernetes.io/name"     = "traefik"
       "app.kubernetes.io/instance" = each.key
     }
-
   }
 
   spec {
@@ -33,7 +32,7 @@ resource "kubernetes_service" "traefik_alb" {
       protocol    = "TCP"
     }
 
-    type = "NodePort"
+    type = "ClusterIP"
   }
 }
 
@@ -56,8 +55,9 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
       "alb.ingress.kubernetes.io/security-groups"                     = join(",", [for type, id in module.alb[each.key].sg_ids : id if id != null])
       "alb.ingress.kubernetes.io/manage-backend-security-group-rules" = "false"
       "alb.ingress.kubernetes.io/healthcheck-protocol"                = "HTTP"
-      "alb.ingress.kubernetes.io/healthcheck-port"                    = "traefik"
+      "alb.ingress.kubernetes.io/healthcheck-port"                    = "9000"
       "alb.ingress.kubernetes.io/healthcheck-path"                    = "/ping"
+      "alb.ingress.kubernetes.io/target-type"                         = "ip"
 
       "CreatedBy" = "terraform"
     }
