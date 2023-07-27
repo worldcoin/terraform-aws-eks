@@ -72,13 +72,25 @@ resource "aws_security_group_rule" "node_egress" {
   description       = "Allow worker nodes to communicate with all"
 }
 
-resource "aws_security_group_rule" "nodeports_from_alb" {
+resource "aws_security_group_rule" "nodeports_from_alb_traffic" {
   for_each = var.kubernetes_provider_enabled ? local.load_balancers : {}
 
   security_group_id        = aws_security_group.node.id
   type                     = "ingress"
-  from_port                = 30000
-  to_port                  = 32767
+  from_port                = 8443
+  to_port                  = 8443
+  protocol                 = "tcp"
+  source_security_group_id = module.alb[each.key].sg_ids["backend"]
+  description              = "Allow ALB to have access to all NodePort Services"
+}
+
+resource "aws_security_group_rule" "nodeports_from_alb_metrics" {
+  for_each = var.kubernetes_provider_enabled ? local.load_balancers : {}
+
+  security_group_id        = aws_security_group.node.id
+  type                     = "ingress"
+  from_port                = 9000
+  to_port                  = 9000
   protocol                 = "tcp"
   source_security_group_id = module.alb[each.key].sg_ids["backend"]
   description              = "Allow ALB to have access to all NodePort Services"
