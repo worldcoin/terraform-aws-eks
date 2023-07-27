@@ -81,5 +81,5 @@ resource "aws_security_group_rule" "nodeports_from_alb" {
   to_port                  = 32767
   protocol                 = "tcp"
   source_security_group_id = module.alb[each.key].sg_ids["backend"]
-  description              = "Allow nodes to communicate with the cluster API Server"
+  description              = "Allow ALB to have access to all NodePort Services"
 }
