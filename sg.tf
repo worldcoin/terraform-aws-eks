@@ -71,3 +71,27 @@ resource "aws_security_group_rule" "node_egress" {
   cidr_blocks       = ["0.0.0.0/0"]
   description       = "Allow worker nodes to communicate with all"
 }
+
+resource "aws_security_group_rule" "nodeports_from_alb_traffic" {
+  for_each = var.kubernetes_provider_enabled && var.alb_enabled ? local.load_balancers : {}
+
+  security_group_id        = aws_security_group.node.id
+  type                     = "ingress"
+  from_port                = 8443
+  to_port                  = 8443
+  protocol                 = "tcp"
+  source_security_group_id = module.alb[each.key].sg_ids["backend"]
+  description              = "Allow ALB to have access to 8443 ClusterIP with app"
+}
+
+resource "aws_security_group_rule" "nodeports_from_alb_metrics" {
+  for_each = var.kubernetes_provider_enabled && var.alb_enabled ? local.load_balancers : {}
+
+  security_group_id        = aws_security_group.node.id
+  type                     = "ingress"
+  from_port                = 9000
+  to_port                  = 9000
+  protocol                 = "tcp"
+  source_security_group_id = module.alb[each.key].sg_ids["backend"]
+  description              = "Allow ALB to have access to 9000 CluterIP with metrics"
+}
