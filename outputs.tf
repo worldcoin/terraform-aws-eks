@@ -4,22 +4,22 @@ output "name" {
 }
 
 output "nlb_dns_name" {
-  description = "A dns name of the main NLB (traefik)"
+  description = "(Depricated) A dns name of the main NLB (traefik)"
   value       = module.nlb["traefik"].dns_name
 }
 
 output "nlb_arn" {
-  description = "An ARN of the main NLB (traefik)"
+  description = "(Depricated) An ARN of the main NLB (traefik)"
   value       = module.nlb["traefik"].arn
 }
 
 output "nlb_dns_names" {
-  description = "Map of dns names of the NLBs"
+  description = "(Depricated) Map of dns names of the NLBs"
   value       = { for k, v in module.nlb : k => v.dns_name }
 }
 
 output "nlb_arns" {
-  description = "Map of ARNs of the NLBs"
+  description = "(Depricated) Map of ARNs of the NLBs"
   value       = { for k, v in module.nlb : k => v.arn }
 }
 
