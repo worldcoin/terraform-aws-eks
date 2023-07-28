@@ -25,12 +25,12 @@ output "nlb_arns" {
 
 output "alb_dns_name" {
   description = "A dns name of the main ALB (traefik)"
-  value       = module.alb["traefik"].dns_name
+  value       = join("", [for k, v in module.alb : v.dns_name if k == "traefik"])
 }
 
 output "alb_arn" {
   description = "An ARN of the main ALB (traefik)"
-  value       = module.alb["traefik"].arn
+  value       = join("", [for k, v in module.alb : v.arn if k == "traefik"])
 }
 
 output "alb_dns_names" {

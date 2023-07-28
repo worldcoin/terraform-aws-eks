@@ -73,7 +73,7 @@ resource "aws_security_group_rule" "node_egress" {
 }
 
 resource "aws_security_group_rule" "nodeports_from_alb_traffic" {
-  for_each = var.kubernetes_provider_enabled ? local.load_balancers : {}
+  for_each = var.kubernetes_provider_enabled && var.alb_enabled ? local.load_balancers : {}
 
   security_group_id        = aws_security_group.node.id
   type                     = "ingress"
@@ -85,7 +85,7 @@ resource "aws_security_group_rule" "nodeports_from_alb_traffic" {
 }
 
 resource "aws_security_group_rule" "nodeports_from_alb_metrics" {
-  for_each = var.kubernetes_provider_enabled ? local.load_balancers : {}
+  for_each = var.kubernetes_provider_enabled && var.alb_enabled ? local.load_balancers : {}
 
   security_group_id        = aws_security_group.node.id
   type                     = "ingress"

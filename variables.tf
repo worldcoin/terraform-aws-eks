@@ -90,6 +90,12 @@ variable "monitoring_notification_channel" {
   default     = "@slack-TFH-infrastructure-alerts"
 }
 
+variable "alb_enabled" {
+  description = "If it set to true ALB will be created"
+  type        = bool
+  default     = false
+}
+
 variable "internal_alb_ingress_rules" {
   description = "The security group rules to allow ingress from to internal ALB"
   type = list(object({
