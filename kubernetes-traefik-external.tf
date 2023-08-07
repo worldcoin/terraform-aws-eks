@@ -1,5 +1,5 @@
 resource "kubernetes_service" "traefik_alb" {
-  for_each               = var.kubernetes_provider_enabled && var.alb_enabled ? local.load_balancers : {}
+  for_each               = var.kubernetes_provider_enabled ? local.external_load_balancers : []
   wait_for_load_balancer = false
 
   metadata {
@@ -37,7 +37,7 @@ resource "kubernetes_service" "traefik_alb" {
 }
 
 resource "kubernetes_ingress_v1" "treafik_ingress" {
-  for_each = var.kubernetes_provider_enabled && var.alb_enabled ? local.load_balancers : {}
+  for_each = var.kubernetes_provider_enabled ? local.external_load_balancers : []
 
   metadata {
     name      = format("%s-alb", each.key)
@@ -49,7 +49,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
     }
 
     annotations = {
-      "alb.ingress.kubernetes.io/scheme"                              = each.value ? "internet-facing" : "internal"
+      "alb.ingress.kubernetes.io/scheme"                              = "internet-facing"
       "alb.ingress.kubernetes.io/certificate-arn"                     = var.traefik_cert_arn
       "alb.ingress.kubernetes.io/group.name"                          = format("%s.%s", each.key, each.key)
       "alb.ingress.kubernetes.io/security-groups"                     = join(",", [for type, id in module.alb[each.key].sg_ids : id if id != null])
@@ -86,13 +86,13 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
 
 module "alb" {
   source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.2.0"
-  for_each = var.alb_enabled ? local.load_balancers : {}
+  for_each = local.extarnal_load_balancers : []
 
   # because of lenght limitation of LB name we need to remove prefix treafik from custom_load_balancers
   name_suffix  = format("%s-alb", replace(each.key, "traefik-", ""))
   cluster_name = var.cluster_name
 
-  internal    = each.value ? false : true
+  internal    = false
   application = each.key
   namespace   = each.key
 

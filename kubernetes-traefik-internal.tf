@@ -1,24 +1,5 @@
-locals {
-  load_balancers = merge(
-    { "traefik" = true },
-    { for key, value in var.custom_load_balancers : "traefik-${key}" => value },
-  )
-}
-
-resource "kubernetes_namespace" "traefik" {
-  for_each = var.kubernetes_provider_enabled ? local.load_balancers : {}
-
-  metadata {
-    name = each.key
-
-    annotations = {
-      "CreatedBy" = "terraform"
-    }
-  }
-}
-
-resource "kubernetes_service" "traefik" {
-  for_each               = var.kubernetes_provider_enabled ? local.load_balancers : {}
+resource "kubernetes_service" "traefik_nlb" {
+  for_each               = var.kubernetes_provider_enabled ? local.internal_load_balancers : []
   wait_for_load_balancer = false
 
   metadata {
@@ -33,7 +14,7 @@ resource "kubernetes_service" "traefik" {
     annotations = {
       "service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled" = "true"
       "service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"                   = "ip"
-      "service.beta.kubernetes.io/aws-load-balancer-scheme"                            = each.value ? "internet-facing" : "internal"
+      "service.beta.kubernetes.io/aws-load-balancer-scheme"                            = "internal"
       "service.beta.kubernetes.io/aws-load-balancer-ssl-cert"                          = var.traefik_cert_arn
       "service.beta.kubernetes.io/aws-load-balancer-ssl-ports"                         = "443"
       "service.beta.kubernetes.io/aws-load-balancer-type"                              = "external"
@@ -68,13 +49,13 @@ resource "kubernetes_service" "traefik" {
 
 module "nlb" {
   source   = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v0.1.3"
-  for_each = local.load_balancers
+  for_each = local.internal_load_balancers
 
   # because of lenght limitation of LB name we need to remove prefix treafik from custom_load_balancers
   name_suffix  = replace(each.key, "traefik-", "")
   cluster_name = var.cluster_name
 
-  internal    = each.value ? false : true
+  internal    = true
   application = format("%s/%s", each.key, each.key)
 
   acm_arn        = var.traefik_cert_arn
