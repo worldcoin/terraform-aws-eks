@@ -5,6 +5,7 @@
   - [How to release](#how-to-release)
   - [Supported versions](#supported-versions)
   - [Example](#example)
+  - [Migrate 1.xx to 2.xx](#migrate-1.xx-to-2.xx)
   - [Upgrading clusters](#upgrading-clusters)
   - [Datadog](#datadog)
     - [Monitoring](#monitoring)
@@ -80,6 +81,36 @@ module "orb" {
     }
 }
 ```
+
+## Migrate 1.xx to 2.xx
+1. Upgrade module to version 1.40
+1. Set alb_enabled to true in module definition
+1. Apply with terraform
+1. Switch all external domains to ALB
+1. Apply with terraform
+1. Check if applications still works
+1. Upgrade to version 2.xx
+1. Add moved blocks
+
+``` hcl
+moved {
+  from = module.eks.kubernetes_service.traefik
+  to   = module.eks.kubernetes_service.traefik_nlb
+}
+
+moved {
+  from = aws_security_group_rule.nodeports_from_alb_traffic
+  to = aws_security_group_rule.traefik_from_alb_traffic
+}
+
+moved {
+  from = aws_security_group_rule.nodeports_from_alb_metrics
+  to = aws_security_group_rule.traefik_from_alb_metrics
+}
+```
+1. Disable delete protection for NLB external and ALB internal
+1. Apply terraform changes
+1. Check if terraform is able to delete k8s resources. If not remove finalizers from it.
 
 ## Upgrading clusters
 

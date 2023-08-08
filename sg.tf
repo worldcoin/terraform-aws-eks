@@ -72,8 +72,8 @@ resource "aws_security_group_rule" "node_egress" {
   description       = "Allow worker nodes to communicate with all"
 }
 
-resource "aws_security_group_rule" "nodeports_from_alb_traffic" {
-  for_each = var.kubernetes_provider_enabled && var.alb_enabled ? local.load_balancers : {}
+resource "aws_security_group_rule" "traefik_from_alb_traffic" {
+  for_each = var.kubernetes_provider_enabled ? local.external_load_balancers : []
 
   security_group_id        = aws_security_group.node.id
   type                     = "ingress"
@@ -84,8 +84,8 @@ resource "aws_security_group_rule" "nodeports_from_alb_traffic" {
   description              = "Allow ALB to have access to 8443 ClusterIP with app"
 }
 
-resource "aws_security_group_rule" "nodeports_from_alb_metrics" {
-  for_each = var.kubernetes_provider_enabled && var.alb_enabled ? local.load_balancers : {}
+resource "aws_security_group_rule" "traefik_from_alb_metrics" {
+  for_each = var.kubernetes_provider_enabled ? local.external_load_balancers : []
 
   security_group_id        = aws_security_group.node.id
   type                     = "ingress"
