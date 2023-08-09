@@ -99,13 +99,13 @@ moved {
 }
 
 moved {
-  from = aws_security_group_rule.nodeports_from_alb_traffic
-  to = aws_security_group_rule.traefik_from_alb_traffic
+  from = module.eks.aws_security_group_rule.nodeports_from_alb_traffic
+  to = module.eks.aws_security_group_rule.traefik_from_alb_traffic
 }
 
 moved {
-  from = aws_security_group_rule.nodeports_from_alb_metrics
-  to = aws_security_group_rule.traefik_from_alb_metrics
+  from = module.eks.aws_security_group_rule.nodeports_from_alb_metrics
+  to = module.eks.aws_security_group_rule.traefik_from_alb_metrics
 }
 ```
 1. Disable delete protection for NLB external and ALB internal
