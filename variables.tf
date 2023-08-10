@@ -51,6 +51,12 @@ variable "extra_role_mapping" {
   default = []
 }
 
+variable "github_deploy_group" {
+  description = "A kubernetes group attached to github-deploy."
+  type        = string
+  default     = "system:masters"
+}
+
 variable "snyk_integration_id" {
   description = "The Snyk Integration ID. Stored in snyk-monitor namespace as a secret ."
   type        = string
@@ -88,22 +94,4 @@ variable "monitoring_notification_channel" {
   description = "The Datadog notification channel to use for monitoring alerts."
   type        = string
   default     = "@slack-TFH-infrastructure-alerts"
-}
-
-variable "alb_enabled" {
-  description = "If it set to true ALB will be created"
-  type        = bool
-  default     = false
-}
-
-variable "internal_alb_ingress_rules" {
-  description = "The security group rules to allow ingress from to internal ALB"
-  type = list(object({
-    description     = optional(string, "")
-    protocol        = optional(string, "tcp")
-    port            = optional(number, 443)
-    security_groups = optional(list(string))
-    cidr_blocks     = optional(list(string))
-  }))
-  default = []
 }
