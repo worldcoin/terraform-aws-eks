@@ -13,7 +13,7 @@ locals {
     {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/github-deploy"
       username = "github-deploy"
-      groups   = ["system:masters"]
+      groups   = [var.github_deploy_group]
     }
     ],
     var.extra_role_mapping,
