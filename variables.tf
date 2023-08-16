@@ -51,12 +51,6 @@ variable "extra_role_mapping" {
   default = []
 }
 
-variable "github_deploy_group" {
-  description = "A kubernetes group attached to github-deploy."
-  type        = string
-  default     = "system:masters"
-}
-
 variable "snyk_integration_id" {
   description = "The Snyk Integration ID. Stored in snyk-monitor namespace as a secret ."
   type        = string
