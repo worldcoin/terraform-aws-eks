@@ -12,6 +12,9 @@ module "datadog_monitoring" {
     "CreatedBy:terraform"
   ]
 
+  # don't lock the monitor, so we can edit (for example mute for some time) it in the UI
+  locked = false
+
   # don't alert on cpu overbooking
   cpu_limits_low_perc_enabled   = false
   cpu_requests_low_perc_enabled = false
