@@ -23,9 +23,9 @@ module "datadog_monitoring" {
 resource "datadog_monitor" "oom" {
   count = var.monitoring_enabled ? 1 : 0
 
-  name      = "OOM kill detected on ${var.cluster_name}"
+  name      = "OOM kill detected"
   type      = "metric alert"
-  query     = "sum(last_1h):sum:oom_kill.oom_process.count{env:prod} by {kube_namespace,kube_container_name}.as_count() >= 1"
+  query     = "sum(last_1h):sum:oom_kill.oom_process.count{env:prod, cluster_name:${var.cluster_name}} by {kube_namespace,kube_container_name}.as_count() >= 1"
   timeout_h = 1
 
   monitor_thresholds {
