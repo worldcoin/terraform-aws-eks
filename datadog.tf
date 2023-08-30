@@ -35,10 +35,12 @@ resource "datadog_monitor" "oom" {
   message = <<EOT
 OOM kill detected:
 
+```
 Namespace: {{kube_namespace}}
 Container: {{kube_container_name}}
+```
 
-Notify: @${var.monitoring_notification_channel}"
+Notify: ${var.monitoring_notification_channel}
 EOT
 
   tags = [
