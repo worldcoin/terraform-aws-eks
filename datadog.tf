@@ -37,6 +37,7 @@ resource "datadog_monitor" "oom" {
 OOM kill detected:
 
 ```
+Cluster:   {{cluster_name}}
 Namespace: {{kube_namespace}}
 Container: {{kube_container_name}}
 ```
