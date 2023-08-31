@@ -19,3 +19,33 @@ module "datadog_monitoring" {
   cpu_limits_low_perc_enabled   = false
   cpu_requests_low_perc_enabled = false
 }
+
+resource "datadog_monitor" "oom" {
+  count = var.monitoring_enabled ? 1 : 0
+
+  name      = "OOM kill detected on ${var.cluster_name}"
+  type      = "metric alert"
+  query     = "sum(last_1h):sum:oom_kill.oom_process.count{cluster_name:${var.cluster_name}} by {kube_namespace,kube_container_name}.as_count() >= 1"
+  timeout_h = 1
+  priority  = 3
+
+  monitor_thresholds {
+    critical = 1
+  }
+
+  message = <<EOT
+OOM kill detected:
+
+```
+Cluster:   {{cluster_name}}
+Namespace: {{kube_namespace}}
+Container: {{kube_container_name}}
+```
+
+Notify: ${var.monitoring_notification_channel}
+EOT
+
+  tags = [
+    "CreatedBy:terraform"
+  ]
+}
