@@ -20,10 +20,10 @@ module "datadog_monitoring" {
   cpu_requests_low_perc_enabled = false
 
   # limit false positives when karpenter adds/removes nodes
-  node_diskpressure_evaluation_period = "last_1h"
+  node_diskpressure_evaluation_period   = "last_1h"
   node_memorypressure_evaluation_period = "last_1h"
-  pid_pressure_evaluation_period = "last_1h"
-  node_ready_evaluation_period = "last_1h"
+  pid_pressure_evaluation_period        = "last_1h"
+  node_ready_evaluation_period          = "last_1h"
 }
 
 resource "datadog_monitor" "oom" {
