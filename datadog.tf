@@ -55,3 +55,43 @@ EOT
     "CreatedBy:terraform"
   ]
 }
+
+data "datadog_synthetics_locations" "locations" {}
+
+resource "datadog_synthetics_test" "cluster_monitoring" {
+  count = var.monitoring_enabled ? 1 : 0
+  name      = "Uptime test for cluster: ${var.cluster_name}"
+  type      = "api"
+  subtype   = "http"
+  status    = "live"
+  message   = "Cluster ${var.cluster_name} is not responding. ${var.monitoring_notification_channel}"
+  locations = keys(data.datadog_synthetics_locations.locations.locations)
+  tags = [
+    "CreatedBy:terraform",
+    "env:${var.environment}",
+  ]
+
+  request_definition {
+    method = "GET"
+    url    = "https://${var.cluster_name}.monitoring.worldcoin.dev/"
+  }
+
+  request_headers = {
+    Content-Type = "application/json"
+  }
+
+  assertion {
+    type     = "statusCode"
+    operator = "is"
+    target   = "200"
+  }
+
+  options_list {
+    tick_every = 300
+    monitor_priority = 1
+    retry {
+      count    = 3
+      interval = 1000 # ms
+    }
+  }
+}
