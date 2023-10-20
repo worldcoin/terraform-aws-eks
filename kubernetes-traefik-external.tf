@@ -85,7 +85,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
 }
 
 module "alb" {
-  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.2.0"
+  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.3.0"
   for_each = local.external_load_balancers
 
   # because of lenght limitation of LB name we need to remove prefix treafik from custom_load_balancers
@@ -99,4 +99,6 @@ module "alb" {
   acm_arn        = var.traefik_cert_arn
   vpc_id         = var.vpc_config.vpc_id
   public_subnets = var.vpc_config.public_subnets
+
+  s3_logs_bucket_id = var.alb_logs_bucket_id
 }

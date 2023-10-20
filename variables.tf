@@ -89,3 +89,8 @@ variable "monitoring_notification_channel" {
   type        = string
   default     = "@slack-TFH-infrastructure-alerts"
 }
+
+variable "alb_logs_bucket_id" {
+  description = "The ID of the S3 bucket to store logs in for ALB."
+  type        = string
+}

@@ -5,7 +5,7 @@
   - [How to release](#how-to-release)
   - [Supported versions](#supported-versions)
   - [Example](#example)
-  - [Migrate 1.xx to 2.xx](#migrate-1.xx-to-2.xx)
+  - [Migrate 1.xx to 2.xx](#migrate-1xx-to-2xx)
   - [Upgrading clusters](#upgrading-clusters)
   - [Datadog](#datadog)
     - [Monitoring](#monitoring)
@@ -58,6 +58,7 @@ module "orb" {
     snyk_integration_id = var.snyk_integration_id
     datadog_api_key     = var.datadog_api_key
     traefik_cert_arn    = var.traefik_cert_arn
+    alb_logs_bucket_id  = module.region.alb_logs_bucket_id
 }
 ```
 
@@ -75,6 +76,7 @@ module "orb" {
     snyk_integration_id = var.snyk_integration_id
     datadog_api_key     = var.datadog_api_key
     traefik_cert_arn    = var.traefik_cert_arn
+    alb_logs_bucket_id  = module.region.alb_logs_bucket_id
 
     custom_load_balancers = {
       internal = false
