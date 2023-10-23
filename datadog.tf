@@ -1,8 +1,7 @@
 module "datadog_monitoring" {
   count = var.monitoring_enabled ? 1 : 0
 
-  source  = "kabisa/kubernetes/datadog"
-  version = "2.1.0"
+  source  = "git@github.com:worldcoin/terraform-datadog-kubernetes?ref=v1.0.0"
 
   notification_channel = var.monitoring_notification_channel
   service              = "Kubernetes"
@@ -11,9 +10,6 @@ module "datadog_monitoring" {
   additional_tags = [
     "CreatedBy:terraform"
   ]
-
-  # don't lock the monitor, so we can edit (for example mute for some time) it in the UI
-  locked = false
 
   # don't alert on cpu overbooking
   cpu_limits_low_perc_enabled   = false
