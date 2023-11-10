@@ -59,7 +59,8 @@ resource "kubernetes_service" "traefik_nlb" {
 }
 
 module "nlb" {
-  source   = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v0.1.3"
+  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v0.2.0"
+
   for_each = local.internal_load_balancers
 
   # because of lenght limitation of LB name we need to remove prefix treafik from custom_load_balancers
@@ -72,4 +73,6 @@ module "nlb" {
   acm_arn        = var.traefik_cert_arn
   vpc_id         = var.vpc_config.vpc_id
   public_subnets = var.vpc_config.public_subnets
+
+  extra_listeners = var.extra_nlb_listeners
 }

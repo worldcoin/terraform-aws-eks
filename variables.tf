@@ -106,3 +106,15 @@ variable "traefik_nlb_service_ports" {
 
   default = []
 }
+
+variable "extra_nlb_listeners" {
+  description = "List with configuration for additional listeners"
+  type = list(object({
+    name              = string
+    port              = string
+    protocol          = optional(string, "TCP")
+    target_group_port = number
+  }))
+
+  default = []
+}
