@@ -43,6 +43,17 @@ resource "kubernetes_service" "traefik_nlb" {
       protocol    = "TCP"
     }
 
+    dynamic "port" {
+      for_each = var.traefik_nlb_service_ports
+
+      content {
+        name        = port.value["name"]
+        port        = port.value["port"]
+        target_port = port.value["target_port"]
+        protocol    = port.value["protocol"]
+      }
+    }
+
     type = "LoadBalancer"
   }
 }

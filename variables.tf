@@ -94,3 +94,15 @@ variable "alb_logs_bucket_id" {
   description = "The ID of the S3 bucket to store logs in for ALB."
   type        = string
 }
+
+variable "traefik_nlb_service_ports" {
+  description = "List of additional ports for treafik k8s service"
+  type = list(object({
+    name        = string
+    port        = number
+    target_port = string
+    protocol    = string
+  }))
+
+  default = []
+}
