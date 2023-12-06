@@ -113,3 +113,9 @@ variable "extra_nlb_listeners" {
 
   default = []
 }
+
+variable "kubelet_extra_args" {
+  description = "kubelet extra args to pass to the node group"
+  type        = string
+  default     = "--register-with-taints=karpenter:NoSchedule"
+}

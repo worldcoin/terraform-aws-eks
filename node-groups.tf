@@ -49,6 +49,7 @@ resource "aws_launch_template" "this" {
       cluster_name           = aws_eks_cluster.this.name
       cluster_endpoint       = aws_eks_cluster.this.endpoint
       cluster_ca_certificate = aws_eks_cluster.this.certificate_authority[0].data
+      kubelet_extra_args     = var.kubelet_extra_args
     })
   )
 }
