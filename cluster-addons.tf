@@ -16,7 +16,7 @@ locals {
     "1.23" = "v1.8.7-eksbuild.2"
     "1.24" = "v1.8.7-eksbuild.3"
     "1.25" = "v1.9.3-eksbuild.2"
-    "1.26" = "v1.9.3-eksbuild.2"
+    "1.26" = "v1.9.3-eksbuild.10"
   }
 
   # Latest available kube-proxy container image version for each Amazon EKS cluster version
