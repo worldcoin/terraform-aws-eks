@@ -53,24 +53,26 @@ resource "aws_eks_addon" "coredns" {
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
   configuration_values = jsonencode({
-    "tolerations" : [
-      {
-        "effect" : "NoExecute",
-        "key" : "karpenter"
-      },
-      {
-        "key" : "CriticalAddonsOnly",
-        "operator" : "Exists"
-      },
-      {
-        "effect" : "NoSchedule",
-        "key" : "node-role.kubernetes.io/control-plane"
-      },
-      {
-        "effect" : "NoSchedule",
-        "key" : "node-role.kubernetes.io/master"
-      }
-    ],
+    "Coredns" : {
+      "tolerations" : [
+        {
+          "effect" : "NoExecute",
+          "key" : "karpenter"
+        },
+        {
+          "key" : "CriticalAddonsOnly",
+          "operator" : "Exists"
+        },
+        {
+          "effect" : "NoSchedule",
+          "key" : "node-role.kubernetes.io/control-plane"
+        },
+        {
+          "effect" : "NoSchedule",
+          "key" : "node-role.kubernetes.io/master"
+        }
+      ]
+    }
   })
 }
 
