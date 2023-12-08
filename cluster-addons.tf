@@ -16,7 +16,7 @@ locals {
     "1.23" = "v1.8.7-eksbuild.2"
     "1.24" = "v1.8.7-eksbuild.3"
     "1.25" = "v1.9.3-eksbuild.2"
-    "1.26" = "v1.9.3-eksbuild.2"
+    "1.26" = "v1.9.3-eksbuild.10"
   }
 
   # Latest available kube-proxy container image version for each Amazon EKS cluster version
@@ -52,6 +52,26 @@ resource "aws_eks_addon" "coredns" {
   addon_version               = local.coredns_version[var.cluster_version]
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
+  configuration_values = jsonencode({
+    tolerations: [
+      {
+        effect : "NoExecute",
+        key : "karpenter"
+      },
+      {
+        key : "CriticalAddonsOnly",
+        operator : "Exists"
+      },
+      {
+        effect : "NoSchedule",
+        key : "node-role.kubernetes.io/control-plane"
+      },
+      {
+        effect : "NoSchedule",
+        key : "node-role.kubernetes.io/master"
+      }
+    ]
+  })
 }
 
 resource "aws_eks_addon" "kube_proxy" {
