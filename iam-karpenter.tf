@@ -133,7 +133,6 @@ data "aws_iam_policy_document" "karpenter" {
       "pricing:GetProducts"
     ]
   }
-
   statement {
     sid       = "ConditionalEC2Termination"
     resources = ["*"]
@@ -145,7 +144,6 @@ data "aws_iam_policy_document" "karpenter" {
       values   = ["*"]
     }
   }
-
   statement {
     sid       = "PassNodeIAMRole"
     effect    = "Allow"
@@ -158,7 +156,6 @@ data "aws_iam_policy_document" "karpenter" {
     actions   = ["eks:DescribeCluster"]
     resources = ["arn:aws:eks:${data.aws_region.current.name}:${data.aws_caller_identity.account.id}:cluster/${var.cluster_name}"]
   }
-
   statement {
     sid       = "AllowScopedInstanceProfileCreationActions"
     effect    = "Allow"
@@ -182,7 +179,6 @@ data "aws_iam_policy_document" "karpenter" {
       values   = ["*"]
     }
   }
-
   statement {
     sid       = "AllowScopedInstanceProfileTagActions"
     effect    = "Allow"
@@ -210,7 +206,6 @@ data "aws_iam_policy_document" "karpenter" {
       variable = "aws:ResourceTag/topology.kubernetes.io/region"
       values   = ["${data.aws_region.current.name}"]
     }
-
     condition {
       test     = "StringLike"
       variable = "aws:RequestTag/karpenter.k8s.aws/ec2nodeclass"
