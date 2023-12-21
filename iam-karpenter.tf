@@ -171,7 +171,7 @@ data "aws_iam_policy_document" "karpenter" {
       values   = ["owned"]
     }
     condition {
-      test     = "StringLike"
+      test     = "StringEquals"
       variable = "aws:RequestTag/topology.kubernetes.io/region"
       values   = ["us-east-1"]
     }
