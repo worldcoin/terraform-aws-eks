@@ -192,7 +192,7 @@ data "aws_iam_policy_document" "karpenter" {
     condition {
       test     = "StringEquals"
       variable = "aws:RequestTag/kubernetes.io/cluster/${var.cluster_name}"
-      values   = "owned"
+      values   = ["owned"]
     }
     condition {
       test     = "StringEquals"
@@ -202,7 +202,7 @@ data "aws_iam_policy_document" "karpenter" {
     condition {
       test     = "StringEquals"
       variable = "aws:ResourceTag/kubernetes.io/cluster/${var.cluster_name}"
-      values   = "owned"
+      values   = ["owned"]
     }
     condition {
       test     = "StringEquals"
@@ -213,12 +213,12 @@ data "aws_iam_policy_document" "karpenter" {
     condition {
       test     = "StringLike"
       variable = "aws:RequestTag/karpenter.k8s.aws/ec2nodeclass"
-      values   = "*"
+      values   = ["*"]
     }
     condition {
       test     = "StringLike"
       variable = "aws:ResourceTag/karpenter.k8s.aws/ec2nodeclass"
-      values   = "*"
+      values   = ["*"]
     }
   }
   statement {
