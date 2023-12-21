@@ -197,7 +197,7 @@ data "aws_iam_policy_document" "karpenter" {
     condition {
       test     = "StringEquals"
       variable = "aws:RequestTag/topology.kubernetes.io/region"
-      values   = "${data.aws_region.current.name}"
+      values   = ["${data.aws_region.current.name}"]
     }
     condition {
       test     = "StringEquals"
@@ -207,7 +207,7 @@ data "aws_iam_policy_document" "karpenter" {
     condition {
       test     = "StringEquals"
       variable = "aws:ResourceTag/topology.kubernetes.io/region"
-      values   = "${data.aws_region.current.name}"
+      values   = ["${data.aws_region.current.name}"]
     }
 
     condition {
