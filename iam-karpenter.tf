@@ -109,6 +109,7 @@ data "aws_iam_policy_document" "karpenter" {
   }
 
   # Karpenter >= 0.30.0
+  # Remove all statements above this line after upgrading to 0.30.0+
   statement {
     sid       = "Karpenter"
     effect    = "Allow"
