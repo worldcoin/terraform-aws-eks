@@ -149,13 +149,13 @@ data "aws_iam_policy_document" "karpenter" {
     sid       = "PassNodeIAMRole"
     effect    = "Allow"
     actions   = ["iam:PassRole"]
-    resources = ["arn:aws:iam::926986201233:role/eks-node-dev-v3-us-east-1"]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.account.id}:role/eks-node-${var.cluster_name}"]
   }
   statement {
     sid       = "EKSClusterEndpointLookup"
     effect    = "Allow"
     actions   = ["eks:DescribeCluster"]
-    resources = ["arn:aws:eks:us-east-1:926986201233:cluster/dev-v3-us-east-1"]
+    resources = ["arn:aws:eks:${data.aws_region.current.name}:${data.aws_caller_identity.account.id}:cluster/${var.cluster_name}"]
   }
 
   statement {
@@ -167,13 +167,13 @@ data "aws_iam_policy_document" "karpenter" {
     ]
     condition {
       test     = "StringEquals"
-      variable = "aws:RequestTag/kubernetes.io/cluster/dev-v3-us-east-1"
+      variable = "aws:RequestTag/kubernetes.io/cluster/${var.cluster_name}"
       values   = ["owned"]
     }
     condition {
       test     = "StringEquals"
       variable = "aws:RequestTag/topology.kubernetes.io/region"
-      values   = ["us-east-1"]
+      values   = ["${data.aws_region.current.name}"]
     }
     condition {
       test     = "StringLike"
@@ -191,23 +191,23 @@ data "aws_iam_policy_document" "karpenter" {
 
     condition {
       test     = "StringEquals"
-      variable = "aws:RequestTag/kubernetes.io/cluster/dev-v3-us-east-1"
+      variable = "aws:RequestTag/kubernetes.io/cluster/${var.cluster_name}"
       values   = "owned"
     }
     condition {
       test     = "StringEquals"
       variable = "aws:RequestTag/topology.kubernetes.io/region"
-      values   = "us-east-1"
+      values   = "${data.aws_region.current.name}"
     }
     condition {
       test     = "StringEquals"
-      variable = "aws:ResourceTag/kubernetes.io/cluster/dev-v3-us-east-1"
+      variable = "aws:ResourceTag/kubernetes.io/cluster/${var.cluster_name}"
       values   = "owned"
     }
     condition {
       test     = "StringEquals"
       variable = "aws:ResourceTag/topology.kubernetes.io/region"
-      values   = "us-east-1"
+      values   = "${data.aws_region.current.name}"
     }
 
     condition {
@@ -232,13 +232,13 @@ data "aws_iam_policy_document" "karpenter" {
     ]
     condition {
       test     = "StringEquals"
-      variable = "aws:ResourceTag/kubernetes.io/cluster/dev-v3-us-east-1"
+      variable = "aws:ResourceTag/kubernetes.io/cluster/${var.cluster_name}"
       values   = ["owned"]
     }
     condition {
       test     = "StringEquals"
       variable = "aws:ResourceTag/topology.kubernetes.io/region"
-      values   = ["us-east-1"]
+      values   = ["${data.aws_region.current.name}"]
     }
     condition {
       test     = "StringLike"
