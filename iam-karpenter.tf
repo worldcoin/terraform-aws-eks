@@ -107,6 +107,147 @@ data "aws_iam_policy_document" "karpenter" {
     resources = [aws_eks_cluster.this.arn]
     actions   = ["eks:DescribeCluster"]
   }
+
+  # Karpenter >= 0.30.0
+  # Remove all statements above this line after upgrading to 0.30.0+
+  statement {
+    sid       = "Karpenter"
+    effect    = "Allow"
+    resources = ["*"]
+    actions = [
+      "ssm:GetParameter",
+      "ec2:DescribeImages",
+      "ec2:RunInstances",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeLaunchTemplates",
+      "ec2:DescribeInstances",
+      "ec2:DescribeInstanceTypes",
+      "ec2:DescribeInstanceTypeOfferings",
+      "ec2:DescribeAvailabilityZones",
+      "ec2:DeleteLaunchTemplate",
+      "ec2:CreateTags",
+      "ec2:CreateLaunchTemplate",
+      "ec2:CreateFleet",
+      "ec2:DescribeSpotPriceHistory",
+      "pricing:GetProducts"
+    ]
+  }
+  statement {
+    sid       = "ConditionalEC2Termination"
+    resources = ["*"]
+    effect    = "Allow"
+    actions   = ["ec2:TerminateInstances"]
+    condition {
+      test     = "StringLike"
+      variable = "ec2:ResourceTag/karpenter.sh/nodepool"
+      values   = ["*"]
+    }
+  }
+  statement {
+    sid       = "PassNodeIAMRole"
+    effect    = "Allow"
+    actions   = ["iam:PassRole"]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.account.id}:role/eks-node-${var.cluster_name}"]
+  }
+  statement {
+    sid       = "EKSClusterEndpointLookup"
+    effect    = "Allow"
+    actions   = ["eks:DescribeCluster"]
+    resources = ["arn:aws:eks:${data.aws_region.current.name}:${data.aws_caller_identity.account.id}:cluster/${var.cluster_name}"]
+  }
+  statement {
+    sid       = "AllowScopedInstanceProfileCreationActions"
+    effect    = "Allow"
+    resources = ["*"]
+    actions = [
+      "iam:CreateInstanceProfile",
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/kubernetes.io/cluster/${var.cluster_name}"
+      values   = ["owned"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/topology.kubernetes.io/region"
+      values   = [data.aws_region.current.name]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "aws:RequestTag/karpenter.k8s.aws/ec2nodeclass"
+      values   = ["*"]
+    }
+  }
+  statement {
+    sid       = "AllowScopedInstanceProfileTagActions"
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = ["iam:TagInstanceProfile"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/kubernetes.io/cluster/${var.cluster_name}"
+      values   = ["owned"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/topology.kubernetes.io/region"
+      values   = [data.aws_region.current.name]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/kubernetes.io/cluster/${var.cluster_name}"
+      values   = ["owned"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/topology.kubernetes.io/region"
+      values   = [data.aws_region.current.name]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "aws:RequestTag/karpenter.k8s.aws/ec2nodeclass"
+      values   = ["*"]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "aws:ResourceTag/karpenter.k8s.aws/ec2nodeclass"
+      values   = ["*"]
+    }
+  }
+  statement {
+    sid       = "AllowScopedInstanceProfileActions"
+    effect    = "Allow"
+    resources = ["*"]
+    actions = [
+      "iam:AddRoleToInstanceProfile",
+      "iam:RemoveRoleFromInstanceProfile",
+      "iam:DeleteInstanceProfile"
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/kubernetes.io/cluster/${var.cluster_name}"
+      values   = ["owned"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/topology.kubernetes.io/region"
+      values   = [data.aws_region.current.name]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "aws:ResourceTag/karpenter.k8s.aws/ec2nodeclass"
+      values   = ["*"]
+    }
+  }
+  statement {
+    sid       = "AllowInstanceProfileReadActions"
+    effect    = "Allow"
+    resources = ["*"]
+    actions   = ["iam:GetInstanceProfile"]
+  }
 }
 
 resource "aws_iam_role" "karpenter" {
