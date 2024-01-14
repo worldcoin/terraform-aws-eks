@@ -119,3 +119,15 @@ variable "kubelet_extra_args" {
   type        = string
   default     = "--register-with-taints=karpenter:NoExecute"
 }
+
+variable "vpc_cni_warm_ip_target" {
+  description = "Number of IPs to keep warm for each node to speed up pod scheduling"
+  type        = number
+  default     = 8
+}
+
+variable "vpc_cni_warm_eni_target" {
+  description = "Number of ENIs to keep warm for each node to speed up pod scheduling"
+  type        = number
+  default     = 1
+}

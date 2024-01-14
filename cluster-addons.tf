@@ -44,6 +44,11 @@ resource "aws_eks_addon" "vpc_cni" {
   addon_version               = var.vpc_cni_version_override == "" ? local.vpc_cni_version[var.cluster_version] : var.vpc_cni_version_override
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
+  configuration_values = jsonencode({
+    ENABLE_PREFIX_DELEGATION : true,               # Enable prefix delegation for IPv6, allocate IPs in /28 blocks (instead of all at once)
+    WARM_IP_TARGET : var.vpc_cni_warm_ip_target,   # Keep +8 IPs warm for each node to speed up pod scheduling
+    WARM_ENI_TARGET : var.vpc_cni_warm_eni_target, # Keep +1 ENI warm for each node to speed up pod scheduling
+  })
 }
 
 resource "aws_eks_addon" "coredns" {
@@ -53,7 +58,7 @@ resource "aws_eks_addon" "coredns" {
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
   configuration_values = jsonencode({
-    tolerations: [
+    tolerations : [
       {
         effect : "NoExecute",
         key : "karpenter"
