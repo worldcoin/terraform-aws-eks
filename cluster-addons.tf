@@ -2,10 +2,11 @@ locals {
   # Recommended version of the Amazon VPC CNI add-on for each cluster version
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
   vpc_cni_version = {
-    "1.23" = "v1.15.5-eksbuild.1"
-    "1.24" = "v1.16.0-eksbuild.1"
-    "1.25" = "v1.16.0-eksbuild.1"
-    "1.26" = "v1.16.0-eksbuild.1"
+    "1.22" = "v1.11.4-eksbuild.1"
+    "1.23" = "v1.11.4-eksbuild.1"
+    "1.24" = "v1.11.4-eksbuild.1"
+    "1.25" = "v1.12.6-eksbuild.1"
+    "1.26" = "v1.12.6-eksbuild.1"
     "1.27" = "v1.16.0-eksbuild.1"
     "1.28" = "v1.16.0-eksbuild.1"
   }
