@@ -2,17 +2,17 @@ locals {
   # Recommended version of the Amazon VPC CNI add-on for each cluster version
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
   vpc_cni_version = {
-    "1.22" = "v1.11.4-eksbuild.1"
-    "1.23" = "v1.11.4-eksbuild.1"
-    "1.24" = "v1.11.4-eksbuild.1"
-    "1.25" = "v1.12.6-eksbuild.1"
-    "1.26" = "v1.12.6-eksbuild.1"
+    "1.23" = "v1.15.5-eksbuild.1"
+    "1.24" = "v1.16.0-eksbuild.1"
+    "1.25" = "v1.16.0-eksbuild.1"
+    "1.26" = "v1.16.0-eksbuild.1"
+    "1.27" = "v1.16.0-eksbuild.1"
+    "1.28" = "v1.16.0-eksbuild.1"
   }
 
   # CoreDNS version deployed with each Amazon EKS supported cluster version
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html
   coredns_version = {
-    "1.22" = "v1.8.7-eksbuild.1"
     "1.23" = "v1.8.7-eksbuild.2"
     "1.24" = "v1.8.7-eksbuild.3"
     "1.25" = "v1.9.3-eksbuild.2"
@@ -22,7 +22,6 @@ locals {
   # Latest available kube-proxy container image version for each Amazon EKS cluster version
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-kube-proxy.html
   kube_proxy_version = {
-    "1.22" = "v1.22.11-eksbuild.2"
     "1.23" = "v1.23.8-eksbuild.2"
     "1.24" = "v1.24.7-eksbuild.2"
     "1.25" = "v1.25.6-eksbuild.2"
@@ -30,7 +29,6 @@ locals {
   }
 
   ebs_csi_driver_version = {
-    "1.22" = "v1.14.1-eksbuild.1"
     "1.23" = "v1.14.1-eksbuild.1"
     "1.24" = "v1.14.1-eksbuild.1"
     "1.25" = "v1.17.0-eksbuild.1"
