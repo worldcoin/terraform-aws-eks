@@ -18,6 +18,8 @@ locals {
     "1.24" = "v1.8.7-eksbuild.3"
     "1.25" = "v1.9.3-eksbuild.2"
     "1.26" = "v1.9.3-eksbuild.10"
+    "1.27" = "v1.10.1-eksbuild.6"
+    "1.28" = "v1.10.1-eksbuild.6"
   }
 
   # Latest available kube-proxy container image version for each Amazon EKS cluster version
@@ -25,15 +27,20 @@ locals {
   kube_proxy_version = {
     "1.23" = "v1.23.8-eksbuild.2"
     "1.24" = "v1.24.7-eksbuild.2"
-    "1.25" = "v1.25.6-eksbuild.2"
-    "1.26" = "v1.26.2-eksbuild.1"
+    "1.25" = "v1.25.16-minimal-eksbuild.1"
+    "1.26" = "v1.26.11-minimal-eksbuild.4"
+    "1.27" = "v1.27.8-minimal-eksbuild.4"
+    "1.28" = "v1.28.4-minimal-eksbuild.4"
   }
 
+  # https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html
   ebs_csi_driver_version = {
     "1.23" = "v1.14.1-eksbuild.1"
     "1.24" = "v1.14.1-eksbuild.1"
     "1.25" = "v1.17.0-eksbuild.1"
     "1.26" = "v1.17.0-eksbuild.1"
+    "1.27" = "v1.26.1-eksbuild.1"
+    "1.28" = "v1.26.1-eksbuild.1"
   }
 }
 
