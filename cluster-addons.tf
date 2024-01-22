@@ -6,7 +6,7 @@ locals {
     "1.23" = "v1.11.4-eksbuild.1"
     "1.24" = "v1.11.4-eksbuild.1"
     "1.25" = "v1.12.6-eksbuild.1"
-    "1.26" = "v1.12.6-eksbuild.1"
+    "1.26" = "v1.13.4-eksbuild.1"
     "1.27" = "v1.16.0-eksbuild.1"
     "1.28" = "v1.16.0-eksbuild.1"
   }
@@ -27,10 +27,10 @@ locals {
   kube_proxy_version = {
     "1.23" = "v1.23.8-eksbuild.2"
     "1.24" = "v1.24.7-eksbuild.2"
-    "1.25" = "v1.25.16-minimal-eksbuild.1"
-    "1.26" = "v1.26.11-minimal-eksbuild.4"
-    "1.27" = "v1.27.8-minimal-eksbuild.4"
-    "1.28" = "v1.28.4-minimal-eksbuild.4"
+    "1.25" = "v1.25.6-eksbuild.2"
+    "1.26" = "v1.26.2-eksbuild.1"
+    "1.27" = "v1.27.8-eksbuild.4"
+    "1.28" = "v1.28.4-eksbuild.4"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html
