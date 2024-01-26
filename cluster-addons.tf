@@ -7,7 +7,7 @@ locals {
     "1.24" = "v1.11.4-eksbuild.1"
     "1.25" = "v1.12.6-eksbuild.1"
     "1.26" = "v1.14.1-eksbuild.1"
-    "1.27" = "v1.16.0-eksbuild.1"
+    "1.27" = "v1.15.5-eksbuild.1"
     "1.28" = "v1.16.0-eksbuild.1"
   }
 
@@ -19,7 +19,7 @@ locals {
     "1.25" = "v1.9.3-eksbuild.2"
     "1.26" = "v1.9.3-eksbuild.10"
     "1.27" = "v1.10.1-eksbuild.6"
-    "1.28" = "v1.10.1-eksbuild.6"
+    "1.28" = "v1.10.1-eksbuild.7"
   }
 
   # Latest available kube-proxy container image version for each Amazon EKS cluster version
@@ -40,7 +40,7 @@ locals {
     "1.25" = "v1.17.0-eksbuild.1"
     "1.26" = "v1.17.0-eksbuild.1"
     "1.27" = "v1.26.1-eksbuild.1"
-    "1.28" = "v1.26.1-eksbuild.1"
+    "1.28" = "v1.27.0-eksbuild.1"
   }
 }
 
