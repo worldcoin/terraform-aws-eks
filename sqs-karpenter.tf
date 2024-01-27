@@ -2,10 +2,9 @@ resource "aws_sqs_queue" "this" {
   content_based_deduplication       = false
   delay_seconds                     = 0
   fifo_queue                        = false
-  kms_data_key_reuse_period_seconds = 300
   sqs_managed_sse_enabled           = true
   max_message_size                  = 262144
-  message_retention_seconds         = 259200 # 3 days
+  message_retention_seconds         = 86400
   name                              = "spot-notifications-${var.cluster_name}"
   receive_wait_time_seconds         = 0
 
