@@ -121,11 +121,11 @@ Due to problems with [tf kubernetes provider](https://registry.terraform.io/prov
 
     1. `aws eks update-cluster-version --region ... --name ... --kubernetes-version 1.26`
 
-    2. And for not karpenter nodes use `instance refresh`
+    2. Run `terraform apply` to update the rest (eks addons etc).
+
+    3. And for not karpenter nodes use `instance refresh`
     https://docs.aws.amazon.com/autoscaling/ec2/userguide/start-instance-refresh.html
     remember to unmark "Enable skip matching"
-
-1. Run `terraform apply` to update the rest (eks addons etc).
 
 ## Datadog
 
