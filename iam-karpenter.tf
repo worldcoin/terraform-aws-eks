@@ -160,6 +160,17 @@ data "aws_iam_policy_document" "karpenter" {
     resources = ["*"]
     actions   = ["iam:GetInstanceProfile"]
   }
+  statement {
+    sid       = "AllowSQSActions"
+    effect    = "Allow"
+    actions = [
+      "sqs:DeleteMessage",
+      "sqs:GetQueueUrl",
+      "sqs:GetQueueAttributes",
+      "sqs:ReceiveMessage",
+    ]
+    resources = [aws_sqs_queue.this.arn]
+  }
 }
 
 resource "aws_iam_role" "karpenter" {
