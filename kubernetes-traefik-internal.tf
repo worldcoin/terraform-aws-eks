@@ -1,5 +1,5 @@
 resource "kubernetes_service" "traefik_nlb" {
-  for_each               = var.kubernetes_provider_enabled ? local.internal_load_balancers : []
+  for_each               = var.kubernetes_provider_enabled ? var.internal_nlb_enabled ? toset([local.internal_nlb_name]) : [] : []
   wait_for_load_balancer = false
 
   metadata {
@@ -61,7 +61,7 @@ resource "kubernetes_service" "traefik_nlb" {
 module "nlb" {
   source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v0.2.0"
 
-  for_each = local.internal_load_balancers
+  for_each = var.internal_nlb_enabled ? toset([local.internal_nlb_name]) : []
 
   # because of lenght limitation of LB name we need to remove prefix treafik from custom_load_balancers
   name_suffix  = replace(each.key, "traefik-", "")

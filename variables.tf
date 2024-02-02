@@ -56,10 +56,10 @@ variable "datadog_api_key" {
   type        = string
 }
 
-variable "custom_load_balancers" {
-  description = "Custom load balancers to create. Key is the name of the load balancer, value is whether it should be internet-facing or not."
-  type        = map(bool)
-  default     = {}
+variable "internal_nlb_enabled" {
+  description = "Internal Network load balancers to create. If true, the NLB will be created."
+  type        = bool
+  default     = true
 }
 
 variable "traefik_cert_arn" {

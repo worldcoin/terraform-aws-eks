@@ -1,15 +1,15 @@
 locals {
-  load_balancers = merge(
-    { "traefik" = true },
-    { for key, value in var.custom_load_balancers : "traefik-${key}" => value },
-  )
+  external_alb_name = "traefik"
+  internal_nlb_name = "traefik-internal"
 
-  internal_load_balancers = toset([for k, v in local.load_balancers : k if v == false])
-  external_load_balancers = toset([for k, v in local.load_balancers : k if v == true])
+  # list of all load balancers names
+  load_balancers = concat([local.external_alb_name],
+    var.internal_nlb_enabled ? [local.internal_nlb_name] : []
+  )
 }
 
 resource "kubernetes_namespace" "traefik" {
-  for_each = var.kubernetes_provider_enabled ? local.load_balancers : {}
+  for_each = var.kubernetes_provider_enabled ? toset(local.load_balancers) : []
 
   metadata {
     name = each.key
