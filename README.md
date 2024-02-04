@@ -55,8 +55,6 @@ Above setting is no longer needed.
 
 The module is currently supporting the following versions of Kubernetes:
 
-- 1.26,
-- 1.27,
 - 1.28,
 
 ## Example
