@@ -70,7 +70,7 @@ module "nlb" {
   internal    = true
   application = format("%s/%s", each.key, each.key)
 
-  acm_arn        = var.traefik_cert_arn
+  acm_arn        = var.internal_nlb_acm_arn != "" ? var.internal_nlb_acm_arn : var.traefik_cert_arn
   vpc_id         = var.vpc_config.vpc_id
   public_subnets = var.vpc_config.public_subnets
 

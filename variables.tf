@@ -62,6 +62,12 @@ variable "internal_nlb_enabled" {
   default     = true
 }
 
+variable "internal_nlb_acm_arn" {
+  description = "The ARN of the certificate to use for internal NLB."
+  type        = string
+  default     = "" 
+}
+
 variable "traefik_cert_arn" {
   description = "The ARN of the certificate to use for Traefik."
   type        = string
