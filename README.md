@@ -3,6 +3,7 @@
 - [terraform-aws-eks](#terraform-aws-eks)
   - [Description](#description)
   - [How to release](#how-to-release)
+  - [Breaking changes](#breaking-changes)
   - [Supported versions](#supported-versions)
   - [Example](#example)
   - [Migrate 1.xx to 2.xx](#migrate-1xx-to-2xx)
@@ -31,16 +32,29 @@ Type of release bump is made of commits (tags feat/bugfix/etc...).
 
 Release is created as draft, so you have to edit it manually and change it to final.
 
+## Breaking changes
+
+The version 3.0 introduces a few breaking changes:
+
+ - The `custom_load_balancers` input has been removed. The module now creates a single ALB and a single internal NLB by default.
+
+```terraform
+  custom_load_balancers = {
+    internal = false
+  }
+```
+Above setting is no longer needed.
+
+ - The `internal_nlb_enabled` input has been added. The module now creates an internal NLB by default. It can be disabled by setting the input to `false`.
+
+```terraform
+  internal_nlb_enabled = true
+```
+
 ## Supported versions
 
 The module is currently supporting the following versions of Kubernetes:
 
-- 1.22,
-- 1.23,
-- 1.24,
-- 1.25,
-- 1.26,
-- 1.27,
 - 1.28,
 
 ## Example
@@ -62,7 +76,7 @@ module "orb" {
 }
 ```
 
-Extra load balancers setup:
+Internal load balancer setup:
 
 ```terraform
 module "orb" {
@@ -77,9 +91,7 @@ module "orb" {
     traefik_cert_arn    = var.traefik_cert_arn
     alb_logs_bucket_id  = module.region.alb_logs_bucket_id
 
-    custom_load_balancers = {
-      internal = false
-    }
+    internal_nlb_enabled = true
 }
 ```
 
