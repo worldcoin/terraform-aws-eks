@@ -15,7 +15,7 @@ resource "kubernetes_service" "traefik_nlb" {
       "service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled" = "true"
       "service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"                   = "ip"
       "service.beta.kubernetes.io/aws-load-balancer-scheme"                            = "internal"
-      "service.beta.kubernetes.io/aws-load-balancer-ssl-cert"                          = var.traefik_cert_arn
+      "service.beta.kubernetes.io/aws-load-balancer-ssl-cert"                          = var.internal_nlb_acm_arn != "" ? var.internal_nlb_acm_arn : var.traefik_cert_arn
       "service.beta.kubernetes.io/aws-load-balancer-ssl-ports"                         = "443"
       "service.beta.kubernetes.io/aws-load-balancer-type"                              = "external"
       "CreatedBy"                                                                      = "terraform"
