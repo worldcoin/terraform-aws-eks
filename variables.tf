@@ -11,7 +11,7 @@ variable "environment" {
 variable "cluster_version" {
   description = "The Kubernetes version to use for the cluster."
   type        = string
-  default     = "1.28"
+  default     = "1.29"
 }
 
 variable "vpc_config" {
@@ -65,7 +65,7 @@ variable "internal_nlb_enabled" {
 variable "internal_nlb_acm_arn" {
   description = "The ARN of the certificate to use for internal NLB."
   type        = string
-  default     = "" 
+  default     = ""
 }
 
 variable "traefik_cert_arn" {

@@ -56,7 +56,6 @@ Above setting is no longer needed.
 
 The module is currently supporting the following versions of Kubernetes:
 
-- 1.28,
 - 1.29,
 
 ## Example
@@ -303,7 +302,7 @@ To remove the cluster you have to:
 |------|-------------|------|---------|:--------:|
 | <a name="input_alb_logs_bucket_id"></a> [alb\_logs\_bucket\_id](#input\_alb\_logs\_bucket\_id) | The ID of the S3 bucket to store logs in for ALB. | `string` | n/a | yes |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name of the cluster. Has to be unique per region per account. | `string` | n/a | yes |
-| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The Kubernetes version to use for the cluster. | `string` | `"1.28"` | no |
+| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The Kubernetes version to use for the cluster. | `string` | `"1.29"` | no |
 | <a name="input_datadog_api_key"></a> [datadog\_api\_key](#input\_datadog\_api\_key) | Datadog API key. Stored in kube-system namespace as a secret. | `string` | n/a | yes |
 | <a name="input_efs_csi_driver_enabled"></a> [efs\_csi\_driver\_enabled](#input\_efs\_csi\_driver\_enabled) | Whether to enable the EFS CSI driver (IAM Role & StorageClass). | `bool` | `false` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment of cluster | `string` | n/a | yes |
