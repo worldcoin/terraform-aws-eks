@@ -21,6 +21,11 @@ locals {
   ebs_csi_driver_version = {
     "1.29" = "v1.27.0-eksbuild.1"
   }
+  
+  # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-agent-setup.html
+  eks_pod_identity_agent_version = {
+    "1.29" = "v1.1.0-eksbuild.1"
+  }
 }
 
 resource "aws_eks_addon" "vpc_cni" {
@@ -78,6 +83,14 @@ resource "aws_eks_addon" "ebs_csi" {
   cluster_name                = aws_eks_cluster.this.id
   addon_name                  = "aws-ebs-csi-driver"
   addon_version               = local.ebs_csi_driver_version[var.cluster_version]
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+}
+
+resource "aws_eks_addon" "eks_pod_identity_agent" {
+  cluster_name                = aws_eks_cluster.this.id
+  addon_name                  = "eks-pod-identity-agent"
+  addon_version               = local.eks_pod_identity_agent_version[var.cluster_version]
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
 }
