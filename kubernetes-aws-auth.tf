@@ -14,7 +14,12 @@ locals {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/github-deploy"
       username = "github-deploy"
       groups   = ["system:masters"]
-    }
+    },
+    { # This role is used by remote ArgoCD to deploy applications
+      rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/eks-cluster-${var.cluster_name}"
+      username = "eks-cluster-${var.cluster_name}"
+      groups   = ["system:masters"]
+    },
     ],
     var.extra_role_mapping,
   )

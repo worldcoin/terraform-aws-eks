@@ -137,3 +137,9 @@ variable "vpc_cni_warm_eni_target" {
   type        = string
   default     = "1"
 }
+
+variable "argocd_role_arn" {
+  description = "The ARN of the remote ArgoCD role used to assume eks-cluster role"
+  type        = string
+  default     = null
+}
