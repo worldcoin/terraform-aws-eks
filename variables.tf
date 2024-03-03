@@ -137,3 +137,16 @@ variable "vpc_cni_warm_eni_target" {
   type        = string
   default     = "1"
 }
+
+variable "internal_tls_listener_version" {
+  description = "The version of the TLS listener to use for internal NLB."
+  type        = string
+  default     = "1.3"
+
+}
+
+variable "external_tls_listener_version" {
+  description = "The version of the TLS listener to use for external ALB."
+  type        = string
+  default     = "1.3"
+}

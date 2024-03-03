@@ -59,13 +59,15 @@ resource "kubernetes_service" "traefik_nlb" {
 }
 
 module "nlb" {
-  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v0.2.0"
+  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=INFRA-1884"
 
   for_each = var.internal_nlb_enabled ? toset([local.internal_nlb_name]) : []
 
   # because of lenght limitation of LB name we need to remove prefix treafik from custom_load_balancers
   name_suffix  = replace(each.key, "traefik-", "")
   cluster_name = var.cluster_name
+
+  tls_listener_version = var.internal_tls_listener_version
 
   internal    = true
   application = format("%s/%s", each.key, each.key)
