@@ -142,11 +142,18 @@ variable "internal_tls_listener_version" {
   description = "The version of the TLS listener to use for internal NLB."
   type        = string
   default     = "1.3"
-
+  validation {
+    condition     = var.internal_tls_listener_version == "1.2" || var.internal_tls_listener_version == "1.3"
+    error_message = "Only TLS >= 1.2 or 1.3 are supported"
+  }
 }
 
 variable "external_tls_listener_version" {
   description = "The version of the TLS listener to use for external ALB."
   type        = string
   default     = "1.3"
+  validation {
+    condition     = var.external_tls_listener_version == "1.2" || var.external_tls_listener_version == "1.3"
+    error_message = "Only TLS >= 1.2 or 1.3 are supported"
+  }
 }
