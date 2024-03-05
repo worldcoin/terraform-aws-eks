@@ -97,6 +97,29 @@ module "orb" {
 }
 ```
 
+Example of using `static_autoscaling_groups`
+
+```tf
+module "eks_v3" {
+  source = "git@github.com:worldcoin/terraform-aws-eks?ref=v3.6.0"
+
+  cluster_name         = local.cluster_name_v3
+  vpc_config           = module.vpc.config
+  extra_role_mapping   = module.sso_roles.default_mappings
+  environment          = var.environment
+  traefik_cert_arn     = module.acm_v3.cert_arn
+  datadog_api_key      = var.datadog_api_key
+  alb_logs_bucket_id   = module.region.alb_logs_bucket_id
+  monitoring_enabled   = false
+  internal_nlb_enabled = true
+
+  static_autoscaling_groups = {
+    size = 8
+    type = "m7gd.16xlarge"
+  }
+}
+```
+
 ## Migrate 1.xx to 2.xx
 
 1. Upgrade module to version 1.40
@@ -212,14 +235,15 @@ To remove the cluster you have to:
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_alb"></a> [alb](#module\_alb) | git@github.com:worldcoin/terraform-aws-alb.git | v0.3.1 |
+| <a name="module_alb"></a> [alb](#module\_alb) | git@github.com:worldcoin/terraform-aws-alb.git | v0.4.0 |
 | <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | git@github.com:worldcoin/terraform-datadog-kubernetes | v1.0.0 |
-| <a name="module_nlb"></a> [nlb](#module\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v0.2.0 |
+| <a name="module_nlb"></a> [nlb](#module\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v0.3.0 |
 
 ## Resources
 
 | Name | Type |
 |------|------|
+| [aws_autoscaling_group.static](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group) | resource |
 | [aws_autoscaling_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group) | resource |
 | [aws_cloudwatch_event_rule.spot_aws_ec2](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_rule.spot_aws_health](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
@@ -230,6 +254,7 @@ To remove the cluster you have to:
 | [aws_efs_mount_target.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_mount_target) | resource |
 | [aws_eks_addon.coredns](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_addon.ebs_csi](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
+| [aws_eks_addon.eks_pod_identity_agent](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_addon.kube_proxy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_addon.vpc_cni](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster) | resource |
@@ -301,20 +326,24 @@ To remove the cluster you have to:
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_alb_logs_bucket_id"></a> [alb\_logs\_bucket\_id](#input\_alb\_logs\_bucket\_id) | The ID of the S3 bucket to store logs in for ALB. | `string` | n/a | yes |
+| <a name="input_argocd_role_arn"></a> [argocd\_role\_arn](#input\_argocd\_role\_arn) | The ARN of the remote ArgoCD role used to assume eks-cluster role | `string` | `null` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name of the cluster. Has to be unique per region per account. | `string` | n/a | yes |
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The Kubernetes version to use for the cluster. | `string` | `"1.29"` | no |
 | <a name="input_datadog_api_key"></a> [datadog\_api\_key](#input\_datadog\_api\_key) | Datadog API key. Stored in kube-system namespace as a secret. | `string` | n/a | yes |
 | <a name="input_efs_csi_driver_enabled"></a> [efs\_csi\_driver\_enabled](#input\_efs\_csi\_driver\_enabled) | Whether to enable the EFS CSI driver (IAM Role & StorageClass). | `bool` | `false` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment of cluster | `string` | n/a | yes |
+| <a name="input_external_tls_listener_version"></a> [external\_tls\_listener\_version](#input\_external\_tls\_listener\_version) | The version of the TLS listener to use for external ALB. | `string` | `"1.3"` | no |
 | <a name="input_extra_nlb_listeners"></a> [extra\_nlb\_listeners](#input\_extra\_nlb\_listeners) | List with configuration for additional listeners | <pre>list(object({<br>    name              = string<br>    port              = string<br>    protocol          = optional(string, "TCP")<br>    target_group_port = number<br>  }))</pre> | `[]` | no |
 | <a name="input_extra_role_mapping"></a> [extra\_role\_mapping](#input\_extra\_role\_mapping) | Extra role mappings to add to the aws-auth configmap. | <pre>list(object({<br>    rolearn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
 | <a name="input_internal_nlb_acm_arn"></a> [internal\_nlb\_acm\_arn](#input\_internal\_nlb\_acm\_arn) | The ARN of the certificate to use for internal NLB. | `string` | `""` | no |
 | <a name="input_internal_nlb_enabled"></a> [internal\_nlb\_enabled](#input\_internal\_nlb\_enabled) | Internal Network load balancers to create. If true, the NLB will be created. | `bool` | `true` | no |
+| <a name="input_internal_tls_listener_version"></a> [internal\_tls\_listener\_version](#input\_internal\_tls\_listener\_version) | The version of the TLS listener to use for internal NLB. | `string` | `"1.3"` | no |
 | <a name="input_kubelet_extra_args"></a> [kubelet\_extra\_args](#input\_kubelet\_extra\_args) | kubelet extra args to pass to the node group | `string` | `"--register-with-taints=karpenter:NoExecute"` | no |
 | <a name="input_kubernetes_provider_enabled"></a> [kubernetes\_provider\_enabled](#input\_kubernetes\_provider\_enabled) | Whether to create a Kubernetes provider for the cluster. Use as a prerequisite to cluster removal. | `bool` | `true` | no |
 | <a name="input_monitoring_enabled"></a> [monitoring\_enabled](#input\_monitoring\_enabled) | Whether to enable monitoring (Datadog). | `bool` | `true` | no |
 | <a name="input_monitoring_notification_channel"></a> [monitoring\_notification\_channel](#input\_monitoring\_notification\_channel) | The Datadog notification channel to use for monitoring alerts. | `string` | `"@slack-TFH-infrastructure-alerts"` | no |
 | <a name="input_on_demand_base_capacity"></a> [on\_demand\_base\_capacity](#input\_on\_demand\_base\_capacity) | The number of minimum on-demand instances to launch. | `number` | `1` | no |
+| <a name="input_static_autoscaling_groups"></a> [static\_autoscaling\_groups](#input\_static\_autoscaling\_groups) | Configuration for static autoscaling group | <pre>object({<br>    size = number<br>    type = string<br>  })</pre> | `null` | no |
 | <a name="input_traefik_cert_arn"></a> [traefik\_cert\_arn](#input\_traefik\_cert\_arn) | The ARN of the certificate to use for Traefik. | `string` | n/a | yes |
 | <a name="input_traefik_nlb_service_ports"></a> [traefik\_nlb\_service\_ports](#input\_traefik\_nlb\_service\_ports) | List of additional ports for treafik k8s service | <pre>list(object({<br>    name        = string<br>    port        = number<br>    target_port = string<br>    protocol    = string<br>  }))</pre> | `[]` | no |
 | <a name="input_vpc_cni_version_override"></a> [vpc\_cni\_version\_override](#input\_vpc\_cni\_version\_override) | The version of the VPC CNI plugin to use. If not specified, the default version for the cluster version will be used. | `string` | `""` | no |
