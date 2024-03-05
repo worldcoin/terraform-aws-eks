@@ -157,3 +157,9 @@ variable "external_tls_listener_version" {
     error_message = "Only TLS >= 1.2 or 1.3 are supported"
   }
 }
+
+variable "argocd_role_arn" {
+  description = "The ARN of the remote ArgoCD role used to assume eks-cluster role"
+  type        = string
+  default     = null
+}
