@@ -118,23 +118,7 @@ resource "aws_autoscaling_group" "static" {
       }
 
       override {
-        instance_requirements {
-          burstable_performance = "included"
-
-          cpu_manufacturers = [
-            "intel",
-          ]
-
-          memory_mib {
-            max = var.static_autoscaling_groups.mem_max
-            min = var.static_autoscaling_groups.mem_min
-          }
-
-          vcpu_count {
-            max = var.static_autoscaling_groups.cpu_max
-            min = var.static_autoscaling_groups.cpu_min
-          }
-        }
+        instance_type = var.static_autoscaling_groups.type
       }
     }
   }
