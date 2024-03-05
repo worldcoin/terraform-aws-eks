@@ -163,3 +163,16 @@ variable "argocd_role_arn" {
   type        = string
   default     = null
 }
+
+variable "static_autoscaling_groups" {
+  description = "Configuration for static autoscaling group"
+  type = object({
+    size    = number
+    mem_max = optional(number, 8192)
+    mem_min = optional(number, 4096)
+    cpu_max = optional(number, 4)
+    cpu_min = optional(number, 2)
+  })
+
+  default = null
+}

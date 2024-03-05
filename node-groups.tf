@@ -96,3 +96,46 @@ resource "aws_autoscaling_group" "this" {
     }
   }
 }
+
+resource "aws_autoscaling_group" "static" {
+  count = var.static_autoscaling_groups != null ? 1 : 0
+
+  name                = "eks-node-${var.cluster_name}-static"
+  vpc_zone_identifier = var.vpc_config.private_subnets
+  desired_capacity    = var.static_autoscaling_groups.size
+  min_size            = var.static_autoscaling_groups.size
+  max_size            = var.static_autoscaling_groups.size
+
+  mixed_instances_policy {
+    instances_distribution {
+      on_demand_base_capacity = var.static_autoscaling_groups.size
+    }
+
+    launch_template {
+      launch_template_specification {
+        launch_template_id = aws_launch_template.this.id
+        version            = "$Latest"
+      }
+
+      override {
+        instance_requirements {
+          burstable_performance = "included"
+
+          cpu_manufacturers = [
+            "intel",
+          ]
+
+          memory_mib {
+            max = var.static_autoscaling_groups.mem_max
+            min = var.static_autoscaling_groups.mem_min
+          }
+
+          vcpu_count {
+            max = var.static_autoscaling_groups.cpu_max
+            min = var.static_autoscaling_groups.cpu_min
+          }
+        }
+      }
+    }
+  }
+}
