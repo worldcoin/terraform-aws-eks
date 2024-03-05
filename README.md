@@ -99,7 +99,7 @@ module "orb" {
 
 Example of using `static_autoscaling_groups`
 
-``tf
+```tf
 module "eks_v3" {
   source = "git@github.com:worldcoin/terraform-aws-eks?ref=v3.6.0"
 
