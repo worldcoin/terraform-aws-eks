@@ -138,6 +138,26 @@ variable "vpc_cni_warm_eni_target" {
   default     = "1"
 }
 
+variable "internal_tls_listener_version" {
+  description = "The version of the TLS listener to use for internal NLB."
+  type        = string
+  default     = "1.3"
+  validation {
+    condition     = var.internal_tls_listener_version == "1.2" || var.internal_tls_listener_version == "1.3"
+    error_message = "Only TLS >= 1.2 or 1.3 are supported"
+  }
+}
+
+variable "external_tls_listener_version" {
+  description = "The version of the TLS listener to use for external ALB."
+  type        = string
+  default     = "1.3"
+  validation {
+    condition     = var.external_tls_listener_version == "1.2" || var.external_tls_listener_version == "1.3"
+    error_message = "Only TLS >= 1.2 or 1.3 are supported"
+  }
+}
+
 variable "argocd_role_arn" {
   description = "The ARN of the remote ArgoCD role used to assume eks-cluster role"
   type        = string
