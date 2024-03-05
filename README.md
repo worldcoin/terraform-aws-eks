@@ -97,6 +97,29 @@ module "orb" {
 }
 ```
 
+Example of using `static_autoscaling_groups`
+
+``tf
+module "eks_v3" {
+  source = "git@github.com:worldcoin/terraform-aws-eks?ref=v3.6.0"
+
+  cluster_name         = local.cluster_name_v3
+  vpc_config           = module.vpc.config
+  extra_role_mapping   = module.sso_roles.default_mappings
+  environment          = var.environment
+  traefik_cert_arn     = module.acm_v3.cert_arn
+  datadog_api_key      = var.datadog_api_key
+  alb_logs_bucket_id   = module.region.alb_logs_bucket_id
+  monitoring_enabled   = false
+  internal_nlb_enabled = true
+
+  static_autoscaling_groups = {
+    size = 8
+    type = "m7gd.16xlarge"
+  }
+}
+```
+
 ## Migrate 1.xx to 2.xx
 
 1. Upgrade module to version 1.40
