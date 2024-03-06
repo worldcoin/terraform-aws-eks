@@ -168,6 +168,7 @@ variable "static_autoscaling_groups" {
   description = "Configuration for static autoscaling group"
   type = object({
     size = number
+    arch = string
     type = string
   })
 

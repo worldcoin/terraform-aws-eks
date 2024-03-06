@@ -115,7 +115,8 @@ module "eks_v3" {
 
   static_autoscaling_groups = {
     size = 8
-    type = "m7gd.16xlarge"
+    arch = "arm64"
+    type = "m7g.16xlarge"
   }
 }
 ```
@@ -273,6 +274,7 @@ To remove the cluster you have to:
 | [aws_iam_role_policy_attachment.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.node](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_kms_key.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
+| [aws_launch_template.static](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
 | [aws_launch_template.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
 | [aws_secretsmanager_secret.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret_version.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version) | resource |
@@ -301,6 +303,7 @@ To remove the cluster you have to:
 | [kubernetes_service.traefik_nlb](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service) | resource |
 | [kubernetes_storage_class.efs](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class) | resource |
 | [random_password.dd_clusteragent_token](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [aws_ami.static](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_ami.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_caller_identity.account](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_eks_cluster_auth.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
@@ -343,7 +346,7 @@ To remove the cluster you have to:
 | <a name="input_monitoring_enabled"></a> [monitoring\_enabled](#input\_monitoring\_enabled) | Whether to enable monitoring (Datadog). | `bool` | `true` | no |
 | <a name="input_monitoring_notification_channel"></a> [monitoring\_notification\_channel](#input\_monitoring\_notification\_channel) | The Datadog notification channel to use for monitoring alerts. | `string` | `"@slack-TFH-infrastructure-alerts"` | no |
 | <a name="input_on_demand_base_capacity"></a> [on\_demand\_base\_capacity](#input\_on\_demand\_base\_capacity) | The number of minimum on-demand instances to launch. | `number` | `1` | no |
-| <a name="input_static_autoscaling_groups"></a> [static\_autoscaling\_groups](#input\_static\_autoscaling\_groups) | Configuration for static autoscaling group | <pre>object({<br>    size = number<br>    type = string<br>  })</pre> | `null` | no |
+| <a name="input_static_autoscaling_groups"></a> [static\_autoscaling\_groups](#input\_static\_autoscaling\_groups) | Configuration for static autoscaling group | <pre>object({<br>    size = number<br>    arch = string<br>    type = string<br>  })</pre> | `null` | no |
 | <a name="input_traefik_cert_arn"></a> [traefik\_cert\_arn](#input\_traefik\_cert\_arn) | The ARN of the certificate to use for Traefik. | `string` | n/a | yes |
 | <a name="input_traefik_nlb_service_ports"></a> [traefik\_nlb\_service\_ports](#input\_traefik\_nlb\_service\_ports) | List of additional ports for treafik k8s service | <pre>list(object({<br>    name        = string<br>    port        = number<br>    target_port = string<br>    protocol    = string<br>  }))</pre> | `[]` | no |
 | <a name="input_vpc_cni_version_override"></a> [vpc\_cni\_version\_override](#input\_vpc\_cni\_version\_override) | The version of the VPC CNI plugin to use. If not specified, the default version for the cluster version will be used. | `string` | `""` | no |
