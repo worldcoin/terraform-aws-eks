@@ -1,17 +1,25 @@
-data "aws_ami" "this" {
+data "aws_ami" "static" {
   filter {
     name   = "name"
-    values = ["amazon-eks-node-${var.cluster_version}-v*"]
+    values = ["amazon-eks-node-*-${var.cluster_version}-v*"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = [var.static_autoscaling_groups.arch]
   }
 
   most_recent = true
   owners      = ["amazon"]
 }
 
-resource "aws_launch_template" "this" {
-  name_prefix = "eks-node-${var.cluster_name}-"
+resource "aws_launch_template" "static" {
+  count = var.static_autoscaling_groups != null ? 1 : 0
 
-  image_id                             = data.aws_ami.this.image_id
+  name_prefix = "eks-node-static-${var.cluster_name}-"
+
+  image_id                             = data.aws_ami.static.image_id
+  instance_type                        = var.static_autoscaling_groups.type
   vpc_security_group_ids               = [aws_security_group.node.id]
   ebs_optimized                        = true
   instance_initiated_shutdown_behavior = "terminate"
@@ -54,44 +62,24 @@ resource "aws_launch_template" "this" {
   )
 }
 
-resource "aws_autoscaling_group" "this" {
-  name                = "eks-node-${var.cluster_name}"
+resource "aws_autoscaling_group" "static" {
+  count = var.static_autoscaling_groups != null ? 1 : 0
+
+  name                = "eks-node-static-${var.cluster_name}"
   vpc_zone_identifier = var.vpc_config.private_subnets
-  desired_capacity    = 2
-  min_size            = 1
-  max_size            = 2
+  desired_capacity    = var.static_autoscaling_groups.size
+  min_size            = var.static_autoscaling_groups.size
+  max_size            = var.static_autoscaling_groups.size
 
   mixed_instances_policy {
     instances_distribution {
-      on_demand_base_capacity                  = var.on_demand_base_capacity
-      on_demand_percentage_above_base_capacity = 0
-      spot_allocation_strategy                 = "lowest-price"
+      on_demand_base_capacity = var.static_autoscaling_groups.size
     }
 
     launch_template {
       launch_template_specification {
-        launch_template_id = aws_launch_template.this.id
+        launch_template_id = aws_launch_template.static[0].id
         version            = "$Latest"
-      }
-
-      override {
-        instance_requirements {
-          burstable_performance = "included"
-
-          cpu_manufacturers = [
-            "intel",
-          ]
-
-          memory_mib {
-            max = 8192
-            min = 4096
-          }
-
-          vcpu_count {
-            max = 4
-            min = 2
-          }
-        }
       }
     }
   }
