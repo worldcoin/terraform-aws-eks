@@ -56,6 +56,10 @@ resource "aws_eks_addon" "coredns" {
         key : "critical"
       },
       {
+        effect : "NoExecute",
+        key : "karpenter"
+      },
+      {
         key : "CriticalAddonsOnly",
         operator : "Exists"
       },
