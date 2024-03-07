@@ -123,7 +123,7 @@ variable "extra_nlb_listeners" {
 variable "kubelet_extra_args" {
   description = "kubelet extra args to pass to the node group"
   type        = string
-  default     = "--register-with-taints=karpenter:NoExecute"
+  default     = "--register-with-taints=karpenter:NoExecute --register-with-taints=critical:NoExecute"
 }
 
 variable "vpc_cni_warm_ip_target" {
