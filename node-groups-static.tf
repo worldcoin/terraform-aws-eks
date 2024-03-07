@@ -1,4 +1,6 @@
 data "aws_ami" "static" {
+  count = var.static_autoscaling_groups != null ? 1 : 0
+
   filter {
     name   = "name"
     values = ["amazon-eks-node-*-${var.cluster_version}-v*"]
@@ -18,7 +20,7 @@ resource "aws_launch_template" "static" {
 
   name_prefix = "eks-node-static-${var.cluster_name}-"
 
-  image_id                             = data.aws_ami.static.image_id
+  image_id                             = data.aws_ami.static[0].image_id
   instance_type                        = var.static_autoscaling_groups.type
   vpc_security_group_ids               = [aws_security_group.node.id]
   ebs_optimized                        = true
