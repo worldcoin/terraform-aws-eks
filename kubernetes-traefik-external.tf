@@ -58,6 +58,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
       "alb.ingress.kubernetes.io/healthcheck-port"                    = "9000"
       "alb.ingress.kubernetes.io/healthcheck-path"                    = "/ping"
       "alb.ingress.kubernetes.io/target-type"                         = "ip"
+      "alb.ingress.kubernetes.io/ssl-policy"                          = module.alb[each.key].ssl_policy
 
       "CreatedBy" = "terraform"
     }
@@ -85,7 +86,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
 }
 
 module "alb" {
-  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.4.0"
+  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.4.1"
   for_each = toset([local.external_alb_name])
 
   # because of lenght limitation of LB name we need to remove prefix treafik from internal NLB
