@@ -53,7 +53,7 @@ resource "aws_eks_addon" "coredns" {
     tolerations : [
       {
         effect : "NoExecute",
-        key : "karpenter"
+        key : "critical"
       },
       {
         key : "CriticalAddonsOnly",
