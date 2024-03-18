@@ -18,6 +18,7 @@ resource "kubernetes_service" "traefik_nlb" {
       "service.beta.kubernetes.io/aws-load-balancer-ssl-cert"                          = var.internal_nlb_acm_arn != "" ? var.internal_nlb_acm_arn : var.traefik_cert_arn
       "service.beta.kubernetes.io/aws-load-balancer-ssl-ports"                         = "443"
       "service.beta.kubernetes.io/aws-load-balancer-type"                              = "external"
+      "service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy"            = module.nlb[each.key].ssl_policy
       "CreatedBy"                                                                      = "terraform"
     }
 
@@ -59,7 +60,7 @@ resource "kubernetes_service" "traefik_nlb" {
 }
 
 module "nlb" {
-  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v0.3.0"
+  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v0.4.0"
 
   for_each = var.internal_nlb_enabled ? toset([local.internal_nlb_name]) : []
 
