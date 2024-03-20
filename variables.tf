@@ -62,6 +62,12 @@ variable "internal_nlb_enabled" {
   default     = true
 }
 
+variable "use_private_subnets_for_internal_nlb" {
+  description = "Set to `true` if you want to use private subnets for internal NLB"
+  type        = bool
+  default     = false
+}
+
 variable "internal_nlb_acm_arn" {
   description = "The ARN of the certificate to use for internal NLB."
   type        = string
