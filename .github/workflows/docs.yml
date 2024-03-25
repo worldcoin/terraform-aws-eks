@@ -18,7 +18,7 @@ jobs:
         name: Checkout source code
 
       - name: Render terraform docs inside the README.md and push changes back to main branch
-        uses: terraform-docs/gh-actions@v1.0.0
+        uses: terraform-docs/gh-actions@v1.1.0
 
       # fix to terraform-docs action change ownership of files
       - name: Update ownership of files
