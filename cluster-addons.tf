@@ -21,7 +21,7 @@ locals {
   ebs_csi_driver_version = {
     "1.29" = "v1.27.0-eksbuild.1"
   }
-  
+
   # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-agent-setup.html
   eks_pod_identity_agent_version = {
     "1.29" = "v1.1.0-eksbuild.1"

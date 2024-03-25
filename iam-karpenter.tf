@@ -161,8 +161,8 @@ data "aws_iam_policy_document" "karpenter" {
     actions   = ["iam:GetInstanceProfile"]
   }
   statement {
-    sid       = "AllowSQSActions"
-    effect    = "Allow"
+    sid    = "AllowSQSActions"
+    effect = "Allow"
     actions = [
       "sqs:DeleteMessage",
       "sqs:GetQueueUrl",

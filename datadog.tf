@@ -1,7 +1,7 @@
 module "datadog_monitoring" {
   count = var.monitoring_enabled ? 1 : 0
 
-  source  = "git@github.com:worldcoin/terraform-datadog-kubernetes?ref=v1.0.0"
+  source = "git@github.com:worldcoin/terraform-datadog-kubernetes?ref=v1.0.0"
 
   notification_channel = var.monitoring_notification_channel
   service              = "Kubernetes"
@@ -55,7 +55,7 @@ EOT
 data "datadog_synthetics_locations" "locations" {}
 
 resource "datadog_synthetics_test" "cluster_monitoring" {
-  count = var.monitoring_enabled ? 1 : 0
+  count     = var.monitoring_enabled ? 1 : 0
   name      = "Uptime test for cluster: ${var.cluster_name}"
   type      = "api"
   subtype   = "http"
@@ -83,7 +83,7 @@ resource "datadog_synthetics_test" "cluster_monitoring" {
   }
 
   options_list {
-    tick_every = 300
+    tick_every       = 300
     monitor_priority = 1
     retry {
       count    = 3
