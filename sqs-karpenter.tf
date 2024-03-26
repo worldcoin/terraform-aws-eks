@@ -1,12 +1,12 @@
 resource "aws_sqs_queue" "this" {
-  content_based_deduplication       = false
-  delay_seconds                     = 0
-  fifo_queue                        = false
-  sqs_managed_sse_enabled           = true
-  max_message_size                  = 262144
-  message_retention_seconds         = 86400
-  name                              = "spot-notifications-${var.cluster_name}"
-  receive_wait_time_seconds         = 0
+  content_based_deduplication = false
+  delay_seconds               = 0
+  fifo_queue                  = false
+  sqs_managed_sse_enabled     = true
+  max_message_size            = 262144
+  message_retention_seconds   = 86400
+  name                        = "spot-notifications-${var.cluster_name}"
+  receive_wait_time_seconds   = 0
 
   tags = {
     Name        = "spot-notifications-${var.cluster_name}"
@@ -21,10 +21,10 @@ data "aws_iam_policy_document" "spot_notification_sqs_policy" {
     effect = "Allow"
     principals {
       identifiers = [
-          "events.amazonaws.com",
-          "sqs.amazonaws.com",
-        ]
-      type        = "Service"
+        "events.amazonaws.com",
+        "sqs.amazonaws.com",
+      ]
+      type = "Service"
     }
     actions   = ["sqs:SendMessage"]
     resources = [aws_sqs_queue.this.arn]
@@ -41,7 +41,7 @@ resource "aws_cloudwatch_event_rule" "spot_aws_health" {
   description = "Capture each scheduled change event from AWS Health"
 
   event_pattern = jsonencode({
-    source     = [
+    source = [
       "aws.health"
     ]
     detail-type = [
@@ -50,8 +50,8 @@ resource "aws_cloudwatch_event_rule" "spot_aws_health" {
   })
 }
 resource "aws_cloudwatch_event_target" "spot_aws_health" {
-  rule      = aws_cloudwatch_event_rule.spot_aws_health.name
-  arn       = aws_sqs_queue.this.arn
+  rule = aws_cloudwatch_event_rule.spot_aws_health.name
+  arn  = aws_sqs_queue.this.arn
 }
 
 resource "aws_cloudwatch_event_rule" "spot_aws_ec2" {
@@ -59,7 +59,7 @@ resource "aws_cloudwatch_event_rule" "spot_aws_ec2" {
   description = "Capture aws.ec2 spot instance events"
 
   event_pattern = jsonencode({
-    source     = [
+    source = [
       "aws.ec2"
     ]
     detail-type = [
@@ -70,6 +70,6 @@ resource "aws_cloudwatch_event_rule" "spot_aws_ec2" {
   })
 }
 resource "aws_cloudwatch_event_target" "spot_aws_ec2" {
-  rule      = aws_cloudwatch_event_rule.spot_aws_ec2.name
-  arn       = aws_sqs_queue.this.arn
+  rule = aws_cloudwatch_event_rule.spot_aws_ec2.name
+  arn  = aws_sqs_queue.this.arn
 }

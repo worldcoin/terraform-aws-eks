@@ -180,3 +180,17 @@ variable "static_autoscaling_groups" {
 
   default = null
 }
+
+variable "additional_security_group_rules" {
+  description = "Additional security group rules"
+  type = list(object({
+    sg_id       = string
+    type        = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    description = string
+  }))
+
+  default = []
+}

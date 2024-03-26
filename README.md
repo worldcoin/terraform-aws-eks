@@ -119,6 +119,7 @@ module "eks_v3" {
     type = "m7g.16xlarge"
   }
 }
+```
 
 Example of using private subnets for internal NLB
 
@@ -136,6 +137,36 @@ module "eks_v3" {
   monitoring_enabled                   = false
   internal_nlb_enabled                 = true
   use_private_subnets_for_internal_nlb = true
+}
+```
+
+Example of using `additional_security_group_rules`
+
+```terraform
+module "eks" {
+  source = "git@github.com:worldcoin/terraform-aws-eks?ref=v3.14.0"
+
+  cluster_name       = local.cluster_name
+  environment        = var.environment
+  vpc_config         = module.vpc.config
+  extra_role_mapping = module.sso_roles.default_mappings
+
+  traefik_cert_arn     = module.acm.cert_arn
+  internal_nlb_enabled = true
+
+  datadog_api_key    = var.datadog_api_key
+  alb_logs_bucket_id = module.region.alb_logs_bucket_id
+
+  monitoring_notification_channel = "@slack-TFH-infrastructure-alerts-stage"
+  additional_security_group_rules = [
+    {
+      sg_id       = var.sg_id
+      type        = "ingress"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      description = format("Rule for %s", var.sg_id)
+  }]
 }
 ```
 
@@ -299,6 +330,7 @@ To remove the cluster you have to:
 | [aws_security_group.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.node](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+| [aws_security_group_rule.additional_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.cluster_egress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.cluster_from_node_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.node_egress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
@@ -346,6 +378,7 @@ To remove the cluster you have to:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_additional_security_group_rules"></a> [additional\_security\_group\_rules](#input\_additional\_security\_group\_rules) | Additional security group rules | <pre>list(object({<br>    sg_id       = string<br>    type        = string<br>    from_port   = number<br>    to_port     = number<br>    protocol    = string<br>    description = string<br>  }))</pre> | `[]` | no |
 | <a name="input_alb_logs_bucket_id"></a> [alb\_logs\_bucket\_id](#input\_alb\_logs\_bucket\_id) | The ID of the S3 bucket to store logs in for ALB. | `string` | n/a | yes |
 | <a name="input_argocd_role_arn"></a> [argocd\_role\_arn](#input\_argocd\_role\_arn) | The ARN of the remote ArgoCD role used to assume eks-cluster role | `string` | `null` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name of the cluster. Has to be unique per region per account. | `string` | n/a | yes |
