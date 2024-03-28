@@ -194,3 +194,9 @@ variable "additional_security_group_rules" {
 
   default = []
 }
+
+variable "create_ebs_csi_controller_role" {
+  description = "Set to `true` if you want to create the EBS CSI controller IAM role"
+  type        = bool
+  default     = false
+}
