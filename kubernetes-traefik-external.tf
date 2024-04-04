@@ -86,7 +86,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
 }
 
 module "alb" {
-  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.4.1"
+  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.5.0"
   for_each = toset([local.external_alb_name])
 
   # because of lenght limitation of LB name we need to remove prefix treafik from internal NLB
@@ -104,4 +104,5 @@ module "alb" {
   public_subnets = var.vpc_config.public_subnets
 
   s3_logs_bucket_id = var.alb_logs_bucket_id
+  idle_timeout      = var.alb_idle_timeout
 }
