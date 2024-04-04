@@ -195,8 +195,20 @@ variable "additional_security_group_rules" {
   default = []
 }
 
+variable "alb_additional_node_ports" {
+  description = "List of node ports which are accessible by ALB"
+  type        = list(number)
+  default     = []
+}
+
 variable "create_ebs_csi_controller_role" {
   description = "Set to `true` if you want to create the EBS CSI controller IAM role"
   type        = bool
   default     = false
+}
+
+variable "alb_idle_timeout" {
+  description = "The time in seconds that the connection is allowed to be idle"
+  type        = number
+  default     = 60
 }
