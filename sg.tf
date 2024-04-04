@@ -96,6 +96,18 @@ resource "aws_security_group_rule" "traefik_from_alb_metrics" {
   description              = "Allow ALB to have access to 9000 CluterIP with metrics"
 }
 
+resource "aws_security_group_rule" "node_from_alb_ingress" {
+  count = length(var.alb_additional_node_ports)
+
+  security_group_id        = aws_security_group.node.id
+  type                     = "ingress"
+  from_port                = var.alb_additional_node_ports[count.index]
+  to_port                  = var.alb_additional_node_ports[count.index]
+  protocol                 = "tcp"
+  source_security_group_id = module.alb[local.external_alb_name].sg_ids["backend"]
+  description              = "Allow ALB to have access to node port ${var.alb_additional_node_ports[count.index]}"
+}
+
 resource "aws_security_group_rule" "additional_rule" {
   for_each = { for v in var.additional_security_group_rules : v.sg_id => v }
 
