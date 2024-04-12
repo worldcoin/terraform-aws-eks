@@ -1,88 +1,28 @@
-data "aws_ami" "static" {
+resource "aws_eks_node_group" "static" {
   count = var.static_autoscaling_groups != null ? 1 : 0
 
-  filter {
-    name   = "name"
-    values = ["amazon-eks-node-*-${var.cluster_version}-v*"]
+  cluster_name    = aws_eks_cluster.this.name
+  node_group_name = "eks-node-static-${var.cluster_name}"
+  node_role_arn   = aws_iam_role.node.arn
+  subnet_ids      = var.vpc_config.private_subnets
+
+  # https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#API_Nodegroup_Contents
+  capacity_type = "ON_DEMAND"
+  disk_size     = var.static_autoscaling_groups.disk
+
+  # https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType
+  ami_type       = var.static_autoscaling_groups.arch == "arm64" ? "AL2023_ARM_64_STANDARD" : "AL2023_x86_64_STANDARD"
+  instance_types = var.static_autoscaling_groups.types
+
+  scaling_config {
+    desired_size = var.static_autoscaling_groups.size
+    min_size     = var.static_autoscaling_groups.size
+    max_size     = var.static_autoscaling_groups.size
   }
 
-  filter {
-    name   = "architecture"
-    values = [var.static_autoscaling_groups.arch]
-  }
-
-  most_recent = true
-  owners      = ["amazon"]
-}
-
-resource "aws_launch_template" "static" {
-  count = var.static_autoscaling_groups != null ? 1 : 0
-
-  name_prefix = "eks-node-static-${var.cluster_name}-"
-
-  image_id                             = data.aws_ami.static[0].image_id
-  instance_type                        = var.static_autoscaling_groups.type
-  vpc_security_group_ids               = [aws_security_group.node.id]
-  ebs_optimized                        = true
-  instance_initiated_shutdown_behavior = "terminate"
-
-  iam_instance_profile {
-    arn = aws_iam_instance_profile.node.arn
-  }
-
-  block_device_mappings {
-    device_name = "/dev/xvda"
-
-    ebs {
-      volume_size = 100
-    }
-  }
-
-  metadata_options {
-    http_endpoint               = "enabled"
-    http_tokens                 = "required"
-    http_put_response_hop_limit = 2
-    instance_metadata_tags      = "enabled"
-  }
-
-  tag_specifications {
-    resource_type = "instance"
-
-    tags = {
-      Name              = "eks-node-${var.cluster_name}"
-      KubernetesCluster = var.cluster_name
-    }
-  }
-
-  user_data = base64encode(
-    templatefile("${path.module}/templates/userdata.sh.tpl", {
-      cluster_name           = aws_eks_cluster.this.name
-      cluster_endpoint       = aws_eks_cluster.this.endpoint
-      cluster_ca_certificate = aws_eks_cluster.this.certificate_authority[0].data
-      kubelet_extra_args     = var.kubelet_extra_args
-    })
-  )
-}
-
-resource "aws_autoscaling_group" "static" {
-  count = var.static_autoscaling_groups != null ? 1 : 0
-
-  name                = "eks-node-static-${var.cluster_name}"
-  vpc_zone_identifier = var.vpc_config.private_subnets
-  desired_capacity    = var.static_autoscaling_groups.size
-  min_size            = var.static_autoscaling_groups.size
-  max_size            = var.static_autoscaling_groups.size
-
-  mixed_instances_policy {
-    instances_distribution {
-      on_demand_base_capacity = var.static_autoscaling_groups.size
-    }
-
-    launch_template {
-      launch_template_specification {
-        launch_template_id = aws_launch_template.static[0].id
-        version            = "$Latest"
-      }
-    }
+  tags = {
+    Name              = "eks-node-${var.cluster_name}"
+    KubernetesCluster = var.cluster_name
+    "kubernetes.io/cluster/${var.cluster_name}" : "owned"
   }
 }
