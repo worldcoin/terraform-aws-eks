@@ -11,7 +11,7 @@ resource "aws_eks_node_group" "static" {
   disk_size     = var.static_autoscaling_groups.disk
 
   # https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType
-  ami_type       = var.static_autoscaling_groups.arch == "arm64" ? "AL2023_ARM_64_STANDARD" : "AL2023_x86_64_STANDARD"
+  ami_type       = var.static_autoscaling_groups.arch == "arm64" ? "AL2_ARM_64" : "AL2_x86_64"
   instance_types = var.static_autoscaling_groups.types
 
   scaling_config {
