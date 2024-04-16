@@ -173,10 +173,9 @@ variable "argocd_role_arn" {
 variable "static_autoscaling_groups" {
   description = "Configuration for static autoscaling group"
   type = object({
-    size  = number
-    arch  = string
-    types = list(string)
-    disk  = optional(number, 100)
+    size = number
+    arch = string
+    type = string
   })
 
   default = null
