@@ -97,7 +97,7 @@ module "orb" {
 }
 ```
 
-Example of using `static_autoscaling_groups`
+Example of using `static_autoscaling_group`
 
 ```terraform
 module "eks_v3" {
@@ -113,7 +113,7 @@ module "eks_v3" {
   monitoring_enabled   = false
   internal_nlb_enabled = true
 
-  static_autoscaling_groups = {
+  static_autoscaling_group = {
     size = 8
     arch = "arm64"
     type = "m7g.16xlarge"
@@ -405,7 +405,7 @@ To remove the cluster you have to:
 | <a name="input_monitoring_enabled"></a> [monitoring\_enabled](#input\_monitoring\_enabled) | Whether to enable monitoring (Datadog). | `bool` | `true` | no |
 | <a name="input_monitoring_notification_channel"></a> [monitoring\_notification\_channel](#input\_monitoring\_notification\_channel) | The Datadog notification channel to use for monitoring alerts. | `string` | `"@slack-TFH-infrastructure-alerts"` | no |
 | <a name="input_on_demand_base_capacity"></a> [on\_demand\_base\_capacity](#input\_on\_demand\_base\_capacity) | The number of minimum on-demand instances to launch. | `number` | `1` | no |
-| <a name="input_static_autoscaling_groups"></a> [static\_autoscaling\_groups](#input\_static\_autoscaling\_groups) | Configuration for static autoscaling group | <pre>object({<br>    size = number<br>    arch = string<br>    type = string<br>  })</pre> | `null` | no |
+| <a name="input_static_autoscaling_group"></a> [static\_autoscaling\_group](#input\_static\_autoscaling\_group) | Configuration for static autoscaling group | <pre>object({<br>    size = number<br>    arch = string<br>    type = string<br>  })</pre> | `null` | no |
 | <a name="input_traefik_cert_arn"></a> [traefik\_cert\_arn](#input\_traefik\_cert\_arn) | The ARN of the certificate to use for Traefik. | `string` | n/a | yes |
 | <a name="input_traefik_nlb_service_ports"></a> [traefik\_nlb\_service\_ports](#input\_traefik\_nlb\_service\_ports) | List of additional ports for treafik k8s service | <pre>list(object({<br>    name        = string<br>    port        = number<br>    target_port = string<br>    protocol    = string<br>  }))</pre> | `[]` | no |
 | <a name="input_use_private_subnets_for_internal_nlb"></a> [use\_private\_subnets\_for\_internal\_nlb](#input\_use\_private\_subnets\_for\_internal\_nlb) | Set to `true` if you want to use private subnets for internal NLB | `bool` | `false` | no |

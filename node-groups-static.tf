@@ -1,15 +1,15 @@
 data "aws_ssm_parameter" "ami_id" {
-  name            = "/aws/service/eks/optimized-ami/${var.cluster_version}/amazon-linux-2-${var.static_autoscaling_groups.arch}/recommended/image_id"
+  name            = "/aws/service/eks/optimized-ami/${var.cluster_version}/amazon-linux-2-${var.static_autoscaling_group.arch}/recommended/image_id"
   with_decryption = true
 }
 
 resource "aws_launch_template" "static" {
-  count = var.static_autoscaling_groups != null ? 1 : 0
+  count = var.static_autoscaling_group != null ? 1 : 0
 
   name_prefix = "eks-node-static-${var.cluster_name}-"
 
   image_id                             = data.aws_ssm_parameter.ami_id.value
-  instance_type                        = var.static_autoscaling_groups.type
+  instance_type                        = var.static_autoscaling_group.type
   vpc_security_group_ids               = [aws_security_group.node.id]
   ebs_optimized                        = true
   instance_initiated_shutdown_behavior = "terminate"
@@ -53,17 +53,17 @@ resource "aws_launch_template" "static" {
 }
 
 resource "aws_autoscaling_group" "static" {
-  count = var.static_autoscaling_groups != null ? 1 : 0
+  count = var.static_autoscaling_group != null ? 1 : 0
 
   name                = "eks-node-static-${var.cluster_name}"
   vpc_zone_identifier = var.vpc_config.private_subnets
-  desired_capacity    = var.static_autoscaling_groups.size
-  min_size            = var.static_autoscaling_groups.size
-  max_size            = var.static_autoscaling_groups.size
+  desired_capacity    = var.static_autoscaling_group.size
+  min_size            = var.static_autoscaling_group.size
+  max_size            = var.static_autoscaling_group.size
 
   mixed_instances_policy {
     instances_distribution {
-      on_demand_base_capacity = var.static_autoscaling_groups.size
+      on_demand_base_capacity = var.static_autoscaling_group.size
     }
 
     launch_template {
