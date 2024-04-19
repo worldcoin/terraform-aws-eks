@@ -1,4 +1,6 @@
 data "aws_ssm_parameter" "ami_id" {
+  count = var.static_autoscaling_group != null ? 1 : 0
+
   name            = "/aws/service/eks/optimized-ami/${var.cluster_version}/amazon-linux-2-${var.static_autoscaling_group.arch}/recommended/image_id"
   with_decryption = true
 }
@@ -8,7 +10,7 @@ resource "aws_launch_template" "static" {
 
   name_prefix = "eks-node-static-${var.cluster_name}-"
 
-  image_id                             = data.aws_ssm_parameter.ami_id.value
+  image_id                             = data.aws_ssm_parameter.ami_id[0].value
   instance_type                        = var.static_autoscaling_group.type
   vpc_security_group_ids               = [aws_security_group.node.id]
   ebs_optimized                        = true
