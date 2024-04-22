@@ -10,6 +10,10 @@ resource "kubernetes_service" "traefik_alb" {
       "app.kubernetes.io/name"     = "traefik"
       "app.kubernetes.io/instance" = each.key
     }
+
+    annotations = {
+      "service.beta.kubernetes.io/aws-load-balancer-attributes" = "deletion_protection.enabled=true"
+    }
   }
 
   spec {
@@ -59,6 +63,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
       "alb.ingress.kubernetes.io/healthcheck-path"                    = "/ping"
       "alb.ingress.kubernetes.io/target-type"                         = "ip"
       "alb.ingress.kubernetes.io/ssl-policy"                          = module.alb[each.key].ssl_policy
+      "alb.ingress.kubernetes.io/load-balancer-attributes"            = "deletion_protection.enabled=true"
 
       "CreatedBy" = "terraform"
     }
