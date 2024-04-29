@@ -19,6 +19,7 @@ resource "kubernetes_service" "traefik_nlb" {
       "service.beta.kubernetes.io/aws-load-balancer-ssl-ports"                         = "443"
       "service.beta.kubernetes.io/aws-load-balancer-type"                              = "external"
       "service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy"            = module.nlb[each.key].ssl_policy
+      "service.beta.kubernetes.io/aws-load-balancer-attributes"                        = "deletion_protection.enabled=true"
       "CreatedBy"                                                                      = "terraform"
     }
 
