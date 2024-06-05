@@ -8,7 +8,7 @@ locals {
   # CoreDNS version deployed with each Amazon EKS supported cluster version
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html
   coredns_version = {
-    "1.29" = "v1.11.1-eksbuild.4"
+    "1.29" = "v1.11.1-eksbuild.9"
   }
 
   # Latest available kube-proxy container image version for each Amazon EKS cluster version
@@ -50,6 +50,11 @@ resource "aws_eks_addon" "coredns" {
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
   configuration_values = jsonencode({
+    "autoScaling": {
+      "enabled": true,
+      "minReplicas": 4,
+      "maxReplicas": 10
+    },
     tolerations : [
       {
         effect : "NoExecute",
