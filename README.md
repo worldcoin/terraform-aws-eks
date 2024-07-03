@@ -240,7 +240,7 @@ To remove the cluster you have to:
      enabled: false
    ```
 
-1. Delete ALL traefik SVCs and ingresses, example (keep in mind there could be other traefiks):
+1. Delete ALL traefik SVCs and ingresses, example (keep in mind there could be more/less traefiks than in this example):
 
    ```bash
    kubectl -n traefik delete svc traefik-alb --wait=false
