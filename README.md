@@ -232,7 +232,6 @@ The module comes with the IAM role for [Amazon EFS CSI driver](https://docs.aws.
 
 To remove the cluster you have to:
 
-1. Remove LB deletion protection from AWS (both external and internal)
 1. Disable argocd install of kyverno in [`cluster-apps` repo](https://github.com/worldcoin/cluster-apps)
 
    ```yaml
@@ -266,7 +265,9 @@ To remove the cluster you have to:
    ```bash
    terraform state list |grep kubernetes_
    ```
-   
+
+1. Manually remove LB deletion protection from AWS (both external and internal) before final delete
+
 1. Remove module invocation to finally delete cluster itself.
 
 <!-- BEGIN_TF_DOCS -->
