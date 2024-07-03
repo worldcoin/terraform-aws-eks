@@ -240,11 +240,14 @@ To remove the cluster you have to:
      enabled: false
    ```
 
-1. Delete traefik svc:
+1. Delete ALL traefik SVCs and ingresses, example:
 
    ```bash
-   kubectl -n traefik delete svc traefik --wait=false
-   kubectl -n traefik patch svc traefik -p '{"metadata":{"finalizers":null}}' --type=merge
+   kubectl -n traefik delete svc traefik-alb --wait=false
+   kubectl -n traefik patch svc traefik-alb -p '{"metadata":{"finalizers":null}}' --type=merge
+
+   kubectl -n traefik-internal delete svc traefik-internal --wait=false
+   kubectl -n traefik-internal patch svc traefik-internal -p '{"metadata":{"finalizers":null}}' --type=merge
    ```
 
 1. Set these flags, the module will remove every usage of the Kubernetes provider and allow
