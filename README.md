@@ -253,7 +253,7 @@ To remove the cluster you have to:
    kubernetes_provider_enabled = false
    ```
 
-1. If above PR apply fails (possible reason: race condition, aws_auth removed too soon), remove all `kubernetes_*` resources from state:
+1. If above PR `apply` fails (possible reason: race condition - aws_auth removed too soon), remove all `kubernetes_*` resources from state:
 
    ```bash
    terraform state list |grep kubernetes_
@@ -264,6 +264,8 @@ To remove the cluster you have to:
 1. Manually remove LB deletion protection from AWS (both external and internal) before final delete
 
 1. Remove module invocation to finally delete cluster itself.
+
+1. If above PR `apply` fails on deleting autoscalinggroups, terminate leftover instances and rerun `apply` (possible reason: race condition - karpenter didn't have enough time to clean instances)
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
