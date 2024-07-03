@@ -257,6 +257,8 @@ To remove the cluster you have to:
 
    ```bash
    terraform state list |grep kubernetes_
+
+   terraform state rm ...
    ```
 
 1. Manually remove LB deletion protection from AWS (both external and internal) before final delete
