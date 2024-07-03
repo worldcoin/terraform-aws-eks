@@ -232,13 +232,6 @@ The module comes with the IAM role for [Amazon EFS CSI driver](https://docs.aws.
 
 To remove the cluster you have to:
 
-1. Disable argocd install of kyverno in [`cluster-apps` repo](https://github.com/worldcoin/cluster-apps)
-
-   ```yaml
-   kyverno:
-     enabled: false
-   ```
-
 1. Delete ALL traefik SVCs and ingresses, example (keep in mind there could be more/less traefiks than in this example):
 
    ```bash
