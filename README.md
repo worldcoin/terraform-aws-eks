@@ -261,6 +261,12 @@ To remove the cluster you have to:
    kubernetes_provider_enabled = false
    ```
 
+1. If above PR apply fails (possible reason: race condition, aws_auth removed too soon), remove all `kubernetes_*` resources from state:
+
+   ```bash
+   terraform state list |grep kubernetes_
+   ```
+   
 1. Remove module invocation to finally delete cluster itself.
 
 <!-- BEGIN_TF_DOCS -->
