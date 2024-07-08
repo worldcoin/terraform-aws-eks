@@ -232,19 +232,17 @@ The module comes with the IAM role for [Amazon EFS CSI driver](https://docs.aws.
 
 To remove the cluster you have to:
 
-1. Remove LB deletion protection from AWS (both external and internal)
-1. Disable argocd install of kyverno in [`cluster-apps` repo](https://github.com/worldcoin/cluster-apps)
-
-   ```yaml
-   kyverno:
-     enabled: false
-   ```
-
-1. Delete traefik svc:
+1. Delete ALL traefik SVCs and ingresses, example (keep in mind there could be more/less traefiks than in this example):
 
    ```bash
-   kubectl -n traefik delete svc traefik --wait=false
-   kubectl -n traefik patch svc traefik -p '{"metadata":{"finalizers":null}}' --type=merge
+   kubectl -n traefik delete svc traefik-alb --wait=false
+   kubectl -n traefik patch svc traefik-alb -p '{"metadata":{"finalizers":null}}' --type=merge
+
+   kubectl -n traefik-internal delete svc traefik-internal --wait=false
+   kubectl -n traefik-internal patch svc traefik-internal -p '{"metadata":{"finalizers":null}}' --type=merge
+
+   kubectl -n traefik delete ingress traefik-alb --wait=false
+   kubectl -n traefik patch ingress traefik-alb -p '{"metadata":{"finalizers":null}}' --type=merge
    ```
 
 1. Set these flags, the module will remove every usage of the Kubernetes provider and allow
@@ -255,7 +253,19 @@ To remove the cluster you have to:
    kubernetes_provider_enabled = false
    ```
 
+1. If above PR `apply` fails (possible reason: race condition - aws_auth removed too soon), remove all `kubernetes_*` resources from state:
+
+   ```bash
+   terraform state list |grep kubernetes_
+
+   terraform state rm ...
+   ```
+
+1. Manually remove LB deletion protection from AWS (both external and internal) before final delete
+
 1. Remove module invocation to finally delete cluster itself.
+
+1. If above PR `apply` fails on deleting autoscalinggroups, terminate leftover instances and rerun `apply` (possible reason: race condition - karpenter didn't have enough time to clean instances)
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
