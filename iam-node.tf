@@ -17,8 +17,8 @@ resource "aws_iam_role" "node" {
     for_each = var.node_instance_profile_inline_policies
 
     content {
-      name   = each.key
-      policy = each.value
+      name   = inline_policy.key
+      policy = inline_policy.value
     }
   }
 }
