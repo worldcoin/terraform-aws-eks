@@ -212,3 +212,9 @@ variable "alb_idle_timeout" {
   type        = number
   default     = 60
 }
+
+variable "node_instance_profile_inline_policies" {
+  description = "Inline policies to attach to the node instance profile. Key is the name of the policy, value is the policy document."
+  type        = map(string)
+  default     = {}
+}

@@ -12,6 +12,15 @@ data "aws_iam_policy_document" "node_assume_role_policy" {
 resource "aws_iam_role" "node" {
   name               = "eks-node-${var.cluster_name}"
   assume_role_policy = data.aws_iam_policy_document.node_assume_role_policy.json
+
+  dynamic "inline_policy" {
+    for_each = var.node_instance_profile_inline_policies
+
+    content {
+      name   = each.key
+      policy = each.value
+    }
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "node" {
