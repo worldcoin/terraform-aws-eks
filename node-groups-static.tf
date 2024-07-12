@@ -1,7 +1,7 @@
 data "aws_ssm_parameter" "ami_id" {
   count = var.static_autoscaling_group != null ? 1 : 0
 
-  name            = "/aws/service/eks/optimized-ami/${var.cluster_version}/amazon-linux-2-${var.static_autoscaling_group.arch}/recommended/image_id"
+  name            = "/aws/service/eks/optimized-ami/${var.cluster_version}/amazon-linux-2${var.static_autoscaling_group.arch != null ? format("-%s", var.static_autoscaling_group.arch) : ""}/recommended/image_id"
   with_decryption = true
 }
 
