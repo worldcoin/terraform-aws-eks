@@ -132,6 +132,12 @@ variable "kubelet_extra_args" {
   default     = "--register-with-taints=critical:NoExecute"
 }
 
+variable "kubelet_extra_args_static_autoscaling_group" {
+  description = "kubelet extra args to pass to the static node group"
+  type        = string
+  default     = ""
+}
+
 variable "vpc_cni_warm_ip_target" {
   description = "Number of IPs to keep warm for each node to speed up pod scheduling"
   type        = string
