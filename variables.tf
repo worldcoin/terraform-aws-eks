@@ -224,3 +224,9 @@ variable "node_instance_profile_inline_policies" {
   type        = map(string)
   default     = {}
 }
+
+variable "open_to_all" {
+  description = "Set to `true` if you want to open the cluster to all traffic from internet"
+  type        = bool
+  default     = false
+}
