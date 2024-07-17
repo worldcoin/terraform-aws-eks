@@ -57,6 +57,7 @@ Above setting is no longer needed.
 The module is currently supporting the following versions of Kubernetes:
 
 - 1.29,
+- 1.30,
 
 ## Example
 
@@ -213,7 +214,7 @@ Due to problems with [tf kubernetes provider](https://registry.terraform.io/prov
    2. Run `terraform apply` to update the rest (eks addons etc).
 
    3. And for not karpenter nodes use `instance refresh`
-      https://docs.aws.amazon.com/autoscaling/ec2/userguide/start-instance-refresh.html
+      <https://docs.aws.amazon.com/autoscaling/ec2/userguide/start-instance-refresh.html>
       remember to unmark "Enable skip matching"
 
 ## Datadog
@@ -295,9 +296,9 @@ To remove the cluster you have to:
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_alb"></a> [alb](#module\_alb) | git@github.com:worldcoin/terraform-aws-alb.git | v0.5.1 |
-| <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | git@github.com:worldcoin/terraform-datadog-kubernetes | v1.0.0 |
-| <a name="module_nlb"></a> [nlb](#module\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v0.6.0 |
+| <a name="module_alb"></a> [alb](#module\_alb) | <git@github.com>:worldcoin/terraform-aws-alb.git | v0.5.0 |
+| <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | <git@github.com>:worldcoin/terraform-datadog-kubernetes | v1.0.0 |
+| <a name="module_nlb"></a> [nlb](#module\_nlb) | <git@github.com>:worldcoin/terraform-aws-nlb.git | v0.6.0 |
 
 ## Resources
 
