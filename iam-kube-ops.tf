@@ -15,8 +15,9 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 resource "aws_iam_role" "kube_ops" {
-  name = "kube-ops-${var.cluster_name}-${data.aws_region.current.name}"
+  count = var.kube_ops_enabled ? 1 : 0
 
+  name = "kube-ops-${var.cluster_name}-${data.aws_region.current.name}"
   assume_role_policy   = data.aws_iam_policy_document.assume_role.json
   path                 = "/system/"
 }
@@ -39,14 +40,18 @@ data "aws_iam_policy_document" "kube_ops" {
 }
 
 resource "aws_iam_role_policy" "kube_ops" {
+  count = var.kube_ops_enabled ? 1 : 0
+
   name   = "kube-ops-${var.cluster_name}"
-  role   = aws_iam_role.kube_ops.id
+  role   = aws_iam_role.kube_ops[0].id
   policy = data.aws_iam_policy_document.kube_ops.json
 }
 
 resource "aws_eks_pod_identity_association" "this" {
+  count = var.kube_ops_enabled ? 1 : 0
+
   cluster_name    = var.cluster_name
   namespace       = "kube-ops"
   service_account = "kube-ops"
-  role_arn        = aws_iam_role.kube_ops.arn
+  role_arn        = aws_iam_role.kube_ops[0].arn
 }
