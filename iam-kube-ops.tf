@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "assume_role" {
 resource "aws_iam_role" "kube_ops" {
   count = var.kube_ops_enabled ? 1 : 0
 
-  name = "kube-ops-${var.cluster_name}-${data.aws_region.current.name}"
+  name = "kube-ops-${var.cluster_name}"
   assume_role_policy   = data.aws_iam_policy_document.assume_role.json
   path                 = "/system/"
 }
