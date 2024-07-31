@@ -237,3 +237,11 @@ variable "open_to_all" {
   default     = false
 }
 
+variable "additional_open_ports" {
+  description = "Additional ports accessible from the Internet for the ALB"
+  type = set(object({
+    port     = number
+    protocol = optional(string, "tcp")
+  }))
+  default = []
+}
