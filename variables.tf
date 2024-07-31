@@ -41,6 +41,12 @@ variable "kubernetes_provider_enabled" {
   default     = true
 }
 
+variable "kube_ops_enabled" {
+  description = "Whether to create a role and association for kube-ops"
+  type        = bool
+  default     = false
+}
+
 variable "extra_role_mapping" {
   description = "Extra role mappings to add to the aws-auth configmap."
   type = list(object({

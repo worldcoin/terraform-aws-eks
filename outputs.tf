@@ -8,6 +8,11 @@ output "nlb_dns_names" {
   value       = { for k, v in module.nlb : k => v.dns_name }
 }
 
+output "nlb_zone_ids" {
+  description = "Map of zone IDs of the NLBs"
+  value       = { for k, v in module.nlb : k => v.zone_id }
+}
+
 output "nlb_arns" {
   description = "Map of ARNs of the NLBs"
   value       = { for k, v in module.nlb : k => v.arn }
