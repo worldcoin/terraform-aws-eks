@@ -91,7 +91,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
 }
 
 module "alb" {
-  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.8.0"
+  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.9.0"
   for_each = toset([local.external_alb_name])
 
   # because of lenght limitation of LB name we need to remove prefix treafik from internal NLB
@@ -113,4 +113,54 @@ module "alb" {
   idle_timeout      = var.alb_idle_timeout
 
   additional_open_ports = var.additional_open_ports
+}
+
+resource "kubernetes_ingress_v1" "treafik_ingress_additional_ports" {
+  for_each = { for aop in var.additional_open_ports : additional_open_ports.port => aop }
+
+  metadata {
+    name      = format("grpc-%s-alb", each.value.port)
+    namespace = kubernetes_namespace.traefik[each.key].id
+
+    labels = {
+      "app.kubernetes.io/name"     = "traefik"
+      "app.kubernetes.io/instance" = each.key
+    }
+
+    annotations = {
+      "alb.ingress.kubernetes.io/scheme"                              = "internet-facing"
+      "alb.ingress.kubernetes.io/certificate-arn"                     = var.traefik_cert_arn
+      "alb.ingress.kubernetes.io/group.name"                          = format("%s.%s", each.value.port, each.value.port)
+      "alb.ingress.kubernetes.io/security-groups"                     = join(",", [for type, id in module.alb["traefik"].sg_ids : id if id != null])
+      "alb.ingress.kubernetes.io/manage-backend-security-group-rules" = "false"
+      "alb.ingress.kubernetes.io/healthcheck-protocol"                = "HTTP"
+      "alb.ingress.kubernetes.io/healthcheck-port"                    = "9000"
+      "alb.ingress.kubernetes.io/healthcheck-path"                    = "/ping"
+      "alb.ingress.kubernetes.io/target-type"                         = "ip"
+      "alb.ingress.kubernetes.io/ssl-policy"                          = module.alb["traefik"].ssl_policy
+      "alb.ingress.kubernetes.io/load-balancer-attributes"            = "deletion_protection.enabled=true"
+
+      "CreatedBy" = "terraform"
+    }
+  }
+
+  spec {
+    ingress_class_name = "alb"
+    rule {
+      http {
+        path {
+          path      = "/"
+          path_type = "Prefix"
+          backend {
+            service {
+              name = format("grpc-%s-alb", each.key)
+              port {
+                number = each.value.port
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
