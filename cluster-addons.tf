@@ -55,10 +55,10 @@ resource "aws_eks_addon" "coredns" {
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
   configuration_values = jsonencode({
-    "autoScaling": {
-      "enabled": true,
-      "minReplicas": 4,
-      "maxReplicas": 10
+    "autoScaling" : {
+      "enabled" : true,
+      "minReplicas" : 4,
+      "maxReplicas" : 10
     },
     tolerations : [
       {
