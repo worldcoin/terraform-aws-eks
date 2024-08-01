@@ -91,7 +91,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
 }
 
 module "alb" {
-  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.8.0"
+  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.9.0"
   for_each = toset([local.external_alb_name])
 
   # because of lenght limitation of LB name we need to remove prefix treafik from internal NLB
