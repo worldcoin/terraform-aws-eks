@@ -120,7 +120,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress_additional_ports" {
 
   metadata {
     name      = format("grpc-%s-alb", each.value.port)
-    namespace = kubernetes_namespace.traefik[each.key].id
+    namespace = kubernetes_namespace.traefik[local.external_alb_name].id
 
     labels = {
       "app.kubernetes.io/name"     = "traefik"
