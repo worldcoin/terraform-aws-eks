@@ -116,7 +116,7 @@ module "alb" {
 }
 
 resource "kubernetes_ingress_v1" "treafik_ingress_additional_ports" {
-  for_each = { for aop in var.additional_open_ports : additional_open_ports.port => aop }
+  for_each = { for aop in var.additional_open_ports : aop.port => aop }
 
   metadata {
     name      = format("grpc-%s-alb", each.value.port)
