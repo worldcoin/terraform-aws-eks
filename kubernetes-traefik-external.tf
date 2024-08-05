@@ -1,6 +1,6 @@
 locals {
   additional_ports = [
-    for port in var.additional_open_ports : {
+    for port_object in var.additional_open_ports : {
       "HTTPS" : port_object.port
     }
   ]
