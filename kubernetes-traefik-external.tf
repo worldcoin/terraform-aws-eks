@@ -3,7 +3,7 @@ locals {
     for port_object in var.additional_open_ports :
       "HTTPS" => port_object.port
   }
-  listen_ports = merge([{HTTPS = 443}], local.additional_ports)
+  listen_ports = merge({HTTPS = 443}, local.additional_ports)
 }
 
 resource "kubernetes_service" "traefik_alb" {
