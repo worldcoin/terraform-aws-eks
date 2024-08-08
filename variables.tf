@@ -236,3 +236,18 @@ variable "open_to_all" {
   type        = bool
   default     = false
 }
+
+variable "additional_open_ports" {
+  description = "Additional ports accessible from the Internet for the ALB"
+  type = set(object({
+    port     = number
+    protocol = optional(string, "tcp")
+  }))
+  default = []
+}
+
+variable "drop_invalid_header_fields" {
+  description = "Drop invalid header fields"
+  type        = bool
+  default     = false
+}
