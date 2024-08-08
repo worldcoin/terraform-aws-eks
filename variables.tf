@@ -251,3 +251,9 @@ variable "drop_invalid_header_fields" {
   type        = bool
   default     = false
 }
+
+variable "waf_enabled" {
+  description = "Enable WAF rules and assign them to the ALB"
+  type        = bool
+  default     = false
+}
