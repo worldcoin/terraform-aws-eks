@@ -1,13 +1,3 @@
-locals {
-  additional_ports = [
-    for port_object in var.additional_open_ports : {
-      "HTTPS" : port_object.port
-    }
-  ]
-
-  listen_ports = concat([{ "HTTPS" : 443 }], local.additional_ports)
-}
-
 resource "kubernetes_service" "traefik_alb" {
   for_each               = var.kubernetes_provider_enabled ? toset([local.external_alb_name]) : []
   wait_for_load_balancer = false
@@ -66,7 +56,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
       "alb.ingress.kubernetes.io/scheme"                              = "internet-facing"
       "alb.ingress.kubernetes.io/certificate-arn"                     = var.traefik_cert_arn
       "alb.ingress.kubernetes.io/group.name"                          = format("%s.%s", each.key, each.key)
-      "alb.ingress.kubernetes.io/listen-ports"                        = jsonencode(local.listen_ports)
+      "alb.ingress.kubernetes.io/listen-ports"                        = "[{\"HTTPS\": 443}]"
       "alb.ingress.kubernetes.io/security-groups"                     = join(",", [for type, id in module.alb[each.key].sg_ids : id if id != null])
       "alb.ingress.kubernetes.io/manage-backend-security-group-rules" = "false"
       "alb.ingress.kubernetes.io/healthcheck-protocol"                = "HTTP"
