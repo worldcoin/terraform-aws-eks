@@ -92,7 +92,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
 }
 
 module "alb" {
-  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.13.0"
+  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.14.0"
   for_each = toset([local.external_alb_name])
 
   # because of lenght limitation of LB name we need to remove prefix treafik from internal NLB
@@ -115,4 +115,6 @@ module "alb" {
 
   additional_open_ports      = var.additional_open_ports
   drop_invalid_header_fields = var.drop_invalid_header_fields
+
+  waf_enabled = var.waf_enabled
 }
