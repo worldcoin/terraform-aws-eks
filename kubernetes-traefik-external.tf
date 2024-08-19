@@ -117,4 +117,5 @@ module "alb" {
   drop_invalid_header_fields = var.drop_invalid_header_fields
 
   waf_enabled = var.waf_enabled
+  waf_rules   = var.waf_rules
 }
