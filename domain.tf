@@ -7,6 +7,6 @@ resource "cloudflare_record" "monitoring" {
   zone_id = data.cloudflare_zone.worldcoin_dev.id
   name    = format("%s.%s", var.cluster_name, "monitoring.worldcoin.dev")
   type    = "CNAME"
-  value   = module.alb["traefik"].dns_name
+  content = module.alb["traefik"].dns_name
   proxied = true
 }
