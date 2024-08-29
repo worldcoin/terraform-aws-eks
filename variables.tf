@@ -251,19 +251,3 @@ variable "drop_invalid_header_fields" {
   type        = bool
   default     = false
 }
-
-variable "waf_enabled" {
-  description = "Enable WAF rules and assign them to the ALB"
-  type        = bool
-  default     = false
-}
-
-variable "waf_rules" {
-  description = "Rule blocks used to identify the web requests that you want to use."
-  type = list(object({
-    name                                     = string
-    priority                                 = number
-    managed_rule_group_statement_vendor_name = string
-  }))
-  default = []
-}
