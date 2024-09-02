@@ -251,3 +251,9 @@ variable "drop_invalid_header_fields" {
   type        = bool
   default     = false
 }
+
+variable "wafv2_arn" {
+  description = "The ARN of the WAFv2 WebACL to associate with the ALB"
+  type        = string
+  default     = ""
+}

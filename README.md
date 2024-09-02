@@ -431,6 +431,7 @@ To remove the cluster you have to:
 | <a name="input_vpc_cni_warm_eni_target"></a> [vpc\_cni\_warm\_eni\_target](#input\_vpc\_cni\_warm\_eni\_target) | Number of ENIs to keep warm for each node to speed up pod scheduling | `string` | `"1"` | no |
 | <a name="input_vpc_cni_warm_ip_target"></a> [vpc\_cni\_warm\_ip\_target](#input\_vpc\_cni\_warm\_ip\_target) | Number of IPs to keep warm for each node to speed up pod scheduling | `string` | `"8"` | no |
 | <a name="input_vpc_config"></a> [vpc\_config](#input\_vpc\_config) | VPC configuration from aws/vps module | <pre>object({<br>    vpc_id          = string<br>    private_subnets = list(string)<br>    public_subnets  = list(string)<br>  })</pre> | n/a | yes |
+| <a name="input_wafv2_arn"></a> [wafv2\_arn](#input\_wafv2\_arn) | The ARN of the WAFv2 WebACL to associate with the ALB | `string` | `""` | no |
 
 ## Outputs
 

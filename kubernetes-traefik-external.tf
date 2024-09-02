@@ -65,6 +65,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
       "alb.ingress.kubernetes.io/target-type"                         = "ip"
       "alb.ingress.kubernetes.io/ssl-policy"                          = module.alb[each.key].ssl_policy
       "alb.ingress.kubernetes.io/load-balancer-attributes"            = "deletion_protection.enabled=true"
+      "alb.ingress.kubernetes.io/wafv2-acl-arn"                       = var.wafv2_arn != "" ? var.wafv2_arn : null
 
       "CreatedBy" = "terraform"
     }
