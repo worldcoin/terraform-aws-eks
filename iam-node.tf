@@ -9,9 +9,26 @@ data "aws_iam_policy_document" "node_assume_role_policy" {
   }
 }
 
+data "aws_iam_policy_document" "dockerhub_pull_through_cache" {
+  statement {
+    sid    = "DockerHubPullThroughCache"
+    effect = "Allow"
+    actions = [
+      "ecr:CreateRepository",
+      "ecr:BatchImportUpstreamImage",
+    ]
+    resources = [var.dockerhub_pull_through_cache_repositories_arn]
+  }
+}
+
 resource "aws_iam_role" "node" {
   name               = "eks-node-${var.cluster_name}"
   assume_role_policy = data.aws_iam_policy_document.node_assume_role_policy.json
+
+  inline_policy {
+    name   = "DockerHubPullThroughCache"
+    policy = data.aws_iam_policy_document.dockerhub_pull_through_cache.json
+  }
 
   dynamic "inline_policy" {
     for_each = var.node_instance_profile_inline_policies

@@ -257,3 +257,9 @@ variable "wafv2_arn" {
   type        = string
   default     = ""
 }
+
+variable "dockerhub_pull_through_cache_repositories_arn" {
+  description = "The ARN of the repositories to allow the EKS node group to pull images from the DockerHub pull-through cache."
+  type        = string
+  default     = "arn:aws:ecr:us-east-1:507152310572:repository/docker-cache/*" # internal-tools docker-cache ECR repositories
+}
