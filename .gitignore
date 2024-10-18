@@ -12,8 +12,9 @@
 .local
 
 *.tfvars
+!tests/*.tfvars
 
-# Terraform 
+# Terraform
 *.lock.hcl
 
 # system

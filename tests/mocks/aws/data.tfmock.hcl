@@ -57,5 +57,3 @@ override_data {
     EOT
   }
 }
-
-mock_data "foo" {}
