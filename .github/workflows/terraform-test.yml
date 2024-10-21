@@ -9,5 +9,9 @@ jobs:
       - name: Check out code
         uses: actions/checkout@master
 
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY_GITHUB_AUTOMATION }}
+
       - name: terraform test
         uses: dflook/terraform-test@v1
