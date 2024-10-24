@@ -20,8 +20,6 @@ resource "kubernetes_service" "traefik_nlb" {
       "service.beta.kubernetes.io/aws-load-balancer-type"                                = "external"
       "service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy"              = module.nlb[each.key].ssl_policy
       "service.beta.kubernetes.io/aws-load-balancer-attributes"                          = "deletion_protection.enabled=true"
-      "service.beta.kubernetes.io/aws-load-balancer-backend-protocol"                    = "false"
-      "service.beta.kubernetes.io/aws-load-balancer-security-groups"                     = module.nlb[each.key].sg_nlb_id
       "service.beta.kubernetes.io/aws-load-balancer-manage-backend-security-group-rules" = "false"
       "CreatedBy"                                                                        = "terraform"
     }
