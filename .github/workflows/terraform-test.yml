@@ -14,6 +14,7 @@ jobs:
         with:
           key: ${{ secrets.SSH_KEY }}
           known_hosts: ${{ secrets.SSH_KNOW_HOSTS_GITHUB_AUTOMATION }}
+          if_key_exists: replace
 
       - name: terraform test
         uses: dflook/terraform-test@v1
