@@ -110,19 +110,23 @@ variable "internal_nlb_acm_arn" {
   description = "The ARN of the certificate to use for internal NLB."
   type        = string
   default     = ""
-  validation {
-    condition     = can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.internal_nlb_acm_arn))
-    error_message = "Invalid ACM ARN"
-  }
+  # commented due to tests passed, but in module it is not working
+  # regex match certificate arn
+  # validation {
+  #   condition     = can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.internal_nlb_acm_arn))
+  #   error_message = "Invalid ACM ARN"
+  # }
 }
 
 variable "traefik_cert_arn" {
   description = "The ARN of the certificate to use for Traefik."
   type        = string
-  validation {
-    condition     = can(regex("arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+", var.traefik_cert_arn))
-    error_message = "Invalid ACM ARN"
-  }
+  # commented due to tests passed, but in module it is not working
+  # regex match certificate arn
+  # validation {
+  #   condition     = can(regex("arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+", var.traefik_cert_arn))
+  #   error_message = "Invalid ACM ARN"
+  # }
 }
 
 variable "efs_csi_driver_enabled" {
