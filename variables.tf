@@ -92,10 +92,6 @@ variable "extra_role_mapping" {
 variable "datadog_api_key" {
   description = "Datadog API key. Stored in kube-system namespace as a secret."
   type        = string
-  validation {
-    condition     = can(regex("[^A-Za-z0-9_]", var.datadog_api_key))
-    error_message = "Invalid API key"
-  }
 }
 
 variable "internal_nlb_enabled" {
