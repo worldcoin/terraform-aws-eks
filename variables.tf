@@ -18,7 +18,7 @@ variable "environment" {
 
 variable "cluster_version" {
   description = "The Kubernetes version to use for the cluster."
-  type        = number
+  type        = string
   default     = "1.29"
 }
 
@@ -78,7 +78,7 @@ variable "extra_role_mapping" {
   validation {
     condition = alltrue([
       for role_mapping in var.extra_role_mapping : (
-        can(regex("arn:aws:iam::\\d+{12}:role/\\w+", role_mapping.rolearn)) &&
+        can(regex("arn:aws:iam::[0-9]{12}:role/[a-zA-Z0-9+=,.@_/-]+$", role_mapping.rolearn)) &&
         can(regex("\\w+", role_mapping.username)) &&
         alltrue([
           for group in role_mapping.groups : can(regex("\\w+", group))
@@ -93,7 +93,7 @@ variable "datadog_api_key" {
   description = "Datadog API key. Stored in kube-system namespace as a secret."
   type        = string
   validation {
-    condition     = can(regex("\\W+", var.datadog_api_key))
+    condition     = can(regex("[^A-Za-z0-9_]", var.datadog_api_key))
     error_message = "Invalid API key"
   }
 }
@@ -155,7 +155,14 @@ variable "alb_logs_bucket_id" {
   description = "The ID of the S3 bucket to store logs in for ALB."
   type        = string
   validation {
-    condition     = can(regex("arn:aws:s3:::\\w+", var.alb_logs_bucket_id))
+    condition = (
+      can(regex("^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$", var.alb_logs_bucket_id)) &&
+      !strcontains(var.alb_logs_bucket_id, "..") &&
+      !startswith(var.alb_logs_bucket_id, "xn--") &&
+      !startswith(var.alb_logs_bucket_id, "sthree-") &&
+      !endswith(var.alb_logs_bucket_id, "-s3alias") &&
+      !endswith(var.alb_logs_bucket_id, "--ol-s3")
+    )
     error_message = "Invalid S3 bucket ID"
   }
 }
