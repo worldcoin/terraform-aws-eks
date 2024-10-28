@@ -120,7 +120,7 @@ variable "traefik_cert_arn" {
   description = "The ARN of the certificate to use for Traefik."
   type        = string
   validation {
-    condition     = can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn))
+    condition     = can(regex("arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+", var.traefik_cert_arn))
     error_message = "Invalid ACM ARN"
   }
 }
