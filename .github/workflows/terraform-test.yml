@@ -1,0 +1,15 @@
+name: Terraform Test Runner
+
+on: [pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@master
+
+      - name: terraform test
+        uses: dflook/terraform-test@v1
+        env:
+          TERRAFORM_SSH_KEY: ${{ secrets.SSH_KEY_GITHUB_AUTOMATION }}
