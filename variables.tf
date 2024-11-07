@@ -401,3 +401,9 @@ variable "dockerhub_pull_through_cache_repositories_arn" {
     error_message = "Invalid ECR repository ARN"
   }
 }
+
+variable "cluster_endpoint_public_access" {
+  description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled"
+  type        = bool
+  default     = true
+}
