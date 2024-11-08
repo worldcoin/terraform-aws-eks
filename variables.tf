@@ -386,7 +386,7 @@ variable "wafv2_arn" {
   type        = string
   default     = ""
   validation {
-    condition     = var.wafv2_arn == "" ? true : can(regex("^arn:aws:wafv2:\\w{2}-\\w{2}-\\w{1,12}:\\d{12}:webacl/.+$", var.wafv2_arn))
+    condition     = var.wafv2_arn == "" ? true : can(regex("^arn:aws:wafv2:\\w{2}-\\w+-\\d{1}:\\d{12}:(regional|global)/webacl/.+$", var.wafv2_arn))
     error_message = "Invalid WAFv2 WebACL ARN"
   }
 }
