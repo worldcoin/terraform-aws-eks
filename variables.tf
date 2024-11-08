@@ -64,7 +64,7 @@ variable "kubernetes_provider_enabled" {
 variable "kube_ops_enabled" {
   description = "Whether to create a role and association for kube-ops"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "extra_role_mapping" {
@@ -400,4 +400,10 @@ variable "dockerhub_pull_through_cache_repositories_arn" {
     condition     = can(regex("arn:aws:ecr:[a-z][a-z]-\\w+-\\d{1}:\\d{12}:repository/.*", var.dockerhub_pull_through_cache_repositories_arn))
     error_message = "Invalid ECR repository ARN"
   }
+}
+
+variable "cluster_endpoint_public_access" {
+  description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled"
+  type        = bool
+  default     = true
 }
