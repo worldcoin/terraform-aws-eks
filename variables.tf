@@ -396,7 +396,6 @@ variable "dockerhub_pull_through_cache_repositories_arn" {
   type        = string
   default     = "arn:aws:ecr:us-east-1:507152310572:repository/docker-cache/*" # internal-tools docker-cache ECR repositories
   validation {
-    #                           arn:aws:ecr:us-east-1:507152310572:repository/docker-cache/*
     condition     = can(regex("arn:aws:ecr:[a-z][a-z]-\\w+-\\d{1}:\\d{12}:repository/.*", var.dockerhub_pull_through_cache_repositories_arn))
     error_message = "Invalid ECR repository ARN"
   }
