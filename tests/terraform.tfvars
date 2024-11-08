@@ -17,6 +17,11 @@ internal_nlb_acm_arn = "arn:aws:acm:ap-south-1:123412341234:certificate/anlbcc11
 
 wafv2_arn = "arn:aws:wafv2:ap-south-1:123123123123:regional/webacl/foo-bar-123-baz/1a2w3e4r-zaq1-2wsx-qwer-098aa8900990"
 
+acm_extra_arns = [
+  "arn:aws:acm:ap-south-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h",
+  "arn:aws:acm:ap-south-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g22",
+]
+
 additional_security_group_rules = [
   {
     "description" = "Rule for sg-1q2w3e4r5t6y7u8ia"

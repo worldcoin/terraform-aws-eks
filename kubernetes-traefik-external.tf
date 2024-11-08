@@ -54,7 +54,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
 
     annotations = {
       "alb.ingress.kubernetes.io/scheme"                              = "internet-facing"
-      "alb.ingress.kubernetes.io/certificate-arn"                     = var.traefik_cert_arn
+      "alb.ingress.kubernetes.io/certificate-arn"                     = length(var.acm_extra_arns) != 0 ? join(",", var.acm_extra_arns, [var.traefik_cert_arn]) : var.traefik_cert_arn
       "alb.ingress.kubernetes.io/group.name"                          = format("%s.%s", each.key, each.key)
       "alb.ingress.kubernetes.io/listen-ports"                        = "[{\"HTTPS\": 443}]"
       "alb.ingress.kubernetes.io/security-groups"                     = join(",", [for type, id in module.alb[each.key].sg_ids : id if id != null])
