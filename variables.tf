@@ -78,11 +78,7 @@ variable "extra_role_mapping" {
   validation {
     condition = alltrue([
       for role_mapping in var.extra_role_mapping : (
-        can(regex("arn:aws:iam::[0-9]{12}:role/[a-zA-Z0-9+=,.@_/-]+$", role_mapping.rolearn)) &&
-        can(regex("\\w+", role_mapping.username)) &&
-        alltrue([
-          for group in role_mapping.groups : can(regex("\\w+", group))
-        ])
+        role_mapping.rolearn != "" ? can(regex("arn:aws:iam::[0-9]{12}:role/[a-zA-Z0-9+=,.@_/-]+$", role_mapping.rolearn)) : true
       )
     ])
     error_message = "Invalid role mapping"
@@ -305,7 +301,7 @@ variable "additional_security_group_rules" {
         rule.from_port >= 0 && rule.from_port <= 65535 &&
         can(regex("\\d+", rule.to_port)) &&
         rule.to_port >= 0 && rule.to_port <= 65535 &&
-        can(regex("TCP|UDP|ICMP", rule.protocol)) &&
+        can(regex("TCP|UDP|ICMP|tcp|udp|icmp|-1", rule.protocol)) &&
         can(regex("\\w+", rule.description))
       )
     ])
@@ -368,7 +364,7 @@ variable "additional_open_ports" {
       for port in var.additional_open_ports : (
         can(regex("\\d+", port.port)) &&
         port.port >= 0 && port.port <= 65535 &&
-        can(regex("TCP|UDP", port.protocol))
+        can(regex("TCP|UDP|tcp|udp", port.protocol))
       )
     ])
     error_message = "Invalid port configuration"
@@ -405,4 +401,10 @@ variable "cluster_endpoint_public_access" {
   description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled"
   type        = bool
   default     = true
+}
+
+variable "acm_extra_arns" {
+  description = "ARNs of ACM certificates used for TLS, attached as additional certificates to the ALB"
+  type        = list(string)
+  default     = []
 }
