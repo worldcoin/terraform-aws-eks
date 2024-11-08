@@ -64,7 +64,7 @@ variable "kubernetes_provider_enabled" {
 variable "kube_ops_enabled" {
   description = "Whether to create a role and association for kube-ops"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "extra_role_mapping" {
