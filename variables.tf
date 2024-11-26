@@ -147,6 +147,18 @@ variable "monitoring_notification_channel" {
   }
 }
 
+variable "monitoring_reachability_fail_locations" {
+  description = "Number of locations to fail to trigger the reachability test"
+  type        = number
+  default     = 5
+}
+
+variable "monitoring_reachability_failure_duration" {
+  description = "Time after first error when the reachability test is triggered"
+  type        = number
+  default     = 300
+}
+
 variable "alb_logs_bucket_id" {
   description = "The ID of the S3 bucket to store logs in for ALB."
   type        = string

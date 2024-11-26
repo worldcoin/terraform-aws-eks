@@ -56,7 +56,7 @@ data "datadog_synthetics_locations" "locations" {}
 
 resource "datadog_synthetics_test" "cluster_monitoring" {
   count     = var.monitoring_enabled ? 1 : 0
-  name      = "Uptime test for cluster: ${var.cluster_name}"
+  name      = "Cluster ${var.cluster_name} unreachable"
   type      = "api"
   subtype   = "http"
   status    = "live"
@@ -83,8 +83,10 @@ resource "datadog_synthetics_test" "cluster_monitoring" {
   }
 
   options_list {
-    tick_every       = 300
-    monitor_priority = 1
+    tick_every           = 300
+    monitor_priority     = 1
+    min_location_failed  = min(var.monitoring_reachability_fail_locations, length(data.datadog_synthetics_locations.locations.locations))
+    min_failure_duration = var.monitoring_reachability_failure_duration
     retry {
       count    = 3
       interval = 1000 # ms
