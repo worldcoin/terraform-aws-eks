@@ -285,19 +285,19 @@ To remove the cluster you have to:
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.63.0 |
-| <a name="provider_cloudflare"></a> [cloudflare](#provider\_cloudflare) | 4.39.0 |
-| <a name="provider_datadog"></a> [datadog](#provider\_datadog) | 3.43.0 |
-| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.32.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.6.2 |
-| <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.5 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.5 |
+| <a name="provider_cloudflare"></a> [cloudflare](#provider\_cloudflare) | ~> 4.10 |
+| <a name="provider_datadog"></a> [datadog](#provider\_datadog) | >= 3.0 |
+| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | >= 2.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 3.3 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | >= 4.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_alb"></a> [alb](#module\_alb) | git@github.com:worldcoin/terraform-aws-alb.git | v0.17.0 |
-| <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | git@github.com:worldcoin/terraform-datadog-kubernetes | v1.1.0 |
+| <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | git@github.com:worldcoin/terraform-datadog-kubernetes | v1.2.1 |
 | <a name="module_nlb"></a> [nlb](#module\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v0.7.0 |
 
 ## Resources
@@ -424,6 +424,8 @@ To remove the cluster you have to:
 | <a name="input_kubernetes_provider_enabled"></a> [kubernetes\_provider\_enabled](#input\_kubernetes\_provider\_enabled) | Whether to create a Kubernetes provider for the cluster. Use as a prerequisite to cluster removal. | `bool` | `true` | no |
 | <a name="input_monitoring_enabled"></a> [monitoring\_enabled](#input\_monitoring\_enabled) | Whether to enable monitoring (Datadog). | `bool` | `true` | no |
 | <a name="input_monitoring_notification_channel"></a> [monitoring\_notification\_channel](#input\_monitoring\_notification\_channel) | The Datadog notification channel to use for monitoring alerts. | `string` | `"@slack-TFH-infrastructure-alerts"` | no |
+| <a name="input_monitoring_reachability_fail_locations"></a> [monitoring\_reachability\_fail\_locations](#input\_monitoring\_reachability\_fail\_locations) | Number of locations to fail to trigger the reachability test | `number` | `5` | no |
+| <a name="input_monitoring_reachability_failure_duration"></a> [monitoring\_reachability\_failure\_duration](#input\_monitoring\_reachability\_failure\_duration) | Time after first error when the reachability test is triggered | `number` | `300` | no |
 | <a name="input_node_instance_profile_inline_policies"></a> [node\_instance\_profile\_inline\_policies](#input\_node\_instance\_profile\_inline\_policies) | Inline policies to attach to the node instance profile. Key is the name of the policy, value is the policy document. | `map(string)` | `{}` | no |
 | <a name="input_on_demand_base_capacity"></a> [on\_demand\_base\_capacity](#input\_on\_demand\_base\_capacity) | The number of minimum on-demand instances to launch. | `number` | `1` | no |
 | <a name="input_open_to_all"></a> [open\_to\_all](#input\_open\_to\_all) | Set to `true` if you want to open the cluster to all traffic from internet | `bool` | `false` | no |
