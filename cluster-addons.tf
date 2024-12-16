@@ -41,9 +41,9 @@ resource "aws_eks_addon" "vpc_cni" {
   resolve_conflicts_on_update = "OVERWRITE"
   configuration_values = jsonencode({
     env : {
-      ENABLE_PREFIX_DELEGATION : "true",             # Enable prefix delegation for IPv6, allocate IPs in /28 blocks (instead of all at once)
-      WARM_IP_TARGET : var.vpc_cni_warm_ip_target,   # Keep +8 IPs warm for each node to speed up pod scheduling
-      WARM_ENI_TARGET : var.vpc_cni_warm_eni_target, # Keep +1 ENI warm for each node to speed up pod scheduling
+      ENABLE_PREFIX_DELEGATION : lower(tostring(var.vpc_cni_enable_prefix_delegation)), # Enable prefix delegation for IPv6, allocate IPs in /28 blocks (instead of all at once)
+      WARM_IP_TARGET : var.vpc_cni_warm_ip_target,                                      # Keep +8 IPs warm for each node to speed up pod scheduling
+      WARM_ENI_TARGET : var.vpc_cni_warm_eni_target,                                    # Keep +1 ENI warm for each node to speed up pod scheduling
     }
   })
 }
