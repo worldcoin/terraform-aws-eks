@@ -24,20 +24,20 @@ data "aws_iam_policy_document" "dockerhub_pull_through_cache" {
 resource "aws_iam_role" "node" {
   name               = "eks-node-${var.cluster_name}"
   assume_role_policy = data.aws_iam_policy_document.node_assume_role_policy.json
+}
 
-  inline_policy {
-    name   = "DockerHubPullThroughCache"
-    policy = data.aws_iam_policy_document.dockerhub_pull_through_cache.json
-  }
+resource "aws_iam_role_policy" "dockerhub_pull_through_cache" {
+  name   = "DockerHubPullThroughCache"
+  role   = aws_iam_role.node.id
+  policy = data.aws_iam_policy_document.dockerhub_pull_through_cache.json
+}
 
-  dynamic "inline_policy" {
-    for_each = var.node_instance_profile_inline_policies
+resource "aws_iam_role_policy" "node_inline_policy" {
+  for_each = var.node_instance_profile_inline_policies
 
-    content {
-      name   = inline_policy.key
-      policy = inline_policy.value
-    }
-  }
+  name   = each.key
+  role   = aws_iam_role.node.id
+  policy = each.value
 }
 
 resource "aws_iam_role_policy_attachment" "node" {
