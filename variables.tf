@@ -233,6 +233,12 @@ variable "kubelet_extra_args_static_autoscaling_group" {
   default     = ""
 }
 
+variable "vpc_cni_enable_prefix_delegation" {
+  description = "Enable prefix delegation for IPv6, allocate IPs in /28 blocks (instead of all at once)"
+  type        = bool
+  default     = true
+}
+
 variable "vpc_cni_warm_ip_target" {
   description = "Number of IPs to keep warm for each node to speed up pod scheduling"
   type        = string
