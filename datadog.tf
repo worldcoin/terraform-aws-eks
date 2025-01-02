@@ -65,7 +65,7 @@ resource "datadog_synthetics_test" "cluster_monitoring" {
   subtype   = "http"
   status    = "live"
   message   = "Cluster ${var.cluster_name} is not responding. ${var.monitoring_notification_channel}"
-  locations = contains(keys(data.datadog_synthetics_locations.locations.locations), local.check_location)
+  locations = contains(keys(data.datadog_synthetics_locations.locations.locations), local.check_location) ? [local.check_location] : []
   tags = [
     "CreatedBy:terraform",
     "env:${var.environment}",
