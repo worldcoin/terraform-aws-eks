@@ -55,7 +55,14 @@ EOT
 data "datadog_synthetics_locations" "locations" {}
 
 locals {
-  check_location = "aws:eu-central-1"
+  check_location = [
+    "aws:af-south-1",
+    "aws:ap-south-1",
+    "aws:ap-southeast-1",
+    "aws:eu-central-1",
+    "aws:sa-east-1",
+    "aws:us-east-1",
+  ]
 }
 
 resource "datadog_synthetics_test" "cluster_monitoring" {
@@ -65,7 +72,7 @@ resource "datadog_synthetics_test" "cluster_monitoring" {
   subtype   = "http"
   status    = "live"
   message   = "Cluster ${var.cluster_name} is not responding. ${var.monitoring_notification_channel}"
-  locations = contains(keys(data.datadog_synthetics_locations.locations.locations), local.check_location) ? [local.check_location] : []
+  locations = setintersection(keys(data.datadog_synthetics_locations.locations.locations), local.check_location)
   tags = [
     "CreatedBy:terraform",
     "env:${var.environment}",
