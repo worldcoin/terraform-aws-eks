@@ -54,17 +54,6 @@ EOT
 
 data "datadog_synthetics_locations" "locations" {}
 
-locals {
-  check_locations = [
-    "aws:af-south-1",
-    "aws:ap-south-1",
-    "aws:ap-southeast-1",
-    "aws:eu-central-1",
-    "aws:sa-east-1",
-    "aws:us-east-1",
-  ]
-}
-
 resource "datadog_synthetics_test" "cluster_monitoring" {
   count     = var.monitoring_enabled ? 1 : 0
   name      = "Cluster ${var.cluster_name} unreachable"
@@ -72,7 +61,7 @@ resource "datadog_synthetics_test" "cluster_monitoring" {
   subtype   = "http"
   status    = "live"
   message   = "Cluster ${var.cluster_name} is not responding. ${var.monitoring_notification_channel}"
-  locations = setintersection(keys(data.datadog_synthetics_locations.locations.locations), local.check_locations)
+  locations = setintersection(keys(data.datadog_synthetics_locations.locations.locations), var.external_check_locations)
   tags = [
     "CreatedBy:terraform",
     "env:${var.environment}",
