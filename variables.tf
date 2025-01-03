@@ -426,3 +426,16 @@ variable "acm_extra_arns" {
   type        = list(string)
   default     = []
 }
+
+variable "external_check_locations" {
+  description = "List of DD locations to check cluster availability from"
+  type        = list(string)
+  default = [
+    "aws:af-south-1",
+    "aws:ap-south-1",
+    "aws:ap-southeast-1",
+    "aws:eu-central-1",
+    "aws:sa-east-1",
+    "aws:us-east-1",
+  ]
+}
