@@ -11,6 +11,11 @@ locals {
       groups   = ["system:masters"]
     },
     {
+      rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/tfe"
+      username = "admin"
+      groups   = ["system:masters"]
+    },
+    {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/github-deploy"
       username = "github-deploy"
       groups   = ["system:masters"]
