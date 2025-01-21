@@ -439,3 +439,9 @@ variable "external_check_locations" {
     "aws:us-east-1",
   ]
 }
+
+variable "http_put_response_hop_limit" {
+  description = "The maximum number of hops allowed for HTTP PUT requests"
+  type        = number
+  default     = 2
+}
