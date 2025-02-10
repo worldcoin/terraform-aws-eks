@@ -449,3 +449,27 @@ variable "http_put_response_hop_limit" {
     error_message = "Invalid hop limit. Must be between 1 and 64"
   }
 }
+
+variable "authentication_mode" {
+  description = "The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP`"
+  type        = string
+  default     = "API_AND_CONFIG_MAP"
+  validation {
+    condition     = var.authentication_mode == "CONFIG_MAP" || var.authentication_mode == "API" || var.authentication_mode == "API_AND_CONFIG_MAP"
+    error_message = "Invalid authentication mode"
+  }
+}
+
+variable "access_entries" {
+  description = "Map of access entries to add to the cluster"
+  type = map(object({
+    principal_arn = string
+    # kubernetes_groups       = optional(list(string), ["system:masters"]) # we don't need it for now
+    type                    = optional(string, "STANDARD")
+    tags                    = optional(map(string), {})
+    access_scope_type       = optional(string, "namespace")
+    access_scope_namespaces = optional(list(string), [])
+    policy_arn              = optional(string, "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy")
+  }))
+  default = {}
+}

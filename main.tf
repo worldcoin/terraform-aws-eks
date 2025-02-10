@@ -27,6 +27,10 @@ resource "aws_eks_cluster" "this" {
     "controllerManager"
   ]
 
+  access_config {
+    authentication_mode = var.authentication_mode
+  }
+
   timeouts {
     create = "30m"
     delete = "15m"
