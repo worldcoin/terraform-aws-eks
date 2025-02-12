@@ -1,11 +1,7 @@
-resource "kubernetes_namespace" "cluster_monitoring" {
-  count = var.kubernetes_provider_enabled ? 1 : 0
+removed {
+  from = kubernetes_namespace.cluster_monitoring
 
-  metadata {
-    name = "cluster-monitoring"
-
-    annotations = {
-      "CreatedBy" = "terraform"
-    }
+  lifecycle {
+    destroy = false
   }
 }

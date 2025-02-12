@@ -14,10 +14,6 @@ resource "kubernetes_namespace" "traefik" {
   metadata {
     name = each.key
 
-    annotations = {
-      "CreatedBy" = "terraform"
-    }
-
     labels = {
       "elbv2.k8s.aws/pod-readiness-gate-inject" = "enabled"
     }
