@@ -28,7 +28,8 @@ resource "aws_eks_cluster" "this" {
   ]
 
   access_config {
-    authentication_mode = var.authentication_mode
+    authentication_mode                         = var.authentication_mode
+    bootstrap_cluster_creator_admin_permissions = false
   }
 
   timeouts {
