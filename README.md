@@ -36,23 +36,13 @@ Release is created as draft, so you have to edit it manually and change it to fi
 
 ## Breaking changes
 
-The version 3.0 introduces a few breaking changes:
+Version 4.0 introduces an authentication mode change from CONFIG_MAP to API_AND_CONFIG_MAP. This change requires manual intervention to update the clusters. The following steps should be taken to update the clusters:
 
-- The `custom_load_balancers` input has been removed. The module now creates a single ALB and a single internal NLB by default.
-
-```terraform
-  custom_load_balancers = {
-    internal = false
-  }
+```
+aws eks update-cluster-config --name CLUSTER_NAME --access-config authenticationMode=API_AND_CONFIG_MAP --region AWS_REGION
 ```
 
-Above setting is no longer needed.
-
-- The `internal_nlb_enabled` input has been added. The module now creates an internal NLB by default. It can be disabled by setting the input to `false`.
-
-```terraform
-  internal_nlb_enabled = true
-```
+This will change the authentication mode to API_AND_CONFIG_MAP, and the next terraform plan/apply will work as expected.
 
 ## Supported versions
 
