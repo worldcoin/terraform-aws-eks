@@ -211,6 +211,8 @@ module "orb" {
 }
 ```
 
+Once the policy_arn is not specified, the default AmazonEKSAdminPolicy is used.
+
 #### AWS EKS Cluster Policies
 
 Most common used AWS policies for EKS clusters:
