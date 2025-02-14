@@ -45,6 +45,12 @@ resource "aws_eks_cluster" "this" {
     aws_iam_role_policy_attachment.cluster,
     aws_cloudwatch_log_group.this
   ]
+
+  lifecycle {
+    ignore_changes = [
+      access_config[0].bootstrap_cluster_creator_admin_permissions,
+    ]
+  }
 }
 
 data "tls_certificate" "this" {
