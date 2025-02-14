@@ -169,7 +169,7 @@ The `access_entries` input allows you to associate access policies with access e
 
 ```terraform
 module "orb" {
-    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v0.3.0"
+    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.0.0"
     cluster_name = "orb-${var.environment}-${var.region}"
 
     vpc_config = module.vpc.config
