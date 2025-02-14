@@ -6,6 +6,8 @@
   - [Breaking changes](#breaking-changes)
   - [Supported versions](#supported-versions)
   - [Example](#example)
+    - [Associate access policies with access entries](#associate-access-policies-with-access-entries)
+      - [AWS EKS Cluster Policies](#aws-eks-cluster-policies)
   - [Migrate 1.xx to 2.xx](#migrate-1xx-to-2xx)
   - [Upgrading clusters](#upgrading-clusters)
   - [Datadog](#datadog)
@@ -34,23 +36,13 @@ Release is created as draft, so you have to edit it manually and change it to fi
 
 ## Breaking changes
 
-The version 3.0 introduces a few breaking changes:
+Version 4.0 introduces an authentication mode change from CONFIG_MAP to API_AND_CONFIG_MAP. This change requires manual intervention to update the clusters. The following steps should be taken to update the clusters:
 
-- The `custom_load_balancers` input has been removed. The module now creates a single ALB and a single internal NLB by default.
-
-```terraform
-  custom_load_balancers = {
-    internal = false
-  }
+```
+aws eks update-cluster-config --name CLUSTER_NAME --access-config authenticationMode=API_AND_CONFIG_MAP --region AWS_REGION
 ```
 
-Above setting is no longer needed.
-
-- The `internal_nlb_enabled` input has been added. The module now creates an internal NLB by default. It can be disabled by setting the input to `false`.
-
-```terraform
-  internal_nlb_enabled = true
-```
+This will change the authentication mode to API_AND_CONFIG_MAP, and the next terraform plan/apply will work as expected.
 
 ## Supported versions
 
@@ -169,6 +161,61 @@ module "eks" {
       description = format("Rule for %s", var.sg_id)
   }]
 }
+```
+
+### Associate access policies with access entries
+
+The `access_entries` input allows you to associate access policies with access entries. The `access_entries` input is a map where the key is the name of the access entry and the value is a map with the following keys:
+
+```terraform
+module "orb" {
+    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.0.0"
+    cluster_name = "orb-${var.environment}-${var.region}"
+
+    vpc_config = module.vpc.config
+
+    extra_role_mapping = module.sso_roles.default_mappings
+
+    datadog_api_key     = var.datadog_api_key
+    traefik_cert_arn    = var.traefik_cert_arn
+    alb_logs_bucket_id  = module.region.alb_logs_bucket_id
+
+    access_entries = {
+      # example with cluster access with default AmazonEKSAdminPolicy
+      applicationA = {
+        principal_arn     = "arn:aws:iam::507152310572:role/github-deployment-applicationA"
+        access_scope_type = "cluster"
+      }
+      # example with namespace access
+      applicationB = {
+        principal_arn           = "arn:aws:iam::507152310572:role/github-deployment-applicationB"
+        access_scope_namespaces = ["applicationB"]
+      }
+      # example with policy AmazonEKSClusterAdminPolicy access
+      applicationC = {
+        principal_arn           = "arn:aws:iam::507152310572:role/github-deployment-applicationC"
+        access_scope_type       = "cluster"
+        policy_arn              = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+      }
+    }
+}
+```
+
+Once the policy_arn is not specified, the default AmazonEKSAdminPolicy is used.
+
+#### AWS EKS Cluster Policies
+
+Most common used AWS policies for EKS clusters:
+* AmazonEKSClusterAdminPolicy: This policy grants administrator access to a cluster and is equivalent to the RBAC cluster-admin role with star permissions on everything.
+* AmazonEKSAdminPolicy: This policy is equivalent to the RBAC admin role. It provides broad permissions to resources, typically scoped to a specific namespace. It is somewhat restricted when it comes to modifying namespace configurations or affecting other namespaces. This policy is designed to support namespace-based multi-tenancy. If you want an IAM principal to have a more limited administrative scope, consider using AmazonEKSAdminPolicy instead of AmazonEKSClusterAdminPolicy.
+* AmazonEKSEditPolicy: This policy grants access to edit most Kubernetes resources, usually within a specific namespace. It allows reading secrets and editing resources, but it should not serve as a security boundary, as there are several possible privilege escalation paths to AmazonEKSClusterAdminPolicy.
+* AmazonEKSViewPolicy: Grants access to list and view most Kubernetes resources, typically within a namespace. This policy is read-only and does not allow modification of resources. It is useful for monitoring and auditing purposes.
+
+In summary, AmazonEKSClusterAdminPolicy provides the highest level of access, while AmazonEKSAdminPolicy and AmazonEKSEditPolicy offer more restricted, namespace-scoped permissions. 
+
+If you need specyfic access to the cluster, you can list the available AWS Polivies via aws cli:
+```
+aws eks list-access-policies --output table --region us-east-1
 ```
 
 ## Migrate 1.xx to 2.xx
