@@ -193,7 +193,7 @@ module "orb" {
       }
       # example with policy AmazonEKSClusterAdminPolicy access
       applicationC = {
-        principal_arn           = "arn:aws:iam::507152310572:role/github-deployment-applicationB"
+        principal_arn           = "arn:aws:iam::507152310572:role/github-deployment-applicationC"
         access_scope_type       = "cluster"
         policy_arn              = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
       }
