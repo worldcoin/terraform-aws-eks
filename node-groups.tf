@@ -83,8 +83,8 @@ resource "aws_autoscaling_group" "this" {
           ]
 
           memory_mib {
-            max = 8192
-            min = 4096
+            max = 16384
+            min = 8192
           }
 
           vcpu_count {
