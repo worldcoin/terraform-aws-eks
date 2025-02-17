@@ -463,8 +463,8 @@ variable "authentication_mode" {
 variable "access_entries" {
   description = "Map of access entries to add to the cluster"
   type = map(object({
-    principal_arn = string
-    # kubernetes_groups       = optional(list(string), ["system:masters"]) # we don't need it for now
+    principal_arn           = string
+    kubernetes_groups       = optional(list(string), null)
     type                    = optional(string, "STANDARD")
     tags                    = optional(map(string), {})
     access_scope_type       = optional(string, "namespace")
