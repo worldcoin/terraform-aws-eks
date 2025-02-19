@@ -1,7 +1,7 @@
 locals {
   # Recommended version of the Amazon VPC CNI add-on for each cluster version
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
-  # aws eks describe-addon-versions --addon-name vpc-cni | jq '.addons[0].addonVersions[0]'
+  # aws eks describe-addon-versions --addon-name vpc-cni --region us-east-1 --output json| jq '.addons[0].addonVersions[0]'
   vpc_cni_version = {
     "1.29" = "v1.19.2-eksbuild.5"
     "1.30" = "v1.19.2-eksbuild.5"
