@@ -1,35 +1,50 @@
 locals {
   # Recommended version of the Amazon VPC CNI add-on for each cluster version
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
+  # aws eks describe-addon-versions --addon-name vpc-cni --region us-east-1 --output json| jq '.addons[0].addonVersions[0]'
   vpc_cni_version = {
-    "1.29" = "v1.16.0-eksbuild.1"
-    "1.30" = "v1.18.2-eksbuild.1"
+    "1.29" = "v1.19.2-eksbuild.5"
+    "1.30" = "v1.19.2-eksbuild.5"
+    "1.31" = "v1.19.2-eksbuild.5"
+    "1.32" = "v1.19.2-eksbuild.5"
   }
 
   # CoreDNS version deployed with each Amazon EKS supported cluster version
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html
+  # aws eks describe-addon-versions --addon-name coredns | jq '.addons[0].addonVersions[0]'
   coredns_version = {
-    "1.29" = "v1.11.1-eksbuild.9"
-    "1.30" = "v1.11.1-eksbuild.9"
+    "1.29" = "v1.11.4-eksbuild.2"
+    "1.30" = "v1.11.4-eksbuild.2"
+    "1.31" = "v1.11.4-eksbuild.2" 
+    "1.32" = "v1.11.4-eksbuild.2"
   }
 
   # Latest available kube-proxy container image version for each Amazon EKS cluster version
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-kube-proxy.html
+  # aws eks describe-addon-versions --addon-name kube-proxy | jq '.addons[0].addonVersions[0]'
   kube_proxy_version = {
-    "1.29" = "v1.29.0-eksbuild.1"
-    "1.30" = "v1.30.0-eksbuild.3"
+    "1.29" = "v1.29.13-eksbuild.3"
+    "1.30" = "v1.30.9-eksbuild.3"
+    "1.31" = "v1.31.3-eksbuild.2" 
+    "1.32" = "v1.32.0-eksbuild.2"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html
+  # aws eks describe-addon-versions --addon-name aws-ebs-csi-driver | jq '.addons[0].addonVersions[0]'
   ebs_csi_driver_version = {
-    "1.29" = "v1.27.0-eksbuild.1"
-    "1.30" = "v1.32.0-eksbuild.1"
+    "1.29" = "v1.39.0-eksbuild.1"
+    "1.30" = "v1.39.0-eksbuild.1"
+    "1.31" = "v1.39.0-eksbuild.1" 
+    "1.32" = "v1.39.0-eksbuild.1"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-agent-setup.html
+  # aws eks describe-addon-versions --addon-name eks-pod-identity-agent | jq '.addons[0].addonVersions[0]'
   eks_pod_identity_agent_version = {
-    "1.29" = "v1.1.0-eksbuild.1"
-    "1.30" = "v1.3.0-eksbuild.1"
+    "1.29" = "v1.3.5-eksbuild.2"
+    "1.30" = "v1.3.5-eksbuild.2"
+    "1.31" = "v1.3.5-eksbuild.2"
+    "1.32" = "v1.3.5-eksbuild.2"
   }
 }
 
