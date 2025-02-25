@@ -62,7 +62,3 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
   thumbprint_list = data.tls_certificate.this.certificates[*].sha1_fingerprint
   url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
 }
-
-data "aws_eks_cluster_auth" "this" {
-  name = aws_eks_cluster.this.name
-}
