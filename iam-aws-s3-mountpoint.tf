@@ -55,6 +55,6 @@ resource "aws_iam_role" "aws_s3_mountpoint_csi" {
 resource "aws_iam_role_policy" "aws_s3_mountpoint_csi" {
   count  = var.s3_mountpoint_csi_driver_enabled ? 1 : 0
   name   = "aws-mountpoint-s3-csi-${var.cluster_name}"
-  role   = aws_iam_role.aws_efs_csi_driver[0].id
+  role   = aws_iam_role.aws_s3_mountpoint_csi[0].id
   policy = data.aws_iam_policy_document.aws_s3_mountpoint_csi_s3_access.json
 }
