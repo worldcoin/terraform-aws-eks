@@ -473,3 +473,15 @@ variable "access_entries" {
   }))
   default = {}
 }
+
+variable "s3_mountpoint_csi_driver_enabled" {
+  description = "Whether to enable the S3 mountpoint CSI driver"
+  type        = bool
+  default     = false
+}
+
+variable "s3_mountpoint_csi_s3_bucket_arns" {
+  description = "List of S3 bucket ARNs to allow access from the S3 mountpoint CSI driver"
+  type        = list(string)
+  default     = ["*"]
+}
