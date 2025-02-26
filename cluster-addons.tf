@@ -129,7 +129,7 @@ resource "aws_eks_addon" "eks_pod_identity_agent" {
 resource "aws_eks_addon" "mountpoint_s3_csi" {
   cluster_name                = aws_eks_cluster.this.id
   addon_name                  = "aws-mountpoint-s3-csi-driver"
-  addon_version               = local.local.mountpoint_s3_csi_version[var.cluster_version]
+  addon_version               = local.mountpoint_s3_csi_version[var.cluster_version]
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
 }
