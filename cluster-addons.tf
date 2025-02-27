@@ -15,7 +15,7 @@ locals {
   coredns_version = {
     "1.29" = "v1.11.4-eksbuild.2"
     "1.30" = "v1.11.4-eksbuild.2"
-    "1.31" = "v1.11.4-eksbuild.2" 
+    "1.31" = "v1.11.4-eksbuild.2"
     "1.32" = "v1.11.4-eksbuild.2"
   }
 
@@ -25,7 +25,7 @@ locals {
   kube_proxy_version = {
     "1.29" = "v1.29.13-eksbuild.3"
     "1.30" = "v1.30.9-eksbuild.3"
-    "1.31" = "v1.31.3-eksbuild.2" 
+    "1.31" = "v1.31.3-eksbuild.2"
     "1.32" = "v1.32.0-eksbuild.2"
   }
 
@@ -34,7 +34,7 @@ locals {
   ebs_csi_driver_version = {
     "1.29" = "v1.39.0-eksbuild.1"
     "1.30" = "v1.39.0-eksbuild.1"
-    "1.31" = "v1.39.0-eksbuild.1" 
+    "1.31" = "v1.39.0-eksbuild.1"
     "1.32" = "v1.39.0-eksbuild.1"
   }
 
@@ -45,6 +45,12 @@ locals {
     "1.30" = "v1.3.5-eksbuild.2"
     "1.31" = "v1.3.5-eksbuild.2"
     "1.32" = "v1.3.5-eksbuild.2"
+  }
+
+  # https://docs.aws.amazon.com/eks/latest/userguide/s3-csi.html#s3-install-driver
+  # aws eks describe-addon-versions --addon-name aws-mountpoint-s3-csi-driver --region us-east-1 --output json| jq '.addons[0].addonVersions[0]'
+  mountpoint_s3_csi_version = {
+    "1.32" = "v1.12.0-eksbuild.1"
   }
 }
 
@@ -118,4 +124,15 @@ resource "aws_eks_addon" "eks_pod_identity_agent" {
   addon_version               = local.eks_pod_identity_agent_version[var.cluster_version]
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
+}
+
+resource "aws_eks_addon" "mountpoint_s3_csi" {
+  count                       = var.s3_mountpoint_csi_driver_enabled ? 1 : 0
+  cluster_name                = aws_eks_cluster.this.id
+  addon_name                  = "aws-mountpoint-s3-csi-driver"
+  addon_version               = local.mountpoint_s3_csi_version[var.cluster_version]
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+
+  service_account_role_arn = aws_iam_role.aws_s3_mountpoint_csi[0].arn
 }
