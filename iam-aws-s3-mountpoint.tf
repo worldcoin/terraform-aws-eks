@@ -34,7 +34,7 @@ data "aws_iam_policy_document" "aws_s3_mountpoint_csi_s3_access" {
   }
   statement {
     effect    = "Allow"
-    resources = var.s3_mountpoint_csi_s3_bucket_arns == ["*"] ? ["*"] : formatlist("%s/*", var.s3_mountpoint_csi_s3_bucket_arns)
+    resources = var.s3_mountpoint_csi_s3_bucket_arns == tolist(["*"]) ? ["*"] : formatlist("%s/*", var.s3_mountpoint_csi_s3_bucket_arns)
 
     actions = [
       "s3:GetObject",
