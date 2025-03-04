@@ -8,7 +8,6 @@
   - [Example](#example)
     - [Associate access policies with access entries](#associate-access-policies-with-access-entries)
       - [AWS EKS Cluster Policies](#aws-eks-cluster-policies)
-  - [Migrate 1.xx to 2.xx](#migrate-1xx-to-2xx)
   - [Upgrading clusters](#upgrading-clusters)
   - [Datadog](#datadog)
     - [Monitoring](#monitoring)
@@ -50,6 +49,8 @@ The module is currently supporting the following versions of Kubernetes:
 
 - 1.29,
 - 1.30,
+- 1.31,
+- 1.32,
 
 ## Example
 
@@ -217,38 +218,6 @@ If you need specyfic access to the cluster, you can list the available AWS Poliv
 ```
 aws eks list-access-policies --output table --region us-east-1
 ```
-
-## Migrate 1.xx to 2.xx
-
-1. Upgrade module to version 1.40
-1. Set alb_enabled to true in module definition
-1. Apply with terraform
-1. Switch all external domains to ALB
-1. Apply with terraform
-1. Check if applications still works
-1. Upgrade to version 2.xx
-1. Add moved blocks
-
-```hcl
-moved {
-  from = module.eks.kubernetes_service.traefik
-  to   = module.eks.kubernetes_service.traefik_nlb
-}
-
-moved {
-  from = module.eks.aws_security_group_rule.nodeports_from_alb_traffic
-  to = module.eks.aws_security_group_rule.traefik_from_alb_traffic
-}
-
-moved {
-  from = module.eks.aws_security_group_rule.nodeports_from_alb_metrics
-  to = module.eks.aws_security_group_rule.traefik_from_alb_metrics
-}
-```
-
-1. Disable delete protection for NLB external and ALB internal
-1. Apply terraform changes
-1. Check if terraform is able to delete k8s resources. If not remove finalizers from it.
 
 ## Upgrading clusters
 
