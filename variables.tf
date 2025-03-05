@@ -19,7 +19,7 @@ variable "environment" {
 variable "cluster_version" {
   description = "The Kubernetes version to use for the cluster."
   type        = string
-  default     = "1.29"
+  default     = "1.32"
 }
 
 variable "vpc_config" {

@@ -13,7 +13,7 @@ data "aws_eks_cluster_auth" "this" {
 
 # Aythenticate to the cluster in a case when cluster is gonna be created.
 data "aws_eks_cluster_auth" "default" {
-  name     = aws_eks_cluster.this.name
+  name = aws_eks_cluster.this.name
 }
 
 # Kubernetes provider configuration:
