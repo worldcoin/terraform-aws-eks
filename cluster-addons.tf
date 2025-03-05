@@ -135,4 +135,12 @@ resource "aws_eks_addon" "mountpoint_s3_csi" {
   resolve_conflicts_on_update = "OVERWRITE"
 
   service_account_role_arn = aws_iam_role.aws_s3_mountpoint_csi[0].arn
+
+  configuration_values = jsonencode(
+    {
+      node : {
+        tolerateAllTaints : true,
+      }
+    }
+  )
 }
