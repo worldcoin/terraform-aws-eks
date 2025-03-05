@@ -70,7 +70,7 @@ A minimal example of how to use this module.
 
 ```terraform
 module "eks" {
-    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.2"
+    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
   cluster_name = local.cluster_name
 
     vpc_config = module.vpc.config
@@ -89,7 +89,7 @@ Example of Internal load balancer setup
 
 ```terraform
 module "eks" {
-    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.2"
+    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
   cluster_name = local.cluster_name
 
     vpc_config = module.vpc.config
@@ -111,7 +111,7 @@ Example off using Static Auto Scaling Group
 
 ```terraform
 module "eks" {
-  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.2"
+  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
   cluster_name = local.cluster_name
 
   vpc_config           = module.vpc.config
@@ -137,7 +137,7 @@ Example of using private subnets for internal NLB
 
 ```terraform
 module "eks" {
-  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.2"
+  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
   cluster_name = local.cluster_name
 
   vpc_config                           = module.vpc.config
@@ -158,7 +158,7 @@ Example of using `additional_security_group_rules`
 
 ```terraform
 module "eks" {
-  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.2"
+  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
   cluster_name = local.cluster_name
 
   environment        = var.environment
@@ -190,7 +190,7 @@ The `access_entries` input allows you to associate access policies with access e
 
 ```terraform
 module "eks" {
-  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.2"
+  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
   cluster_name = local.cluster_name
 
   vpc_config = module.vpc.config
