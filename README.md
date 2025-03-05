@@ -1,25 +1,28 @@
 # terraform-aws-eks
 
-- [terraform-aws-eks](#terraform-aws-eks)
-  - [Description](#description)
-  - [How to release](#how-to-release)
-  - [Breaking changes](#breaking-changes)
-  - [Supported versions](#supported-versions)
-  - [Example](#example)
-    - [Associate access policies with access entries](#associate-access-policies-with-access-entries)
-      - [AWS EKS Cluster Policies](#aws-eks-cluster-policies)
-  - [Migrate 1.xx to 2.xx](#migrate-1xx-to-2xx)
-  - [Upgrading clusters](#upgrading-clusters)
-  - [Datadog](#datadog)
-    - [Monitoring](#monitoring)
-  - [Amazon EFS CSI driver](#amazon-efs-csi-driver)
-  - [Cluster removal](#cluster-removal)
-  - [Requirements](#requirements)
-  - [Providers](#providers)
-  - [Modules](#modules)
-  - [Resources](#resources)
-  - [Inputs](#inputs)
-  - [Outputs](#outputs)
+- [Description](#description)
+- [How to release](#how-to-release)
+- [Breaking changes](#breaking-changes)
+- [Supported versions](#supported-versions)
+- [Examples](#examples)
+  - [Minimal](#minimal)
+  - [Internal Load Balancer](#internal-load-balancer)
+  - [Static AutoScalingGroup](#static-autoscalinggroup)
+  - [Private SubNets](#private-subnets)
+  - [Additional Security Group Rules](#additional-security-group-rules)
+  - [Associate access policies with access entries](#associate-access-policies-with-access-entries)
+    - [AWS EKS Cluster Policies](#aws-eks-cluster-policies)
+- [Upgrading clusters](#upgrading-clusters)
+- [Datadog](#datadog)
+  - [Monitoring](#monitoring)
+- [Amazon EFS CSI driver](#amazon-efs-csi-driver)
+- [Cluster removal](#cluster-removal)
+- [Requirements](#requirements)
+- [Providers](#providers)
+- [Modules](#modules)
+- [Resources](#resources)
+- [Inputs](#inputs)
+- [Outputs](#outputs)
 
 ## Description
 
@@ -50,15 +53,22 @@ The module is currently supporting the following versions of Kubernetes:
 
 - 1.29,
 - 1.30,
+- 1.31,
+- 1.32,
 
-## Example
+> [!NOTE]
+> Default version for EKS Cluster is 1.32.
+
+## Examples
+
+### Minimal
 
 A minimal example of how to use this module.
 
 ```terraform
-module "orb" {
-    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v0.3.0"
-    cluster_name = "orb-${var.environment}-${var.region}"
+module "eks" {
+    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.0"
+  cluster_name = local.cluster_name
 
     vpc_config = module.vpc.config
 
@@ -70,12 +80,14 @@ module "orb" {
 }
 ```
 
-Internal load balancer setup:
+### Internal Load Balancer
+
+Example of Internal load balancer setup
 
 ```terraform
-module "orb" {
-    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v0.3.0"
-    cluster_name = "orb-${var.environment}-${var.region}"
+module "eks" {
+    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.0"
+  cluster_name = local.cluster_name
 
     vpc_config = module.vpc.config
 
@@ -90,13 +102,15 @@ module "orb" {
 }
 ```
 
-Example of using `static_autoscaling_group`
+### Static AutoScalingGroup
+
+Example off using Static Auto Scaling Group
 
 ```terraform
-module "eks_v3" {
-  source = "git@github.com:worldcoin/terraform-aws-eks?ref=v3.19.0"
+module "eks" {
+  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.0"
+  cluster_name = local.cluster_name
 
-  cluster_name         = local.cluster_name_v3
   vpc_config           = module.vpc.config
   extra_role_mapping   = module.sso_roles.default_mappings
   environment          = var.environment
@@ -114,13 +128,15 @@ module "eks_v3" {
 }
 ```
 
+### Private SubNets
+
 Example of using private subnets for internal NLB
 
 ```terraform
-module "eks_v3" {
-  source = "git@github.com:worldcoin/terraform-aws-eks?ref=v3.13.0"
+module "eks" {
+  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.0"
+  cluster_name = local.cluster_name
 
-  cluster_name                         = local.cluster_name_v3
   vpc_config                           = module.vpc.config
   extra_role_mapping                   = module.sso_roles.default_mappings
   environment                          = var.environment
@@ -133,13 +149,15 @@ module "eks_v3" {
 }
 ```
 
+### Additional Security Group Rules
+
 Example of using `additional_security_group_rules`
 
 ```terraform
 module "eks" {
-  source = "git@github.com:worldcoin/terraform-aws-eks?ref=v3.14.0"
+  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.0"
+  cluster_name = local.cluster_name
 
-  cluster_name       = local.cluster_name
   environment        = var.environment
   vpc_config         = module.vpc.config
   extra_role_mapping = module.sso_roles.default_mappings
@@ -168,36 +186,36 @@ module "eks" {
 The `access_entries` input allows you to associate access policies with access entries. The `access_entries` input is a map where the key is the name of the access entry and the value is a map with the following keys:
 
 ```terraform
-module "orb" {
-    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.0.0"
-    cluster_name = "orb-${var.environment}-${var.region}"
+module "eks" {
+  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.0"
+  cluster_name = local.cluster_name
 
-    vpc_config = module.vpc.config
+  vpc_config = module.vpc.config
 
-    extra_role_mapping = module.sso_roles.default_mappings
+  extra_role_mapping = module.sso_roles.default_mappings
 
-    datadog_api_key     = var.datadog_api_key
-    traefik_cert_arn    = var.traefik_cert_arn
-    alb_logs_bucket_id  = module.region.alb_logs_bucket_id
+  datadog_api_key     = var.datadog_api_key
+  traefik_cert_arn    = var.traefik_cert_arn
+  alb_logs_bucket_id  = module.region.alb_logs_bucket_id
 
-    access_entries = {
-      # example with cluster access with default AmazonEKSAdminPolicy
-      applicationA = {
-        principal_arn     = "arn:aws:iam::507152310572:role/github-deployment-applicationA"
-        access_scope_type = "cluster"
-      }
-      # example with namespace access
-      applicationB = {
-        principal_arn           = "arn:aws:iam::507152310572:role/github-deployment-applicationB"
-        access_scope_namespaces = ["applicationB"]
-      }
-      # example with policy AmazonEKSClusterAdminPolicy access
-      applicationC = {
-        principal_arn           = "arn:aws:iam::507152310572:role/github-deployment-applicationC"
-        access_scope_type       = "cluster"
-        policy_arn              = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-      }
+  access_entries = {
+    # example with cluster access with default AmazonEKSAdminPolicy
+    applicationA = {
+      principal_arn     = "arn:aws:iam::507152310572:role/github-deployment-applicationA"
+      access_scope_type = "cluster"
     }
+    # example with namespace access
+    applicationB = {
+      principal_arn           = "arn:aws:iam::507152310572:role/github-deployment-applicationB"
+      access_scope_namespaces = ["applicationB"]
+    }
+    # example with policy AmazonEKSClusterAdminPolicy access
+    applicationC = {
+      principal_arn           = "arn:aws:iam::507152310572:role/github-deployment-applicationC"
+      access_scope_type       = "cluster"
+      policy_arn              = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+    }
+  }
 }
 ```
 
@@ -218,52 +236,6 @@ If you need specyfic access to the cluster, you can list the available AWS Poliv
 aws eks list-access-policies --output table --region us-east-1
 ```
 
-## Migrate 1.xx to 2.xx
-
-1. Upgrade module to version 1.40
-1. Set alb_enabled to true in module definition
-1. Apply with terraform
-1. Switch all external domains to ALB
-1. Apply with terraform
-1. Check if applications still works
-1. Upgrade to version 2.xx
-1. Add moved blocks
-
-```hcl
-moved {
-  from = module.eks.kubernetes_service.traefik
-  to   = module.eks.kubernetes_service.traefik_nlb
-}
-
-moved {
-  from = module.eks.aws_security_group_rule.nodeports_from_alb_traffic
-  to = module.eks.aws_security_group_rule.traefik_from_alb_traffic
-}
-
-moved {
-  from = module.eks.aws_security_group_rule.nodeports_from_alb_metrics
-  to = module.eks.aws_security_group_rule.traefik_from_alb_metrics
-}
-```
-
-1. Disable delete protection for NLB external and ALB internal
-1. Apply terraform changes
-1. Check if terraform is able to delete k8s resources. If not remove finalizers from it.
-
-## Upgrading clusters
-
-Due to problems with [tf kubernetes provider](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs) handling configuration changes, this module can't update kubernetes version without help:
-
-1. Update cluster to desired version with CLI/console
-
-   1. `aws eks update-cluster-version --region ... --name ... --kubernetes-version 1.26`
-
-   2. Run `terraform apply` to update the rest (eks addons etc).
-
-   3. And for not karpenter nodes use `instance refresh`
-      <https://docs.aws.amazon.com/autoscaling/ec2/userguide/start-instance-refresh.html>
-      remember to unmark "Enable skip matching"
-
 ## Datadog
 
 The module is creating a DataDog integration secret for the [apiKeyExistingSecret](https://github.com/DataDog/helm-charts/blob/main/charts/datadog/values.yaml#L38) of the DataDog helm chart.
@@ -276,7 +248,36 @@ Monitoring the cluster using Datadog is also included, enabled by default, by us
 
 The module comes with the IAM role for [Amazon EFS CSI driver](https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html), and can be enabled using `efs_csi_driver_enabled` variable. Also with the role, it will create an instance of Elastic File System (EFS) and mount it to the cluster as a StorageClass named `efs`.
 
-## Cluster removal
+## Terraform tips and tricks
+
+1. Module from begining, has defined `kubernetes` provider inside on it, configured based on information from terraform resource `aws_eks_cluster` to authenticate to the eks cluster.
+With this constrain only `create` operation work properly, other operation `update`, `remove` doesn't work. 
+
+1. With version `v4.2.0` we have change for `kubernetes` provider. It's configured based on informatiom from data source about `aws_eks_cluster`, and if provider can't be configure with this way terraform resource `aws_eks_cluster` is used. PR with: [fix kubernetes provider](https://github.com/worldcoin/terraform-aws-eks/pull/176). With this change `create` and `update` operation work perfectly, `remove` operation still doesn't work.
+
+1. In the feature versions of `terraform-aws-eks module`, `remove` operation can be fixed to work properly. For this `kubernetes` provider must be moved from module to workspace. It can be tested with PRs:
+  * [remove kubernetes provider from terraform-aws-eks module](https://github.com/worldcoin/terraform-aws-eks/pull/177)
+  * [test if remove kubernetes provider from tf module works](https://github.com/worldcoin/infrastructure/pull/13175)
+
+### Cluster create
+
+Works like a charm for any case, from begining.
+
+### Cluster update
+
+#### Before version 4.2.0
+
+Manual upgrade is required with below command, and `terraform apply` after execution.
+
+```bash
+aws eks update-cluster-version --region ... --name ... --kubernetes-version 1.29
+```
+
+#### After version 4.2.0
+
+Works like a charm without of any manual operation.
+
+### Cluster remove
 
 To remove the cluster you have to:
 
@@ -332,12 +333,12 @@ To remove the cluster you have to:
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.5 |
-| <a name="provider_cloudflare"></a> [cloudflare](#provider\_cloudflare) | ~> 4.10 |
-| <a name="provider_datadog"></a> [datadog](#provider\_datadog) | >= 3.0 |
-| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | >= 2.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | >= 3.3 |
-| <a name="provider_tls"></a> [tls](#provider\_tls) | >= 4.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.88.0 |
+| <a name="provider_cloudflare"></a> [cloudflare](#provider\_cloudflare) | 4.52.0 |
+| <a name="provider_datadog"></a> [datadog](#provider\_datadog) | 3.55.0 |
+| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.35.1 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.6.3 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.6 |
 
 ## Modules
 
@@ -366,6 +367,7 @@ To remove the cluster you have to:
 | [aws_eks_addon.ebs_csi](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_addon.eks_pod_identity_agent](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_addon.kube_proxy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
+| [aws_eks_addon.mountpoint_s3_csi](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_addon.vpc_cni](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster) | resource |
 | [aws_eks_pod_identity_association.ebs_csi_controller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_pod_identity_association) | resource |
@@ -374,6 +376,7 @@ To remove the cluster you have to:
 | [aws_iam_openid_connect_provider.oidc_provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_openid_connect_provider) | resource |
 | [aws_iam_role.aws_efs_csi_driver](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.aws_load_balancer](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role.aws_s3_mountpoint_csi](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.ebs_csi_controller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.karpenter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
@@ -381,6 +384,7 @@ To remove the cluster you have to:
 | [aws_iam_role.node](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy.aws_efs_csi_driver](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.aws_load_balancer](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.aws_s3_mountpoint_csi](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.dockerhub_pull_through_cache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.karpenter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.kube_ops](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
@@ -422,6 +426,7 @@ To remove the cluster you have to:
 | [aws_ami.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_caller_identity.account](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
+| [aws_eks_cluster_auth.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
 | [aws_eks_cluster_auth.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
 | [aws_eks_clusters.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_clusters) | data source |
 | [aws_iam_policy_document.assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -429,6 +434,8 @@ To remove the cluster you have to:
 | [aws_iam_policy_document.aws_efs_csi_driver_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.aws_load_balancer](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.aws_load_balancer_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.aws_s3_mountpoint_csi_s3_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.aws_s3_mountpoint_csi_s3_assume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.cluster_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.dockerhub_pull_through_cache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.eks_pod_identity_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -459,7 +466,7 @@ To remove the cluster you have to:
 | <a name="input_authentication_mode"></a> [authentication\_mode](#input\_authentication\_mode) | The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP` | `string` | `"API_AND_CONFIG_MAP"` | no |
 | <a name="input_cluster_endpoint_public_access"></a> [cluster\_endpoint\_public\_access](#input\_cluster\_endpoint\_public\_access) | Indicates whether or not the Amazon EKS public API server endpoint is enabled | `bool` | `true` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name of the cluster. Has to be unique per region per account. | `string` | n/a | yes |
-| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The Kubernetes version to use for the cluster. | `string` | `"1.29"` | no |
+| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The Kubernetes version to use for the cluster. | `string` | `"1.32"` | no |
 | <a name="input_create_ebs_csi_controller_role"></a> [create\_ebs\_csi\_controller\_role](#input\_create\_ebs\_csi\_controller\_role) | Set to `true` if you want to create the EBS CSI controller IAM role | `bool` | `false` | no |
 | <a name="input_datadog_api_key"></a> [datadog\_api\_key](#input\_datadog\_api\_key) | Datadog API key. Stored in kube-system namespace as a secret. | `string` | n/a | yes |
 | <a name="input_dockerhub_pull_through_cache_repositories_arn"></a> [dockerhub\_pull\_through\_cache\_repositories\_arn](#input\_dockerhub\_pull\_through\_cache\_repositories\_arn) | The ARN of the repositories to allow the EKS node group to pull images from the DockerHub pull-through cache. | `string` | `"arn:aws:ecr:us-east-1:507152310572:repository/docker-cache/*"` | no |
@@ -485,6 +492,8 @@ To remove the cluster you have to:
 | <a name="input_node_instance_profile_inline_policies"></a> [node\_instance\_profile\_inline\_policies](#input\_node\_instance\_profile\_inline\_policies) | Inline policies to attach to the node instance profile. Key is the name of the policy, value is the policy document. | `map(string)` | `{}` | no |
 | <a name="input_on_demand_base_capacity"></a> [on\_demand\_base\_capacity](#input\_on\_demand\_base\_capacity) | The number of minimum on-demand instances to launch. | `number` | `1` | no |
 | <a name="input_open_to_all"></a> [open\_to\_all](#input\_open\_to\_all) | Set to `true` if you want to open the cluster to all traffic from internet | `bool` | `false` | no |
+| <a name="input_s3_mountpoint_csi_driver_enabled"></a> [s3\_mountpoint\_csi\_driver\_enabled](#input\_s3\_mountpoint\_csi\_driver\_enabled) | Whether to enable the S3 mountpoint CSI driver | `bool` | `false` | no |
+| <a name="input_s3_mountpoint_csi_s3_bucket_arns"></a> [s3\_mountpoint\_csi\_s3\_bucket\_arns](#input\_s3\_mountpoint\_csi\_s3\_bucket\_arns) | List of S3 bucket ARNs to allow access from the S3 mountpoint CSI driver | `list(string)` | <pre>[<br/>  "*"<br/>]</pre> | no |
 | <a name="input_static_autoscaling_group"></a> [static\_autoscaling\_group](#input\_static\_autoscaling\_group) | Configuration for static autoscaling group | <pre>object({<br/>    size = number<br/>    arch = optional(string, null)<br/>    type = string<br/>  })</pre> | `null` | no |
 | <a name="input_traefik_cert_arn"></a> [traefik\_cert\_arn](#input\_traefik\_cert\_arn) | The ARN of the certificate to use for Traefik. | `string` | n/a | yes |
 | <a name="input_traefik_nlb_service_ports"></a> [traefik\_nlb\_service\_ports](#input\_traefik\_nlb\_service\_ports) | List of additional ports for treafik k8s service | <pre>list(object({<br/>    name        = string<br/>    port        = number<br/>    target_port = string<br/>    protocol    = string<br/>  }))</pre> | `[]` | no |
