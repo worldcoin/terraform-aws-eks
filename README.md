@@ -70,7 +70,7 @@ A minimal example of how to use this module.
 
 ```terraform
 module "eks" {
-    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.0"
+    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.2"
   cluster_name = local.cluster_name
 
     vpc_config = module.vpc.config
