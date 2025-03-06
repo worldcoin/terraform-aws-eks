@@ -11,7 +11,7 @@ resource "aws_eks_access_entry" "this" {
   for_each = toset(var.service_accounts)
 
   cluster_name  = var.cluster_name
-  principal_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/github-deploy-${var.application}"
+  principal_arn = data.aws_iam_role.access_entries.arn
   type          = "STANDARD"
 }
 
@@ -20,7 +20,7 @@ resource "aws_eks_access_policy_association" "this" {
 
   cluster_name  = var.cluster_name
   policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
-  principal_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/github-deploy-${var.application}"
+  principal_arn = data.aws_iam_role.access_entries.arn
 
   access_scope {
     type       = "namespace"
