@@ -1,12 +1,12 @@
-# eks-access-entries
+# eks-identity
 
-This module create access entries for EKS cluster based on information provided to module:
-- cluster_name
-- access-entries
+This module create `pods identity` and `access entries` for EKS cluster based on information provided to module.
 
 ## Example
 
-### Access Entries minimal
+Base example how to use this module you can find below.
+
+### Minimal
 
 ```hcl
 module "test_selfservice_application_identity" {
