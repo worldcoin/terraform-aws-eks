@@ -3,9 +3,6 @@ locals {
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
   # aws eks describe-addon-versions --addon-name vpc-cni --region us-east-1 --output json| jq '.addons[0].addonVersions[0]'
   vpc_cni_version = {
-    "1.29" = "v1.19.2-eksbuild.5"
-    "1.30" = "v1.19.2-eksbuild.5"
-    "1.31" = "v1.19.2-eksbuild.5"
     "1.32" = "v1.19.2-eksbuild.5"
   }
 
@@ -13,9 +10,6 @@ locals {
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html
   # aws eks describe-addon-versions --addon-name coredns | jq '.addons[0].addonVersions[0]'
   coredns_version = {
-    "1.29" = "v1.11.4-eksbuild.2"
-    "1.30" = "v1.11.4-eksbuild.2"
-    "1.31" = "v1.11.4-eksbuild.2"
     "1.32" = "v1.11.4-eksbuild.2"
   }
 
@@ -23,28 +17,25 @@ locals {
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-kube-proxy.html
   # aws eks describe-addon-versions --addon-name kube-proxy | jq '.addons[0].addonVersions[0]'
   kube_proxy_version = {
-    "1.29" = "v1.29.13-eksbuild.3"
-    "1.30" = "v1.30.9-eksbuild.3"
-    "1.31" = "v1.31.3-eksbuild.2"
     "1.32" = "v1.32.0-eksbuild.2"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html
   # aws eks describe-addon-versions --addon-name aws-ebs-csi-driver | jq '.addons[0].addonVersions[0]'
   ebs_csi_driver_version = {
-    "1.29" = "v1.39.0-eksbuild.1"
-    "1.30" = "v1.39.0-eksbuild.1"
-    "1.31" = "v1.39.0-eksbuild.1"
     "1.32" = "v1.39.0-eksbuild.1"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-agent-setup.html
   # aws eks describe-addon-versions --addon-name eks-pod-identity-agent | jq '.addons[0].addonVersions[0]'
   eks_pod_identity_agent_version = {
-    "1.29" = "v1.3.5-eksbuild.2"
-    "1.30" = "v1.3.5-eksbuild.2"
-    "1.31" = "v1.3.5-eksbuild.2"
     "1.32" = "v1.3.5-eksbuild.2"
+  }
+
+  # https://docs.aws.amazon.com/eks/latest/userguide/node-health.html
+  # aws eks describe-addon-versions --addon-name eks-node-monitoring-agent | jq '.addons[0].addonVersions[0]'
+  eks_node_monitoring_agent_version = {
+    "1.32" = "v1.1.0-eksbuild.1"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/s3-csi.html#s3-install-driver
@@ -122,6 +113,14 @@ resource "aws_eks_addon" "eks_pod_identity_agent" {
   cluster_name                = aws_eks_cluster.this.id
   addon_name                  = "eks-pod-identity-agent"
   addon_version               = local.eks_pod_identity_agent_version[var.cluster_version]
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+}
+
+resource "aws_eks_addon" "eks_node_monitoring_agent" {
+  cluster_name                = aws_eks_cluster.this.id
+  addon_name                  = "eks-node-monitoring-agent"
+  addon_version               = local.eks_node_monitoring_agent_version[var.cluster_version]
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
 }
