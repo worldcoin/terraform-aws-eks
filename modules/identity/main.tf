@@ -10,9 +10,10 @@ resource "aws_eks_pod_identity_association" "this" {
 resource "aws_eks_access_entry" "this" {
   for_each = toset(var.service_accounts)
 
-  cluster_name  = var.cluster_name
-  principal_arn = data.aws_iam_role.access_entries.arn
-  type          = "STANDARD"
+  cluster_name      = var.cluster_name
+  kubernetes_groups = ["NamespaceCreator"]
+  principal_arn     = data.aws_iam_role.access_entries.arn
+  type              = "STANDARD"
 }
 
 resource "aws_eks_access_policy_association" "this" {
