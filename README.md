@@ -53,9 +53,6 @@ This will change the authentication mode to API_AND_CONFIG_MAP, and the next ter
 
 The module is currently supporting the following versions of Kubernetes:
 
-- 1.29,
-- 1.30,
-- 1.31,
 - 1.32,
 
 > [!NOTE]
