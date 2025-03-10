@@ -12,7 +12,6 @@
   - [Additional Security Group Rules](#additional-security-group-rules)
   - [Associate access policies with access entries](#associate-access-policies-with-access-entries)
     - [AWS EKS Cluster Policies](#aws-eks-cluster-policies)
-- [Upgrading clusters](#upgrading-clusters)
 - [Datadog](#datadog)
   - [Monitoring](#monitoring)
 - [Amazon EFS CSI driver](#amazon-efs-csi-driver)
@@ -268,6 +267,85 @@ Works like a charm for any case, from begining.
 
 ### Cluster update
 
+General steps to update EKS cluster:
+
+- check AWS documentation about [EKS cluster update procedure](https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html)
+
+- update information about addons versions in repository [teraform-aws-eks](https://github.com/worldcoin/terraform-aws-eks/blob/main/cluster-addons.tf#L1-L55) and release new module version
+
+```hcl
+locals {
+  # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-agent-setup.html
+  # aws eks describe-addon-versions --addon-name eks-pod-identity-agent | jq '.addons[0].addonVersions[0]'
+  eks_pod_identity_agent_version = {
+    "1.29" = "v1.3.5-eksbuild.2"
+    "1.30" = "v1.3.5-eksbuild.2"
+    "1.31" = "v1.3.5-eksbuild.2"
+    "1.32" = "v1.3.5-eksbuild.2"
+  }
+}
+```
+
+- upgrade addons for EKS clusters, by bump version of module [teraform-aws-eks](https://github.com/search?q=repo%3Aworldcoin%2Finfrastructure+terraform-aws-eks%3Fref%3D&type=code) to the latest release
+
+```git
+diff --git a/internal-tools/dev/us-east-1/eks.tf b/internal-tools/dev/us-east-1/eks.tf
+index a95261645..9cf8d04b9 100644
+--- a/internal-tools/dev/us-east-1/eks.tf
++++ b/internal-tools/dev/us-east-1/eks.tf
+@@ -14,7 +14,7 @@ module "acm" {
+ }
+
+ module "eks" {
+-  source = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.2"
++  source = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
+
+   cluster_name       = format("tools-%s-%s", var.environment, data.aws_region.current.name)
+   cluster_version    = "1.32"
+```
+
+- upgrade EKS control plane, by bump version in variable [cluster_version](https://github.com/search?q=repo%3Aworldcoin%2Finfrastructure%20cluster_version&type=code) for each cluster
+
+```git
+--- a/internal-tools/dev/us-east-1/eks.tf
++++ b/internal-tools/dev/us-east-1/eks.tf
+@@ -17,7 +17,7 @@ module "eks" {
+   source = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
+
+   cluster_name       = format("tools-%s-%s", var.environment, data.aws_region.current.name)
+-  cluster_version    = "1.31"
++  cluster_version    = "1.32"
+   environment        = var.environment
+   vpc_config         = module.vpc.config
+   extra_role_mapping = module.sso_roles.default_mappings
+```
+
+> [!NOTE]
+> The control plane can only be updated by +1 version!!!
+
+> [!NOTE]
+> Repeat this step many times to get right EKS cluster version
+
+- observe node group rotation, after upgrade control-plane/launch-template/Is not always it is done automatically. From time to time manual operation is required here to kill pods with pdb/annotations.
+
+> [!NOTE]
+> Kubelet compatibility is +3 versions, and node group rotation is not always required and can be done once in the end
+
+> [!NOTE]
+> Please be carefull with EKS crypto nodes rotation
+
+- schedule `start-instance-refresh` for node group used to keep infrastructure pods
+
+```bash
+aws autoscaling start-instance-refresh --auto-scaling-group-name eks-node-tools-dev-us-east-1 --region us-east-1 --profile wld-internal-tools-dev --output json
+```
+
+- observe `describe-instance-refreshes` for node group used to keep infrastructure pods
+
+```bash
+aws autoscaling describe-instance-refreshes --auto-scaling-group-name eks-node-tools-dev-us-east-1 --region us-east-1 --profile wld-internal-tools-dev --output json
+```
+
 #### Before version 4.2.0
 
 Manual upgrade is required with below command, and `terraform apply` after execution.
@@ -278,7 +356,7 @@ aws eks update-cluster-version --region ... --name ... --kubernetes-version 1.29
 
 #### After version 4.2.0
 
-Works like a charm without of any manual operation.
+Works like a charm without of any manual operation. Just plan/apply workspace with TFE.
 
 ### Cluster remove
 
