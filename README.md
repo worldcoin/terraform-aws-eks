@@ -326,13 +326,14 @@ index a95261645..9cf8d04b9 100644
 > [!NOTE]
 > Repeat this step many times to get right EKS cluster version
 
-- observe node group rotation, after upgrade control-plane/launch-template/Is not always it is done automatically. From time to time manual operation is required here to kill pods with pdb/annotations.
+- observe node group rotation, after upgrade control-plane/launch-template/AMIs not always it is done automatically. From time to time manual operation is required here to kill pods with pdb/annotations.
 
 > [!NOTE]
 > Kubelet compatibility is +3 versions, and node group rotation is not always required and can be done once in the end
 
 > [!NOTE]
-> Please be carefull with EKS crypto nodes rotation
+> Please be carefull with EKS crypto nodes rotation, and don't do this without information on slack channel #planned-outages
+> Alternative approche is to leave them with status `Read/SchedulingDisabled` and wait when they rotate with apps deployment
 
 - schedule `start-instance-refresh` for node group used to keep infrastructure pods
 
