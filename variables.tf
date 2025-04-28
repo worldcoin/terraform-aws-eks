@@ -485,3 +485,9 @@ variable "s3_mountpoint_csi_s3_bucket_arns" {
   type        = list(string)
   default     = ["*"]
 }
+
+variable "memory_limits_low_perc_enabled" {
+  description = "Enable memory limits low percentage alert"
+  type        = bool
+  default     = false
+}
