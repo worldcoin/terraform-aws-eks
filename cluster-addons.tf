@@ -118,6 +118,7 @@ resource "aws_eks_addon" "eks_pod_identity_agent" {
 }
 
 resource "aws_eks_addon" "eks_node_monitoring_agent" {
+  count                       = var.node_monitoring_agent_enabled ? 1 : 0
   cluster_name                = aws_eks_cluster.this.id
   addon_name                  = "eks-node-monitoring-agent"
   addon_version               = local.eks_node_monitoring_agent_version[var.cluster_version]

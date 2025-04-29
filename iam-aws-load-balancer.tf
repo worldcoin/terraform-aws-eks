@@ -49,6 +49,9 @@ data "aws_iam_policy_document" "aws_load_balancer" {
       "ec2:DescribeTags",
       "ec2:GetCoipPoolUsage",
       "ec2:DescribeCoipPools",
+      "ec2:GetSecurityGroupsForVpc",
+      "ec2:DescribeIpamPools",
+      "ec2:DescribeRouteTables",
       "elasticloadbalancing:DescribeLoadBalancers",
       "elasticloadbalancing:DescribeLoadBalancerAttributes",
       "elasticloadbalancing:DescribeListeners",
@@ -59,6 +62,9 @@ data "aws_iam_policy_document" "aws_load_balancer" {
       "elasticloadbalancing:DescribeTargetGroupAttributes",
       "elasticloadbalancing:DescribeTargetHealth",
       "elasticloadbalancing:DescribeTags",
+      "elasticloadbalancing:DescribeTrustStores",
+      "elasticloadbalancing:DescribeListenerAttributes",
+      "elasticloadbalancing:DescribeCapacityReservation",
     ]
   }
 
@@ -170,7 +176,10 @@ data "aws_iam_policy_document" "aws_load_balancer" {
     sid       = ""
     effect    = "Allow"
     resources = ["*"]
-    actions   = ["elasticloadbalancing:CreateTargetGroup"]
+    actions = [
+      "elasticloadbalancing:CreateLoadBalancer",
+      "elasticloadbalancing:CreateTargetGroup",
+    ]
 
     condition {
       test     = "Null"
@@ -276,9 +285,13 @@ data "aws_iam_policy_document" "aws_load_balancer" {
       "elasticloadbalancing:SetIpAddressType",
       "elasticloadbalancing:SetSecurityGroups",
       "elasticloadbalancing:SetSubnets",
+      "elasticloadbalancing:DeleteLoadBalancer",
       "elasticloadbalancing:ModifyTargetGroup",
       "elasticloadbalancing:ModifyTargetGroupAttributes",
       "elasticloadbalancing:DeleteTargetGroup",
+      "elasticloadbalancing:ModifyListenerAttributes",
+      "elasticloadbalancing:ModifyCapacityReservation",
+      "elasticloadbalancing:ModifyIpPools",
     ]
 
     condition {
@@ -310,6 +323,7 @@ data "aws_iam_policy_document" "aws_load_balancer" {
       "elasticloadbalancing:AddListenerCertificates",
       "elasticloadbalancing:RemoveListenerCertificates",
       "elasticloadbalancing:ModifyRule",
+      "elasticloadbalancing:SetRulePriorities",
     ]
   }
 }

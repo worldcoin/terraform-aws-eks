@@ -491,3 +491,9 @@ variable "memory_limits_low_perc_enabled" {
   type        = bool
   default     = false
 }
+
+variable "node_monitoring_agent_enabled" {
+  description = "Enable node monitoring agent"
+  type        = bool
+  default     = false
+}
