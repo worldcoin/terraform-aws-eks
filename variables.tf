@@ -497,3 +497,15 @@ variable "node_monitoring_agent_enabled" {
   type        = bool
   default     = false
 }
+
+variable "coredns_min_replicas" {
+  description = "Minimum number of replicas for CoreDNS"
+  type        = number
+  default     = 2
+}
+
+variable "coredns_max_replicas" {
+  description = "Maximum number of replicas for CoreDNS"
+  type        = number
+  default     = 10
+}

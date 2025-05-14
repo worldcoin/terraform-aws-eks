@@ -69,8 +69,8 @@ resource "aws_eks_addon" "coredns" {
   configuration_values = jsonencode({
     "autoScaling" : {
       "enabled" : true,
-      "minReplicas" : 4,
-      "maxReplicas" : 10
+      "minReplicas" : var.coredns_min_replicas,
+      "maxReplicas" : var.coredns_max_replicas,
     },
     tolerations : [
       {
