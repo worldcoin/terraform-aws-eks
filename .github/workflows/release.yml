@@ -13,7 +13,7 @@ permissions:
 jobs:
   update_release_draft:
     name: Update Release Draft
-    runs-on: [self-hosted, amd64]
+    runs-on: arc-large-arm64-runner
 
     permissions:
       contents: write
