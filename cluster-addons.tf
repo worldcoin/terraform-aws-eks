@@ -10,7 +10,7 @@ locals {
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html
   # aws eks describe-addon-versions --addon-name coredns | jq '.addons[0].addonVersions[0]'
   coredns_version = {
-    "1.32" = "v1.11.4-eksbuild.2"
+    "1.32" = "v1.11.4-eksbuild.10"
   }
 
   # Latest available kube-proxy container image version for each Amazon EKS cluster version
