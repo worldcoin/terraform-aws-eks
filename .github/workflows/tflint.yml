@@ -7,7 +7,7 @@ on:
 jobs:
   tflint:
     name: tflint
-    runs-on: [self-hosted, amd64]
+    runs-on: arc-large-arm64-runner
 
     steps:
       - uses: actions/checkout@v4

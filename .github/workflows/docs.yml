@@ -7,7 +7,7 @@ on:
 jobs:
   docs:
     name: docs
-    runs-on: [self-hosted, amd64]
+    runs-on: arc-large-arm64-runner
 
     permissions:
       pull-requests: write

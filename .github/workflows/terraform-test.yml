@@ -10,6 +10,6 @@ jobs:
         uses: actions/checkout@master
 
       - name: terraform test
-        uses: dflook/terraform-test@v1
+        uses: dflook/terraform-test@58481fc46588861db38966e076b8481402817b91
         env:
           TERRAFORM_SSH_KEY: ${{ secrets.SSH_KEY_GITHUB_AUTOMATION }}
