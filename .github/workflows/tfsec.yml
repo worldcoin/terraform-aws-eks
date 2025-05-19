@@ -14,11 +14,11 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         name: Checkout source code
 
       - name: tfsec
-        uses: aquasecurity/tfsec-pr-commenter-action@v1.3.1
+        uses: aquasecurity/tfsec-pr-commenter-action@7a44c5dcde5dfab737363e391800629e27b6376b
         with:
-          tfsec_version: v1.28.1
+          tfsec_version: v1.28.14
           github_token: ${{ github.token }}
