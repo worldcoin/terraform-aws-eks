@@ -7,7 +7,7 @@ on:
 jobs:
   tfsec:
     name: tfsec
-    runs-on: arc-large-arm64-runner
+    runs-on: arc-large-amd64-runner
 
     permissions:
       contents: read
