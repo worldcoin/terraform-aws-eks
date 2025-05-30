@@ -133,8 +133,6 @@ resource "aws_security_group_rule" "additional_cluster_security_group_rules" {
 }
 
 resource "aws_security_group_rule" "tfe_and_gha_cluster_ingress" {
-  count = var.cluster_endpoint_public_access ? 0 : 1
-
   security_group_id = aws_security_group.cluster.id
   type              = "ingress"
   from_port         = 443
