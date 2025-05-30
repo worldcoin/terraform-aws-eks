@@ -131,3 +131,15 @@ resource "aws_security_group_rule" "additional_cluster_security_group_rules" {
   protocol                 = each.value.protocol
   description              = each.value.description
 }
+
+resource "aws_security_group_rule" "tfe_and_gha_cluster_ingress" {
+  count = var.cluster_endpoint_public_access ? 0 : 1
+
+  security_group_id = aws_security_group.cluster.id
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = [var.tfe_cidr, var.gha_cidr]
+  description       = "Allow cluster to communicate with all"
+}

@@ -536,3 +536,25 @@ variable "additional_cluster_security_group_rules" {
     error_message = "Invalid security group rule configuration"
   }
 }
+
+variable "tfe_cidr" {
+  description = "Terraform Enterprise CIDR block"
+  type        = string
+  default     = "10.52.160.0/20"
+
+  validation {
+    condition     = can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$", var.vpc_account_shared_vpc_cidr))
+    error_message = "Terraform Enterprise CIDR must be a valid CIDR block."
+  }
+}
+
+variable "gha_cidr" {
+  description = "GitHub Actions CIDR block"
+  type        = string
+  default     = "10.0.96.0/20"
+
+  validation {
+    condition     = can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$", var.vpc_account_shared_vpc_cidr))
+    error_message = "GitHub Actions CIDR must be a valid CIDR block."
+  }
+}
