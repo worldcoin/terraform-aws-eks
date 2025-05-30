@@ -71,6 +71,3 @@ extra_role_mapping = [
     "username" = "ViewOnlyAccess"
   },
 ]
-
-tfe_cidr = "10.0.96.0/20"
-gha_cidr = "10.52.160.0/20"

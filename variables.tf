@@ -543,7 +543,7 @@ variable "tfe_cidr" {
   default     = "10.52.160.0/20"
 
   validation {
-    condition     = can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$", var.vpc_account_shared_vpc_cidr))
+    condition     = can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$", var.tfe_cidr))
     error_message = "Terraform Enterprise CIDR must be a valid CIDR block."
   }
 }
@@ -554,7 +554,7 @@ variable "gha_cidr" {
   default     = "10.0.96.0/20"
 
   validation {
-    condition     = can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$", var.vpc_account_shared_vpc_cidr))
+    condition     = can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$", var.gha_cidr))
     error_message = "GitHub Actions CIDR must be a valid CIDR block."
   }
 }
