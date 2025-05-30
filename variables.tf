@@ -509,3 +509,30 @@ variable "coredns_max_replicas" {
   type        = number
   default     = 10
 }
+
+variable "additional_cluster_security_group_rules" {
+  description = "Additional cluster security group rules"
+  type = list(object({
+    sg_id       = string
+    type        = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    description = string
+  }))
+  default = []
+  validation {
+    condition = alltrue([
+      for rule in var.additional_cluster_security_group_rules : (
+        can(regex("sg-\\w+", rule.sg_id)) &&
+        can(regex("\\d+", rule.from_port)) &&
+        rule.from_port >= 0 && rule.from_port <= 65535 &&
+        can(regex("\\d+", rule.to_port)) &&
+        rule.to_port >= 0 && rule.to_port <= 65535 &&
+        can(regex("TCP|UDP|ICMP|tcp|udp|icmp|-1", rule.protocol)) &&
+        can(regex("\\w+", rule.description))
+      )
+    ])
+    error_message = "Invalid security group rule configuration"
+  }
+}
