@@ -9,6 +9,8 @@ jobs:
   execute-relyance-sci:
     name: Relyance SCI Job
     runs-on: arc-large-amd64-runner
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
