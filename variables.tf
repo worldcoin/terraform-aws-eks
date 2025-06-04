@@ -582,7 +582,7 @@ variable "enclaves_autoscaling_group" {
 variable "enclaves_instance_type" {
   description = "Instance type for Nitro Enclaves"
   type        = string
-  default     = "m7i.xlarge"
+  default     = "m7i.2xlarge"
   validation {
     condition     = can(regex("^(c5|c5d|c5n|c6i|c6id|c6in|c7i|m5|m5d|m5dn|m5n|m5zn|m6i|m6id|m6idn|m6in|m7i|r5|r5b|r5d|r5dn|r5n|r6i|r6id|r6idn|r6in|r7i|x2idn|x2iedn|x2iezn|z1d)\\.(xlarge|2xlarge|4xlarge|8xlarge|12xlarge|16xlarge|32xlarge)$", var.enclaves_instance_type)) || can(regex("^(c6g|c6gd|c6gn|c7g|m6g|m6gd|r6g|r6gd|x2gd)\\.(large|xlarge|2xlarge|4xlarge|8xlarge|12xlarge|16xlarge)$", var.enclaves_instance_type))
     error_message = "Invalid instance type for Nitro Enclaves. Must be Intel/AMD instances with at least 4 vCPUs (excluding c7i.24xlarge, c7i.48xlarge, m7i.24xlarge, m7i.48xlarge) or Graviton instances with at least 2 vCPUs (excluding excluded families)."
