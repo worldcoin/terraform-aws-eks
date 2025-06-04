@@ -45,7 +45,7 @@ resource "aws_launch_template" "enclave" {
       cluster_name           = aws_eks_cluster.this.name
       cluster_endpoint       = aws_eks_cluster.this.endpoint
       cluster_ca_certificate = aws_eks_cluster.this.certificate_authority[0].data
-      kubelet_extra_args     = var.kubelet_extra_args
+      kubelet_extra_args     = "--node-labels=aws-nitro-enclaves-k8s-dp=enabled ${var.kubelet_extra_args}"
     })
   )
 }
