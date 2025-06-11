@@ -1,8 +1,8 @@
-resource "kubernetes_storage_class" "ebs_gp3" {
+resource "kubernetes_storage_class" "gp3" {
   count = var.kubernetes_provider_enabled ? 1 : 0
 
   metadata {
-    name = "ebs-gp3"
+    name = "gp3"
     annotations = {
       "storageclass.kubernetes.io/is-default-class" = "true"
     }
