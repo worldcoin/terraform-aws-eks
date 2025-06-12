@@ -9,8 +9,8 @@ resource "kubernetes_storage_class" "gp3" {
   }
 
   storage_provisioner    = "ebs.csi.aws.com"
-  volume_binding_mode    = storage_class.volume_binding_mode
-  allow_volume_expansion = storage_class.allow_volume_expansion
+  volume_binding_mode    = var.storage_class.volume_binding_mode
+  allow_volume_expansion = var.storage_class.allow_volume_expansion
 
   parameters = {
     "encrypted" = "true"
