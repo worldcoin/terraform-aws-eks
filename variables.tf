@@ -588,3 +588,24 @@ variable "enclaves_instance_type" {
     error_message = "Invalid instance type for Nitro Enclaves. Must be Intel/AMD instances with at least 4 vCPUs (excluding c7i.24xlarge, c7i.48xlarge, m7i.24xlarge, m7i.48xlarge) or Graviton instances with at least 2 vCPUs (excluding excluded families)."
   }
 }
+
+variable "storage_class" {
+  description = "Configuration for the storage class that defines how volumes are allocated in Kubernetes."
+
+  type = object({
+    volume_binding_mode    = optional(string, "WaitForFirstConsumer")
+    allow_volume_expansion = optional(bool, true)
+  })
+
+  default = {
+    volume_binding_mode    = "WaitForFirstConsumer"
+    allow_volume_expansion = true
+  }
+
+  validation {
+    condition = (
+      contains(["WaitForFirstConsumer", "Immediate"], var.storage_class.volume_binding_mode)
+    )
+    error_message = "volume_binding_mode must be one of: 'WaitForFirstConsumer' or 'Immediate'."
+  }
+}
