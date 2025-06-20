@@ -26,6 +26,13 @@ locals {
     "1.32" = "v1.39.0-eksbuild.1"
   }
 
+  # https://docs.aws.amazon.com/eks/latest/userguide/workloads-add-ons-available-eks.html#addons-csi-snapshot-controller
+  # https://docs.aws.amazon.com/eks/latest/userguide/csi-snapshot-controller.html
+  # aws eks describe-addon-versions --region us-east-1 --addon-name snapshot-controller | jq '.addons[0].addonVersions[0]'
+  snapshot_controller = {
+    "1.32" = "v8.2.0-eksbuild.1"
+  }
+
   # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-agent-setup.html
   # aws eks describe-addon-versions --addon-name eks-pod-identity-agent | jq '.addons[0].addonVersions[0]'
   eks_pod_identity_agent_version = {
@@ -105,6 +112,14 @@ resource "aws_eks_addon" "ebs_csi" {
   cluster_name                = aws_eks_cluster.this.id
   addon_name                  = "aws-ebs-csi-driver"
   addon_version               = local.ebs_csi_driver_version[var.cluster_version]
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+}
+
+resource "aws_eks_addon" "snapshot_controller" {
+  cluster_name                = aws_eks_cluster.this.id
+  addon_name                  = "snapshot-controller"
+  addon_version               = local.snapshot_controller[var.cluster_version]
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
 }
