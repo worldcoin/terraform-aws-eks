@@ -223,14 +223,15 @@ Once the policy_arn is not specified, the default AmazonEKSAdminPolicy is used.
 #### AWS EKS Cluster Policies
 
 Most common used AWS policies for EKS clusters:
-* AmazonEKSClusterAdminPolicy: This policy grants administrator access to a cluster and is equivalent to the RBAC cluster-admin role with star permissions on everything.
-* AmazonEKSAdminPolicy: This policy is equivalent to the RBAC admin role. It provides broad permissions to resources, typically scoped to a specific namespace. It is somewhat restricted when it comes to modifying namespace configurations or affecting other namespaces. This policy is designed to support namespace-based multi-tenancy. If you want an IAM principal to have a more limited administrative scope, consider using AmazonEKSAdminPolicy instead of AmazonEKSClusterAdminPolicy.
-* AmazonEKSEditPolicy: This policy grants access to edit most Kubernetes resources, usually within a specific namespace. It allows reading secrets and editing resources, but it should not serve as a security boundary, as there are several possible privilege escalation paths to AmazonEKSClusterAdminPolicy.
-* AmazonEKSViewPolicy: Grants access to list and view most Kubernetes resources, typically within a namespace. This policy is read-only and does not allow modification of resources. It is useful for monitoring and auditing purposes.
+- AmazonEKSClusterAdminPolicy: This policy grants administrator access to a cluster and is equivalent to the RBAC cluster-admin role with star permissions on everything.
+- AmazonEKSAdminPolicy: This policy is equivalent to the RBAC admin role. It provides broad permissions to resources, typically scoped to a specific namespace. It is somewhat restricted when it comes to modifying namespace configurations or affecting other namespaces. This policy is designed to support namespace-based multi-tenancy. If you want an IAM principal to have a more limited administrative scope, consider using AmazonEKSAdminPolicy instead of AmazonEKSClusterAdminPolicy.
+- AmazonEKSEditPolicy: This policy grants access to edit most Kubernetes resources, usually within a specific namespace. It allows reading secrets and editing resources, but it should not serve as a security boundary, as there are several possible privilege escalation paths to AmazonEKSClusterAdminPolicy.
+- AmazonEKSViewPolicy: Grants access to list and view most Kubernetes resources, typically within a namespace. This policy is read-only and does not allow modification of resources. It is useful for monitoring and auditing purposes.
 
 In summary, AmazonEKSClusterAdminPolicy provides the highest level of access, while AmazonEKSAdminPolicy and AmazonEKSEditPolicy offer more restricted, namespace-scoped permissions.
 
 If you need specyfic access to the cluster, you can list the available AWS Polivies via aws cli:
+
 ```
 aws eks list-access-policies --output table --region us-east-1
 ```
@@ -250,13 +251,14 @@ The module comes with the IAM role for [Amazon EFS CSI driver](https://docs.aws.
 ## Terraform tips and tricks
 
 1. Module from begining, has defined `kubernetes` provider inside on it, configured based on information from terraform resource `aws_eks_cluster` to authenticate to the eks cluster.
-With this constrain only `create` operation work properly, other operation `update`, `remove` doesn't work. 
+With this constrain only `create` operation work properly, other operation `update`, `remove` doesn't work.
 
 1. With version `v4.2.0` we have change for `kubernetes` provider. It's configured based on informatiom from data source about `aws_eks_cluster`, and if provider can't be configure with this way terraform resource `aws_eks_cluster` is used. PR with: [fix kubernetes provider](https://github.com/worldcoin/terraform-aws-eks/pull/176). With this change `create` and `update` operation work perfectly, `remove` operation still doesn't work.
 
 1. In the feature versions of `terraform-aws-eks module`, `remove` operation can be fixed to work properly. For this `kubernetes` provider must be moved from module to workspace. It can be tested with PRs:
-  * [remove kubernetes provider from terraform-aws-eks module](https://github.com/worldcoin/terraform-aws-eks/pull/177)
-  * [test if remove kubernetes provider from tf module works](https://github.com/worldcoin/infrastructure/pull/13175)
+
+- [remove kubernetes provider from terraform-aws-eks module](https://github.com/worldcoin/terraform-aws-eks/pull/177)
+- [test if remove kubernetes provider from tf module works](https://github.com/worldcoin/infrastructure/pull/13175)
 
 ### Cluster create
 
@@ -423,9 +425,9 @@ To remove the cluster you have to:
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_alb"></a> [alb](#module\_alb) | git@github.com:worldcoin/terraform-aws-alb.git | v0.17.0 |
-| <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | git@github.com:worldcoin/terraform-datadog-kubernetes | v1.2.1 |
-| <a name="module_nlb"></a> [nlb](#module\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v0.7.0 |
+| <a name="module_alb"></a> [alb](#module\_alb) | <git@github.com>:worldcoin/terraform-aws-alb.git | v0.17.0 |
+| <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | <git@github.com>:worldcoin/terraform-datadog-kubernetes | v1.2.1 |
+| <a name="module_nlb"></a> [nlb](#module\_nlb) | <git@github.com>:worldcoin/terraform-aws-nlb.git | v0.7.0 |
 
 ## Resources
 
@@ -546,7 +548,6 @@ To remove the cluster you have to:
 | <a name="input_cluster_endpoint_public_access"></a> [cluster\_endpoint\_public\_access](#input\_cluster\_endpoint\_public\_access) | Indicates whether or not the Amazon EKS public API server endpoint is enabled | `bool` | `true` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name of the cluster. Has to be unique per region per account. | `string` | n/a | yes |
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The Kubernetes version to use for the cluster. | `string` | `"1.32"` | no |
-| <a name="input_create_ebs_csi_controller_role"></a> [create\_ebs\_csi\_controller\_role](#input\_create\_ebs\_csi\_controller\_role) | Set to `true` if you want to create the EBS CSI controller IAM role | `bool` | `false` | no |
 | <a name="input_datadog_api_key"></a> [datadog\_api\_key](#input\_datadog\_api\_key) | Datadog API key. Stored in kube-system namespace as a secret. | `string` | n/a | yes |
 | <a name="input_dockerhub_pull_through_cache_repositories_arn"></a> [dockerhub\_pull\_through\_cache\_repositories\_arn](#input\_dockerhub\_pull\_through\_cache\_repositories\_arn) | The ARN of the repositories to allow the EKS node group to pull images from the DockerHub pull-through cache. | `string` | `"arn:aws:ecr:us-east-1:507152310572:repository/docker-cache/*"` | no |
 | <a name="input_drop_invalid_header_fields"></a> [drop\_invalid\_header\_fields](#input\_drop\_invalid\_header\_fields) | Drop invalid header fields | `bool` | `false` | no |
