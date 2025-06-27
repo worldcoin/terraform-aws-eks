@@ -20,7 +20,8 @@ module "datadog_monitoring" {
   node_diskpressure_evaluation_period   = "last_1h"
   node_memorypressure_evaluation_period = "last_1h"
   pid_pressure_evaluation_period        = "last_1h"
-  node_ready_evaluation_period          = "last_1h"
+  node_ready_enabled                    = false
+  node_memory_used_percent_warning      = null
 }
 
 resource "datadog_monitor" "oom" {
