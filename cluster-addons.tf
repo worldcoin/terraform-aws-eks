@@ -50,6 +50,12 @@ locals {
   mountpoint_s3_csi_version = {
     "1.32" = "v1.12.0-eksbuild.1"
   }
+
+  # https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
+  # aws eks describe-addon-versions --addon-name metrics-server --region us-east-1 --output json --profile wld-internal-tools |jq '.addons[0].addonVersions[0]'
+  metrics_server_version = {
+    "1.32" = "v0.7.2-eksbuild.4"
+  }
 }
 
 resource "aws_eks_addon" "vpc_cni" {
@@ -158,4 +164,12 @@ resource "aws_eks_addon" "mountpoint_s3_csi" {
       }
     }
   )
+}
+
+resource "aws_eks_addon" "metrics_server" {
+  cluster_name                = aws_eks_cluster.this.id
+  addon_name                  = "metrics-server"
+  addon_version               = local.metrics_server_version[var.cluster_version]
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
 }
