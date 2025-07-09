@@ -324,7 +324,7 @@ variable "additional_security_group_rules" {
         rule.from_port >= 0 && rule.from_port <= 65535 &&
         can(regex("\\d+", rule.to_port)) &&
         rule.to_port >= 0 && rule.to_port <= 65535 &&
-        can(regex("TCP|UDP|ICMP|tcp|udp|icmp|-1", rule.protocol)) &&
+        can(regex("TCP|UDP|ICMP|tcp|udp|icmp|-1", rule.protocol))
       )
     ])
     error_message = "Invalid security group rule configuration"
@@ -532,7 +532,7 @@ variable "additional_cluster_security_group_rules" {
         rule.from_port >= 0 && rule.from_port <= 65535 &&
         can(regex("\\d+", rule.to_port)) &&
         rule.to_port >= 0 && rule.to_port <= 65535 &&
-        can(regex("TCP|UDP|ICMP|tcp|udp|icmp|-1", rule.protocol)) &&
+        can(regex("TCP|UDP|ICMP|tcp|udp|icmp|-1", rule.protocol))
       )
     ])
     error_message = "Invalid security group rule configuration"
