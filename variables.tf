@@ -313,7 +313,7 @@ variable "additional_security_group_rules" {
     ipv6_cidr_blocks           = optional(list(string))
     prefix_list_ids            = optional(list(string))
     self                       = optional(bool)
-    source_cluster_security_group = optional(bool)
+    source_cluster_security_group = optional(bool, false)
     sg_id                      = optional(string)
   }))
   default = []
@@ -521,7 +521,7 @@ variable "additional_cluster_security_group_rules" {
     ipv6_cidr_blocks           = optional(list(string))
     prefix_list_ids            = optional(list(string))
     self                       = optional(bool)
-    source_node_security_group = optional(bool)
+    source_node_security_group = optional(bool, false)
     sg_id                      = optional(string)
   }))
   default = []
