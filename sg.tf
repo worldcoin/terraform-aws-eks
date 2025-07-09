@@ -109,7 +109,7 @@ resource "aws_security_group_rule" "node_from_alb_ingress" {
 }
 
 resource "aws_security_group_rule" "additional_rule" {
-  for_each = { for v in var.additional_security_group_rules : v.sg_id => v }
+  for_each = var.additional_security_group_rules
 
   # Required
   security_group_id = aws_security_group.node.id
@@ -128,7 +128,7 @@ resource "aws_security_group_rule" "additional_rule" {
 }
 
 resource "aws_security_group_rule" "additional_cluster_security_group_rules" {
-  for_each = { for v in var.additional_cluster_security_group_rules : v.sg_id => v }
+  for_each = var.additional_cluster_security_group_rules
 
   # Required
   security_group_id = aws_security_group.cluster.id
