@@ -54,7 +54,9 @@ EOT
   ]
 }
 
-data "datadog_synthetics_locations" "locations" {}
+data "datadog_synthetics_locations" "locations" {
+  count = var.monitoring_enabled ? 1 : 0
+}
 
 resource "datadog_synthetics_test" "cluster_monitoring" {
   count     = var.monitoring_enabled ? 1 : 0
@@ -63,7 +65,7 @@ resource "datadog_synthetics_test" "cluster_monitoring" {
   subtype   = "http"
   status    = "live"
   message   = "Cluster ${var.cluster_name} is not responding. ${var.monitoring_notification_channel}"
-  locations = setintersection(keys(data.datadog_synthetics_locations.locations.locations), var.external_check_locations)
+  locations = setintersection(keys(one(data.datadog_synthetics_locations.locations).locations), var.external_check_locations)
   tags = [
     "CreatedBy:terraform",
     "env:${var.environment}",
