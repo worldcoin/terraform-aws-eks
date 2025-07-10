@@ -611,3 +611,9 @@ variable "storage_class" {
     error_message = "volume_binding_mode must be one of: 'WaitForFirstConsumer' or 'Immediate'."
   }
 }
+
+variable "enable_cluster_monitoring_domain" {
+  description = "Enable cluster monitoring domain"
+  type        = bool
+  default     = true
+}
