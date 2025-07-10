@@ -303,18 +303,18 @@ variable "static_autoscaling_group" {
 variable "additional_security_group_rules" {
   description = "Additional security group rules"
   type = list(object({
-    type                       = string
-    from_port                  = number
-    to_port                    = number
-    protocol                   = string
+    type      = string
+    from_port = number
+    to_port   = number
+    protocol  = string
 
-    description                = optional(string)
-    cidr_blocks                = optional(list(string))
-    ipv6_cidr_blocks           = optional(list(string))
-    prefix_list_ids            = optional(list(string))
-    self                       = optional(bool)
+    description                   = optional(string)
+    cidr_blocks                   = optional(list(string))
+    ipv6_cidr_blocks              = optional(list(string))
+    prefix_list_ids               = optional(list(string))
+    self                          = optional(bool)
     source_cluster_security_group = optional(bool, false)
-    sg_id                      = optional(string)
+    sg_id                         = optional(string)
   }))
   default = []
   validation {
@@ -511,10 +511,10 @@ variable "coredns_max_replicas" {
 variable "additional_cluster_security_group_rules" {
   description = "Additional cluster security group rules"
   type = list(object({
-    type                       = string
-    from_port                  = number
-    to_port                    = number
-    protocol                   = string
+    type      = string
+    from_port = number
+    to_port   = number
+    protocol  = string
 
     description                = optional(string)
     cidr_blocks                = optional(list(string))
