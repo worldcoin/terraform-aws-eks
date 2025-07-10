@@ -31,4 +31,7 @@ resource "aws_eks_pod_identity_association" "ebs_csi_controller" {
   namespace       = "kube-system"
   service_account = "ebs-csi-controller-sa"
   role_arn        = aws_iam_role.ebs_csi_controller.arn
+  depends_on = [
+    aws_eks_cluster.this
+  ]
 }
