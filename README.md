@@ -643,5 +643,4 @@ To remove the cluster you have to:
 | <a name="output_nlb_dns_names"></a> [nlb\_dns\_names](#output\_nlb\_dns\_names) | Map of dns names of the NLBs |
 | <a name="output_nlb_zone_ids"></a> [nlb\_zone\_ids](#output\_nlb\_zone\_ids) | Map of zone IDs of the NLBs |
 | <a name="output_node_security_group_id"></a> [node\_security\_group\_id](#output\_node\_security\_group\_id) | The security group ID of the EKS nodes |
-| <a name="output_oidc_provider_arn"></a> [oidc\_provider\_arn](#output\_oidc\_provider\_arn) | The ARN of the OIDC Provider |
 <!-- END_TF_DOCS -->
