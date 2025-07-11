@@ -5,7 +5,7 @@ data "cloudflare_zone" "worldcoin_dev" {
 
 # dns record for cluster monitoring
 resource "cloudflare_record" "monitoring" {
-  count = var.monitoring_enabled ? 1 : 0
+  count = var.monitoring_enabled && var.external_alb_enabled ? 1 : 0
 
   zone_id = one(data.cloudflare_zone.worldcoin_dev).id
   name    = format("%s.%s", var.cluster_name, "monitoring.worldcoin.dev")

@@ -123,12 +123,11 @@ variable "internal_nlb_acm_arn" {
 variable "traefik_cert_arn" {
   description = "The ARN of the certificate to use for Traefik."
   type        = string
-  # commented due to tests passed, but in module it is not working
-  # regex match certificate arn
-  # validation {
-  #   condition     = can(regex("arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+", var.traefik_cert_arn))
-  #   error_message = "Invalid ACM ARN"
-  # }
+  default     = null
+  validation {
+    condition     = var.internal_nlb_enabled || var.external_alb_enabled ? can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn)) : true
+    error_message = "Invalid `traefik_cert_arn` ARN"
+  }
 }
 
 variable "efs_csi_driver_enabled" {

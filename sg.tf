@@ -97,7 +97,7 @@ resource "aws_security_group_rule" "traefik_from_alb_metrics" {
 }
 
 resource "aws_security_group_rule" "node_from_alb_ingress" {
-  count = length(var.alb_additional_node_ports)
+  count = var.external_alb_enabled ? length(var.alb_additional_node_ports) : 0
 
   security_group_id        = aws_security_group.node.id
   type                     = "ingress"
