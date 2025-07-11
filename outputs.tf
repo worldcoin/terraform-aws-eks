@@ -47,3 +47,13 @@ output "node_security_group_id" {
   description = "The security group ID of the EKS nodes"
   value       = aws_security_group.node.id
 }
+
+output "cluster_certificate_authority_data" {
+  description = "Base64 encoded certificate data required to communicate with the cluster"
+  value       = try(aws_eks_cluster.this.certificate_authority[0].data, null)
+}
+
+output "cluster_endpoint" {
+  description = "Endpoint for your Kubernetes API server"
+  value       = try(aws_eks_cluster.this.endpoint, null)
+}

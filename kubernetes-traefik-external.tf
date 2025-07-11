@@ -1,5 +1,5 @@
 resource "kubernetes_service" "traefik_alb" {
-  for_each               = var.kubernetes_provider_enabled ? toset([local.external_alb_name]) : []
+  for_each               = var.kubernetes_provider_enabled ? var.external_alb_enabled ? toset([local.external_alb_name]) : [] : []
   wait_for_load_balancer = false
 
   metadata {
@@ -41,7 +41,7 @@ resource "kubernetes_service" "traefik_alb" {
 }
 
 resource "kubernetes_ingress_v1" "treafik_ingress" {
-  for_each = var.kubernetes_provider_enabled ? toset([local.external_alb_name]) : []
+  for_each = var.kubernetes_provider_enabled ? var.external_alb_enabled ? toset([local.external_alb_name]) : [] : []
 
   metadata {
     name      = format("%s-alb", each.key)
@@ -94,7 +94,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
 
 module "alb" {
   source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v0.17.0"
-  for_each = toset([local.external_alb_name])
+  for_each = var.external_alb_enabled ? toset([local.external_alb_name]) : []
 
   # because of lenght limitation of LB name we need to remove prefix treafik from internal NLB
   name_suffix  = format("%s-alb", replace(each.key, "traefik-", ""))
