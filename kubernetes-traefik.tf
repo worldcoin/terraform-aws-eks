@@ -1,5 +1,5 @@
 locals {
-  external_alb_name = "traefik"
+  external_alb_name = external_alb_enabled ? "traefik" : null
   internal_nlb_name = "traefik-internal"
 
   # list of all load balancers names

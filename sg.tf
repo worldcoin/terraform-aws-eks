@@ -73,7 +73,7 @@ resource "aws_security_group_rule" "node_egress" {
 }
 
 resource "aws_security_group_rule" "traefik_from_alb_traffic" {
-  for_each = toset([local.external_alb_name])
+  for_each = var.external_alb_enabled ? toset([local.external_alb_name]) : []
 
   security_group_id        = aws_security_group.node.id
   type                     = "ingress"
@@ -85,7 +85,7 @@ resource "aws_security_group_rule" "traefik_from_alb_traffic" {
 }
 
 resource "aws_security_group_rule" "traefik_from_alb_metrics" {
-  for_each = toset([local.external_alb_name])
+  for_each = var.external_alb_enabled ? toset([local.external_alb_name]) : []
 
   security_group_id        = aws_security_group.node.id
   type                     = "ingress"

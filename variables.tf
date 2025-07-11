@@ -96,6 +96,12 @@ variable "internal_nlb_enabled" {
   default     = true
 }
 
+variable "external_alb_enabled" {
+  description = "External Application load balancers to create. If true, the ALB will be created."
+  type        = bool
+  default     = true
+}
+
 variable "use_private_subnets_for_internal_nlb" {
   description = "Set to `true` if you want to use private subnets for internal NLB"
   type        = bool
@@ -331,8 +337,8 @@ variable "additional_security_group_rules" {
   }
 }
 
-variable "alb_additional_node_ports" {
-  description = "List of node ports which are accessible by ALB"
+variable "" {
+  description = "List of node palb_additional_node_portsorts which are accessible by ALB"
   type        = list(number)
   default     = []
   validation {
