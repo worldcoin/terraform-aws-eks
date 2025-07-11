@@ -97,7 +97,7 @@ variable "internal_nlb_enabled" {
 }
 
 variable "external_alb_enabled" {
-  description = "External Application load balancers to create. If true, the ALB will be created."
+  description = "Internal Network load balancers to create. If true, the NLB will be created."
   type        = bool
   default     = true
 }
@@ -337,8 +337,8 @@ variable "additional_security_group_rules" {
   }
 }
 
-variable "" {
-  description = "List of node palb_additional_node_portsorts which are accessible by ALB"
+variable "alb_additional_node_ports" {
+  description = "List of node ports which are accessible by ALB"
   type        = list(number)
   default     = []
   validation {
