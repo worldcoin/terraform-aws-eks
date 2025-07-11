@@ -150,7 +150,7 @@ module "eks" {
 
 ### Additional Security Group Rules
 
-Example of using `additional_security_group_rules`
+Example of using `additional_security_group_rules` to add rules to the node security group and `additional_cluster_security_group_rules` for the cluster security group.
 
 ```terraform
 module "eks" {
@@ -168,15 +168,38 @@ module "eks" {
   alb_logs_bucket_id = module.region.alb_logs_bucket_id
 
   monitoring_notification_channel = "@slack-TFH-infrastructure-alerts-stage"
+
+  # Add rules to the NODE security group
   additional_security_group_rules = [
     {
-      sg_id       = var.sg_id
       type        = "ingress"
       from_port   = 0
       to_port     = 0
       protocol    = "-1"
-      description = format("Rule for %s", var.sg_id)
-  }]
+      description = "Allow all ingress traffic from specific CIDR blocks"
+      cidr_blocks = ["10.100.0.0/16", "192.168.0.0/24"]
+    },
+    {
+      type                          = "ingress"
+      from_port                     = 0
+      to_port                       = 0
+      protocol                      = "-1"
+      description                   = "Allow all ingress traffic from the cluster security group"
+      source_cluster_security_group = true
+    }
+  ]
+
+  # Add rules to the CLUSTER security group
+  additional_cluster_security_group_rules = [
+    {
+      type                       = "ingress"
+      from_port                  = 0
+      to_port                    = 0
+      protocol                   = "-1"
+      description                = "Allow all ingress traffic from the node security group"
+      source_node_security_group = true
+    }
+  ]
 }
 ```
 
