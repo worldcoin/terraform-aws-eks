@@ -1,9 +1,10 @@
 locals {
-  external_alb_name = var.external_alb_enabled ? "traefik" : null
+  external_alb_name = "traefik"
   internal_nlb_name = "traefik-internal"
 
   # list of all load balancers names
-  load_balancers = concat([local.external_alb_name],
+  load_balancers = concat(
+    var.external_alb_enabled ? [local.external_alb_name] : [],
     var.internal_nlb_enabled ? [local.internal_nlb_name] : []
   )
 }
