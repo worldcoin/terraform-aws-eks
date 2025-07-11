@@ -43,11 +43,6 @@ output "cluster_oidc_issuer_url" {
   value       = local.oidc
 }
 
-output "oidc_provider_arn" {
-  description = "The ARN of the OIDC Provider"
-  value       = try(aws_iam_openid_connect_provider.oidc_provider.arn, null)
-}
-
 output "node_security_group_id" {
   description = "The security group ID of the EKS nodes"
   value       = aws_security_group.node.id
