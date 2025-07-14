@@ -12,9 +12,12 @@ module "datadog_monitoring" {
   ]
 
   # don't alert on cpu overbooking
-  cpu_limits_low_perc_enabled    = false
-  cpu_requests_low_perc_enabled  = false
-  memory_limits_low_perc_enabled = var.memory_limits_low_perc_enabled
+  cpu_limits_low_perc_enabled                = false
+  cpu_requests_low_perc_enabled              = false
+  memory_limits_low_perc_enabled             = var.memory_limits_low_perc_enabled
+  deploy_desired_vs_status_warning           = var.deploy_desired_vs_status_warning
+  deploy_desired_vs_status_critical          = var.deploy_desired_vs_status_critical
+  deploy_desired_vs_status_evaluation_period = var.deploy_desired_vs_status_evaluation_period
 
   # limit false positives when karpenter adds/removes nodes
   node_diskpressure_evaluation_period   = "last_1h"

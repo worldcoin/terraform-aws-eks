@@ -616,3 +616,20 @@ variable "storage_class" {
     error_message = "volume_binding_mode must be one of: 'WaitForFirstConsumer' or 'Immediate'."
   }
 }
+
+# https://github.com/worldcoin/terraform-datadog-kubernetes/blob/main/deploy-desired-vs-status-variables.tf#L6-L16
+variable "deploy_desired_vs_status_warning" {
+  description = "Threshold for warning for Desired pods vs current pods (Deployments)"
+  type        = number
+  default     = 1
+}
+variable "deploy_desired_vs_status_critical" {
+  description = "Threshold for critical for Desired pods vs current pods (Deployments)"
+  type        = number
+  default     = 10
+}
+variable "deploy_desired_vs_status_evaluation_period" {
+  description = "Evaluation period for Desired pods vs current pods (Deployments)"
+  type        = string
+  default     = "last_15m"
+}
