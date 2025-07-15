@@ -633,3 +633,20 @@ variable "deploy_desired_vs_status_evaluation_period" {
   type        = string
   default     = "last_15m"
 }
+
+variable "vpc_cni_enable_pod_eni" {
+  description = "Enable pod ENI support"
+  type        = bool
+  default     = true
+}
+
+variable "vpc_cni_pod_security_group_enforcing_mode" {
+  description = "Set pod security group enforcing mode"
+  type        = string
+  default     = "standard"
+
+  validation {
+    condition     = can(regex("^(standard|strict)$", var.vpc_cni_pod_security_group_enforcing_mode))
+    error_message = "Invalid pod security group enforcing mode. Must be 'standard' or 'strict'."
+  }
+}
