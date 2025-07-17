@@ -421,7 +421,7 @@ variable "dockerhub_pull_through_cache_repositories_arn" {
 variable "cluster_endpoint_public_access" {
   description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "acm_extra_arns" {
