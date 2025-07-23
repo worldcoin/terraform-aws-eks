@@ -108,6 +108,30 @@ resource "aws_security_group_rule" "node_from_alb_ingress" {
   description              = "Allow ALB to have access to node port ${var.alb_additional_node_ports[count.index]}"
 }
 
+resource "aws_security_group_rule" "node_allow_vpc_dns_udp" {
+  count = var.vpc_cni_enable_pod_eni ? 1 : 0
+
+  security_group_id = aws_security_group.node.id
+  type              = "ingress"
+  from_port         = 53
+  to_port           = 53
+  protocol          = "udp"
+  cidr_blocks       = [data.aws_vpc.cluster_vpc.cidr_block]
+  description       = "Default: Allow DNS (UDP) from within the VPC"
+}
+
+resource "aws_security_group_rule" "node_allow_vpc_dns_tcp" {
+  count = var.vpc_cni_enable_pod_eni ? 1 : 0
+
+  security_group_id = aws_security_group.node.id
+  type              = "ingress"
+  from_port         = 53
+  to_port           = 53
+  protocol          = "tcp"
+  cidr_blocks       = [data.aws_vpc.cluster_vpc.cidr_block]
+  description       = "Default: Allow DNS (TCP) from within the VPC"
+}
+
 resource "aws_security_group_rule" "additional_rule" {
   for_each = { for i, v in var.additional_security_group_rules : i => v }
 

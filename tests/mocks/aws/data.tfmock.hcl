@@ -37,6 +37,13 @@ EOF
   }
 }
 
+mock_data "aws_vpc" {
+  defaults = {
+    id         = "vpc-1234567890abcdef3" # Must match the vpc_id in your test variables
+    cidr_block = "10.0.0.0/16"
+  }
+}
+
 override_data {
   target = data.aws_iam_policy_document.dockerhub_pull_through_cache
   values = {
