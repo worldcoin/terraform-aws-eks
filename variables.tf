@@ -650,3 +650,9 @@ variable "vpc_cni_pod_security_group_enforcing_mode" {
     error_message = "Invalid pod security group enforcing mode. Must be 'standard' or 'strict'."
   }
 }
+
+variable "vpc_cni_external_snat" {
+  description = "Needed to enable cross-vpc pod-to-pod communication - see: https://github.com/aws/amazon-vpc-cni-k8s?tab=readme-ov-file#aws_vpc_k8s_cni_externalsnat"
+  type        = string
+  default     = false
+}

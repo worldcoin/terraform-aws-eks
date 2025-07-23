@@ -65,6 +65,7 @@ resource "aws_eks_addon" "vpc_cni" {
       WARM_ENI_TARGET : var.vpc_cni_warm_eni_target,                                                      # Keep +1 ENI warm for each node to speed up pod scheduling
       ENABLE_POD_ENI : lower(tostring(var.vpc_cni_enable_pod_eni)),                                       # Enable pod ENI support
       POD_SECURITY_GROUP_ENFORCING_MODE : lower(tostring(var.vpc_cni_pod_security_group_enforcing_mode)), # Enable pod security group enforcing mode
+      AWS_VPC_K8S_CNI_EXTERNALSNAT : lower(tostring(var.vpc_cni_external_snat)),                          # Enable external SNAT to enable pod to pod communication across different vpc's
     }
   })
 }
