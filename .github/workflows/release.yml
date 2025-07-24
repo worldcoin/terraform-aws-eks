@@ -13,7 +13,7 @@ permissions:
 jobs:
   update_release_draft:
     name: Update Release Draft
-    runs-on: arc-large-arm64-runner
+    runs-on: ubuntu-latest
 
     permissions:
       contents: write
