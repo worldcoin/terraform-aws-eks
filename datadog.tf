@@ -1,7 +1,7 @@
 module "datadog_monitoring" {
   count = var.monitoring_enabled ? 1 : 0
 
-  source = "git@github.com:worldcoin/terraform-datadog-kubernetes?ref=v1.2.2"
+  source = "git::https://github.com/worldcoin/terraform-datadog-kubernetes?ref=v1.2.2"
 
   notification_channel = var.monitoring_notification_channel
   service              = format("EKS %s", var.cluster_name)
