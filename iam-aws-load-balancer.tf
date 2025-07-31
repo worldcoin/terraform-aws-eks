@@ -338,7 +338,7 @@ resource "aws_iam_role" "aws_load_balancer" {
 resource "aws_iam_role_policy" "aws_load_balancer" {
   count  = var.aws_load_balancer_iam_role_enabled ? 1 : 0
   name   = "aws-load-balancer-controller-${var.cluster_name}"
-  role   = aws_iam_role.aws_load_balancer.id
+  role   = aws_iam_role.aws_load_balancer[0].id
   policy = data.aws_iam_policy_document.aws_load_balancer.json
 }
 
