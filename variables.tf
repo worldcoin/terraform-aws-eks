@@ -656,3 +656,9 @@ variable "vpc_cni_external_snat" {
   type        = string
   default     = false
 }
+
+variable "aws_load_balancer_iam_role_enabled" {
+  description = "Whether to enable the IAM role for the AWS Load Balancer"
+  type        = bool
+  default     = true
+}
