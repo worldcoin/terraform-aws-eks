@@ -673,3 +673,9 @@ variable "eks_node_group" {
 
   default = null
 }
+
+variable "aws_autoscaling_group_enabled" {
+  description = "Whether to enable AWS Autoscaling group"
+  type        = bool
+  default     = true
+}
