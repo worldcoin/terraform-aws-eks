@@ -16,7 +16,7 @@ resource "aws_launch_template" "al2023" {
 
   name_prefix = local.al2023_name_prefix
 
-  image_id                             = data.aws_ssm_parameter.al2023_ami[0].image_id
+  image_id                             = data.aws_ssm_parameter.al2023_ami[0].value
   vpc_security_group_ids               = [aws_security_group.node.id]
   ebs_optimized                        = true
   instance_initiated_shutdown_behavior = "terminate"
