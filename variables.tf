@@ -662,3 +662,14 @@ variable "aws_load_balancer_iam_role_enabled" {
   type        = bool
   default     = true
 }
+
+variable "eks_node_group" {
+  description = "Configuration for EKS node group"
+  type = object({
+    arch  = string
+    types = list(string)
+    disk  = optional(number, 100)
+  })
+
+  default = null
+}
