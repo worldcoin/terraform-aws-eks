@@ -48,6 +48,14 @@ resource "aws_launch_template" "al2023" {
       KubernetesCluster = var.cluster_name
     }
   }
+
+  user_data = base64encode(
+    templatefile("${path.module}/templates/userdata-al2023.tpl", {
+      cluster_name        = aws_eks_cluster.this.name
+      cluster_endpoint    = aws_eks_cluster.this.endpoint
+      cluster_certificate = aws_eks_cluster.this.certificate_authority[0].data
+    })
+  )
 }
 
 resource "aws_eks_node_group" "al2023" {
