@@ -232,12 +232,6 @@ variable "kubelet_extra_args" {
   default     = "--register-with-taints=critical:NoExecute"
 }
 
-variable "kubelet_extra_args_static_autoscaling_group" {
-  description = "kubelet extra args to pass to the static node group"
-  type        = string
-  default     = ""
-}
-
 variable "vpc_cni_enable_prefix_delegation" {
   description = "Enable prefix delegation for IPv6, allocate IPs in /28 blocks (instead of all at once)"
   type        = bool
