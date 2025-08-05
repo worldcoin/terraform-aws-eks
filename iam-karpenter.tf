@@ -176,10 +176,20 @@ data "aws_iam_policy_document" "karpenter" {
 resource "aws_iam_role" "karpenter" {
   name               = "karpenter-controller-${var.cluster_name}"
   assume_role_policy = data.aws_iam_policy_document.karpenter_assume_role_policy.json
+  lifecycle {
+    ignore_changes = [
+      assume_role_policy,
+    ]
+  }
 }
 
 resource "aws_iam_role_policy" "karpenter" {
   name   = "karpenter-controller-${var.cluster_name}"
   role   = aws_iam_role.karpenter.id
   policy = data.aws_iam_policy_document.karpenter.json
+  lifecycle {
+    ignore_changes = [
+      policy
+    ]
+  }
 }
