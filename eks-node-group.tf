@@ -70,7 +70,7 @@ resource "aws_eks_node_group" "al2023" {
   capacity_type = "ON_DEMAND"
 
   # https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType
-  ami_type       = var.eks_node_group.arch == "arm64" ? "AL2023_ARM_64_STANDARD" : "AL2023_x86_64_STANDARD"
+  ami_type       = "CUSTOM" #var.eks_node_group.arch == "arm64" ? "AL2023_ARM_64_STANDARD" : "AL2023_x86_64_STANDARD"
   instance_types = var.eks_node_group.types
 
   scaling_config {
