@@ -21,9 +21,9 @@ resource "aws_launch_template" "al2023" {
   ebs_optimized                        = true
   instance_initiated_shutdown_behavior = "terminate"
 
-  iam_instance_profile {
-    arn = aws_iam_instance_profile.node.arn
-  }
+  # iam_instance_profile {
+  #   arn = aws_iam_instance_profile.node.arn
+  # }
 
   block_device_mappings {
     device_name = "/dev/xvda"
