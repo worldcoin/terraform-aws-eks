@@ -1,8 +1,8 @@
 locals {
   al2023_name                = format("eks-node-al2023-%s", var.cluster_name)
   al2023_name_prefix         = format("%s-", local.al2023_name)
-  al2023_x86_64_standard_ami = format("/aws/service/eks/optimized-ami/%s/amazon-linux-2023/x86_64/standard/recommended/release_version", var.cluster_version)
-  al2023_arm_64_standard_ami = format("/aws/service/eks/optimized-ami/%s/amazon-linux-2023/arm64/standard/recommended/release_version", var.cluster_version)
+  al2023_x86_64_standard_ami = format("/aws/service/eks/optimized-ami/%s/amazon-linux-2023/x86_64/standard/recommended/image_id", var.cluster_version)
+  al2023_arm_64_standard_ami = format("/aws/service/eks/optimized-ami/%s/amazon-linux-2023/arm64/standard/recommended/image_id", var.cluster_version)
 }
 
 data "aws_ssm_parameter" "al2023_ami" {
