@@ -58,6 +58,9 @@ resource "aws_launch_template" "al2023" {
   )
 }
 
+  # Add this block to configure userdata type
+  #node_config {
+  # Set userdata type to EKS_NODEADM
 resource "aws_eks_node_group" "al2023" {
   count = var.eks_node_group != null ? 1 : 0
 
@@ -65,6 +68,7 @@ resource "aws_eks_node_group" "al2023" {
   node_role_arn   = aws_iam_role.node.arn
   cluster_name    = aws_eks_cluster.this.name
   subnet_ids      = var.vpc_config.private_subnets
+  key_name       = "RO-TEST"
 
   # https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#API_Nodegroup_Contents
   capacity_type = "ON_DEMAND"
