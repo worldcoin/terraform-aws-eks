@@ -20,13 +20,6 @@ resource "aws_launch_template" "al2023" {
   vpc_security_group_ids               = [aws_security_group.node.id]
   ebs_optimized                        = true
 
-  key_name = "RO-TEST"
-  #instance_initiated_shutdown_behavior = "terminate"
-
-  # iam_instance_profile {
-  #   arn = aws_iam_instance_profile.node.arn
-  # }
-
   block_device_mappings {
     device_name = "/dev/xvda"
 
@@ -61,9 +54,6 @@ resource "aws_launch_template" "al2023" {
   )
 }
 
-  # Add this block to configure userdata type
-  #node_config {
-  # Set userdata type to EKS_NODEADM
 resource "aws_eks_node_group" "al2023" {
   count = var.eks_node_group != null ? 1 : 0
 
