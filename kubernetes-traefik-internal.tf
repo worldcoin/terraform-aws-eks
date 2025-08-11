@@ -63,7 +63,7 @@ resource "kubernetes_service" "traefik_nlb" {
 }
 
 module "nlb" {
-  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v0.7.0"
+  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=remove-hyphens-in-the-end-of-lb-name"
 
   for_each = var.internal_nlb_enabled ? toset([local.internal_nlb_name]) : []
 
