@@ -9,6 +9,8 @@ data "aws_ami" "this" {
 }
 
 resource "aws_launch_template" "this" {
+  count = var.aws_autoscaling_group_enabled ? 1 : 0
+
   name_prefix = "eks-node-${var.cluster_name}-"
 
   image_id                             = data.aws_ami.this.image_id
@@ -55,6 +57,8 @@ resource "aws_launch_template" "this" {
 }
 
 resource "aws_autoscaling_group" "this" {
+  count = var.aws_autoscaling_group_enabled ? 1 : 0
+
   name                = "eks-node-${var.cluster_name}"
   vpc_zone_identifier = var.vpc_config.private_subnets
   desired_capacity    = 2
@@ -70,7 +74,7 @@ resource "aws_autoscaling_group" "this" {
 
     launch_template {
       launch_template_specification {
-        launch_template_id = aws_launch_template.this.id
+        launch_template_id = aws_launch_template.this[0].id
         version            = "$Latest"
       }
 
@@ -95,4 +99,14 @@ resource "aws_autoscaling_group" "this" {
       }
     }
   }
+}
+
+moved {
+  from = aws_autoscaling_group.this
+  to   = aws_autoscaling_group.this[0]
+}
+
+moved {
+  from = aws_launch_template.this
+  to   = aws_launch_template.this[0]
 }
