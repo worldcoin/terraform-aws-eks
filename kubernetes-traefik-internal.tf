@@ -63,7 +63,7 @@ resource "kubernetes_service" "traefik_nlb" {
 }
 
 module "nlb" {
-  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v0.7.0"
+  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v1.1.0"
 
   for_each = var.internal_nlb_enabled ? toset([local.internal_nlb_name]) : []
 
@@ -78,8 +78,8 @@ module "nlb" {
 
   acm_arn         = var.internal_nlb_acm_arn != "" ? var.internal_nlb_acm_arn : var.traefik_cert_arn
   vpc_id          = var.vpc_config.vpc_id
-  public_subnets  = var.use_private_subnets_for_internal_nlb ? null : var.vpc_config.public_subnets
-  private_subnets = var.use_private_subnets_for_internal_nlb ? var.vpc_config.private_subnets : null
+  public_subnets  = var.use_private_subnets_for_internal_nlb ? [] : var.vpc_config.public_subnets
+  private_subnets = var.use_private_subnets_for_internal_nlb ? var.vpc_config.private_subnets : []
 
   extra_listeners = var.extra_nlb_listeners
 }
