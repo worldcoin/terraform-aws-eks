@@ -16,7 +16,7 @@ permissions:
 jobs:
   update-deployment:
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'release'
-    runs-on: arc-medium-arm64-runner
+    runs-on: ubuntu-latest
 
     steps:
       - name: Validate version format
