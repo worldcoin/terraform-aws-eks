@@ -16,9 +16,9 @@ resource "aws_launch_template" "al2023" {
 
   name_prefix = local.al2023_name_prefix
 
-  image_id               = data.aws_ssm_parameter.al2023_ami[0].value
-  vpc_security_group_ids = [aws_security_group.node.id]
-  ebs_optimized          = true
+  image_id                             = data.aws_ssm_parameter.al2023_ami[0].value
+  vpc_security_group_ids               = [aws_security_group.node.id]
+  ebs_optimized                        = true
 
   block_device_mappings {
     device_name = "/dev/xvda"
@@ -49,8 +49,7 @@ resource "aws_launch_template" "al2023" {
       cluster_name        = aws_eks_cluster.this.name
       cluster_endpoint    = aws_eks_cluster.this.endpoint
       cluster_certificate = aws_eks_cluster.this.certificate_authority[0].data
-      cluster_cidr        = data.aws_vpc.cluster_vpc.cidr_block
-      cluster_dns         = "172.20.0.10"
+      cluster_cidr     = data.aws_vpc.cluster_vpc.cidr_block
     })
   )
 }
