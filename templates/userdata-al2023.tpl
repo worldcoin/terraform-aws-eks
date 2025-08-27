@@ -11,3 +11,5 @@ spec:
     config:
       clusterDNS:
         - "${cluster_dns}"
+userdata:
+    type: EKS_NODEADM
