@@ -7,5 +7,3 @@ spec:
     apiServerEndpoint: ${cluster_endpoint}
     certificateAuthority: ${cluster_certificate}
     cidr: ${cluster_cidr}
-userdata:
-    type: EKS_NODEADM
