@@ -7,5 +7,9 @@ spec:
     apiServerEndpoint: ${cluster_endpoint}
     certificateAuthority: ${cluster_certificate}
     cidr: ${cluster_cidr}
+  kubelet:
+    config:
+      clusterDNS:
+        - "${cluster_dns}"
 userdata:
     type: EKS_NODEADM
