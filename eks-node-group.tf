@@ -49,7 +49,6 @@ resource "aws_launch_template" "al2023" {
       cluster_name        = aws_eks_cluster.this.name
       cluster_endpoint    = aws_eks_cluster.this.endpoint
       cluster_certificate = aws_eks_cluster.this.certificate_authority[0].data
-      cluster_cidr     = data.aws_vpc.cluster_vpc.cidr_block
     })
   )
 }
