@@ -50,7 +50,7 @@ resource "aws_launch_template" "al2023" {
       cluster_endpoint    = aws_eks_cluster.this.endpoint
       cluster_certificate = aws_eks_cluster.this.certificate_authority[0].data
       cluster_cidr        = data.aws_vpc.cluster_vpc.cidr_block
-      cluster_dns         = "172.20.0.10"
+      cluster_dns         = var.eks_node_group.dns
     })
   )
 }
