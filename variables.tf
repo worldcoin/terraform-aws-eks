@@ -663,6 +663,7 @@ variable "eks_node_group" {
     arch  = string
     types = list(string)
     disk  = optional(number, 100)
+    dns   = optional(string, "172.20.0.10")
   })
 
   default = null
