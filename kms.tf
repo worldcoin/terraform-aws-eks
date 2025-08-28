@@ -27,12 +27,12 @@ data "aws_iam_policy_document" "kms" {
     condition {
       test     = "ArnLike"
       variable = "kms:EncryptionContext:aws:logs:arn"
-      values   = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.account.account_id}:log-group:/aws/eks/${var.cluster_name}/cluster"]
+      values   = ["arn:aws:logs:${data.aws_region.current.region}:${data.aws_caller_identity.account.account_id}:log-group:/aws/eks/${var.cluster_name}/cluster"]
     }
 
     principals {
       type        = "Service"
-      identifiers = ["logs.${data.aws_region.current.name}.amazonaws.com"]
+      identifiers = ["logs.${data.aws_region.current.region}.amazonaws.com"]
     }
   }
 }

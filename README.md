@@ -322,7 +322,7 @@ index a95261645..9cf8d04b9 100644
 -  source = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.4.2"
 +  source = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
 
-   cluster_name       = format("tools-%s-%s", var.environment, data.aws_region.current.name)
+   cluster_name       = format("tools-%s-%s", var.environment, data.aws_region.current.region)
    cluster_version    = "1.32"
 ```
 
@@ -334,7 +334,7 @@ index a95261645..9cf8d04b9 100644
 @@ -17,7 +17,7 @@ module "eks" {
    source = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
 
-   cluster_name       = format("tools-%s-%s", var.environment, data.aws_region.current.name)
+   cluster_name       = format("tools-%s-%s", var.environment, data.aws_region.current.region)
 -  cluster_version    = "1.31"
 +  cluster_version    = "1.32"
    environment        = var.environment
