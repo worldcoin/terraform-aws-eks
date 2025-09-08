@@ -11,5 +11,8 @@ spec:
     config:
       clusterDNS:
         - "${cluster_dns}"
+      registerWithTaints:
+        - key: critical
+          effect: NoExecute
 userdata:
     type: EKS_NODEADM
