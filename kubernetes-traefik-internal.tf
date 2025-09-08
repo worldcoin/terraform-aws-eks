@@ -19,7 +19,7 @@ resource "kubernetes_service" "traefik_nlb" {
       "service.beta.kubernetes.io/aws-load-balancer-ssl-ports"                           = "443"
       "service.beta.kubernetes.io/aws-load-balancer-type"                                = "external"
       "service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy"              = module.nlb[each.key].ssl_policy
-      "service.beta.kubernetes.io/aws-load-balancer-attributes"                          = "deletion_protection.enabled=false"
+      "service.beta.kubernetes.io/aws-load-balancer-attributes"                          = "deletion_protection.enabled=true"
       "service.beta.kubernetes.io/aws-load-balancer-security-groups"                     = module.nlb[each.key].sg_nlb_id
       "service.beta.kubernetes.io/aws-load-balancer-manage-backend-security-group-rules" = "true"
       "CreatedBy"                                                                        = "terraform"
@@ -63,7 +63,7 @@ resource "kubernetes_service" "traefik_nlb" {
 }
 
 module "nlb" {
-  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v1.1.0"
+  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v1.1.1"
 
   for_each = var.internal_nlb_enabled ? toset([local.internal_nlb_name]) : []
 
