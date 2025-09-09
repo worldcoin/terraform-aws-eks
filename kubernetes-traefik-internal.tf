@@ -60,6 +60,10 @@ resource "kubernetes_service" "traefik_nlb" {
 
     type = "LoadBalancer"
   }
+
+  lifecycle {
+    ignore_changes = [spec[0].load_balancer_class]
+  }
 }
 
 module "nlb" {
