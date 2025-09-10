@@ -60,6 +60,13 @@ resource "kubernetes_service" "traefik_nlb" {
 
     type = "LoadBalancer"
   }
+
+  lifecycle {
+    # Ignore changes to 'load_balancer_class' because this attribute is
+    # managed by the AWS Load Balancer Controller's webhook in the cluster.
+    # This prevents a perpetual diff in the plan.
+    ignore_changes = [spec[0].load_balancer_class]
+  }
 }
 
 module "nlb" {
