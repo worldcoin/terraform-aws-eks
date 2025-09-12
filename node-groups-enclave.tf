@@ -2,7 +2,7 @@ resource "aws_launch_template" "enclave" {
   count       = var.enclaves ? 1 : 0
   name_prefix = "eks-node-enclaves-${var.cluster_name}-"
 
-  image_id                             = data.aws_ami.this.image_id
+  image_id                             = data.aws_ami.this[0].image_id
   instance_type                        = var.enclaves_instance_type
   vpc_security_group_ids               = [aws_security_group.node.id]
   ebs_optimized                        = true
