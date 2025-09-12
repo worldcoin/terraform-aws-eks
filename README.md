@@ -597,6 +597,8 @@ To remove the cluster you have to:
 | <a name="input_enclaves"></a> [enclaves](#input\_enclaves) | Enabling Nitro Enclaves for the cluster | `bool` | `false` | no |
 | <a name="input_enclaves_autoscaling_group"></a> [enclaves\_autoscaling\_group](#input\_enclaves\_autoscaling\_group) | Configuration for Nitro Enclaves autoscaling group | <pre>object({<br>    size = number<br>  })</pre> | <pre>{<br>  "size": 2<br>}</pre> | no |
 | <a name="input_enclaves_instance_type"></a> [enclaves\_instance\_type](#input\_enclaves\_instance\_type) | Instance type for Nitro Enclaves | `string` | `"m7a.2xlarge"` | no |
+| <a name="input_enclaves_cpu_allocation"></a> [enclaves\_cpu\_allocation](#input\_enclaves\_cpu\_allocation) | Number of CPUs to allocate for Nitro Enclaves per node | `number` | `4` | no |
+| <a name="input_enclaves_memory_allocation"></a> [enclaves\_memory\_allocation](#input\_enclaves\_memory\_allocation) | Memory in MiB to allocate for Nitro Enclaves per node | `number` | `4096` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment of cluster | `string` | n/a | yes |
 | <a name="input_external_alb_enabled"></a> [external\_alb\_enabled](#input\_external\_alb\_enabled) | Internal Network load balancers to create. If true, the NLB will be created. | `bool` | `true` | no |
 | <a name="input_external_check_locations"></a> [external\_check\_locations](#input\_external\_check\_locations) | List of DD locations to check cluster availability from | `list(string)` | <pre>[<br>  "aws:af-south-1",<br>  "aws:ap-south-1",<br>  "aws:ap-southeast-1",<br>  "aws:eu-central-1",<br>  "aws:sa-east-1",<br>  "aws:us-east-1"<br>]</pre> | no |
