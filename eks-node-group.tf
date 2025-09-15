@@ -79,7 +79,7 @@ resource "aws_eks_node_group" "al2023" {
 
   launch_template {
     id      = aws_launch_template.al2023[0].id
-    version = "$Latest"
+    version = aws_launch_template.al2023[0].latest_version != null ? aws_launch_template.al2023[0].latest_version : "$Latest"
   }
 
   tags = {
