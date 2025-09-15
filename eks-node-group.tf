@@ -19,6 +19,7 @@ resource "aws_launch_template" "al2023" {
   image_id               = data.aws_ssm_parameter.al2023_ami[0].value
   vpc_security_group_ids = [aws_security_group.node.id]
   ebs_optimized          = true
+  update_default_version = true
 
   block_device_mappings {
     device_name = "/dev/xvda"
@@ -79,7 +80,7 @@ resource "aws_eks_node_group" "al2023" {
 
   launch_template {
     id      = aws_launch_template.al2023[0].id
-    version = aws_launch_template.al2023[0].latest_version != null ? aws_launch_template.al2023[0].latest_version : "$Latest"
+    version = try(aws_launch_template.al2023[0].latest_version, "$Latest")
   }
 
   tags = {
