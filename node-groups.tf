@@ -1,4 +1,5 @@
 data "aws_ami" "this" {
+  count = var.aws_autoscaling_group_enabled ? 1 : 0
   filter {
     name   = "name"
     values = ["amazon-eks-node-${var.cluster_version}-v*"]
@@ -13,7 +14,7 @@ resource "aws_launch_template" "this" {
 
   name_prefix = "eks-node-${var.cluster_name}-"
 
-  image_id                             = data.aws_ami.this.image_id
+  image_id                             = data.aws_ami.this[0].image_id
   vpc_security_group_ids               = [aws_security_group.node.id]
   ebs_optimized                        = true
   instance_initiated_shutdown_behavior = "terminate"

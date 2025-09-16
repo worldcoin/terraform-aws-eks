@@ -54,6 +54,7 @@ This will change the authentication mode to API_AND_CONFIG_MAP, and the next ter
 The module is currently supporting the following versions of Kubernetes:
 
 - 1.32,
+- 1.33,
 
 > [!NOTE]
 > Default version for EKS Cluster is 1.32.
