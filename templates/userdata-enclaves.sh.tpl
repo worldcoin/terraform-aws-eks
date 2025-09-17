@@ -30,6 +30,11 @@ sed -i "s/memory_mib:.*/memory_mib: $MEMORY_MIB/g" $NE_ALLOCATOR_SPEC_PATH
 systemctl restart nitro-enclaves-allocator.service
 echo "NE user data script has finished successfully."
 
+KUBELET_EXTRA_ARGS=""
+if [ -n "${kubelet_extra_args}" ]; then
+  KUBELET_EXTRA_ARGS="--kubelet-extra-args ${kubelet_extra_args}"
+fi
+
 --==MYBOUNDARY==--
 Content-Transfer-Encoding: 7bit
 Content-Type: application/node.eks.aws
