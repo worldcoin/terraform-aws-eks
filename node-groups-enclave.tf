@@ -45,6 +45,8 @@ resource "aws_launch_template" "enclave" {
       cluster_name              = aws_eks_cluster.this.name
       cluster_endpoint          = aws_eks_cluster.this.endpoint
       cluster_certificate       = aws_eks_cluster.this.certificate_authority[0].data
+      cluster_cidr              = data.aws_vpc.cluster_vpc.cidr_block
+      cluster_dns               = var.eks_node_group.dns
       kubelet_extra_args        = "--node-labels=aws-nitro-enclaves-k8s-dp=enabled ${var.kubelet_extra_args}"
       enclave_cpu_allocation    = var.enclaves_cpu_allocation
       enclave_memory_allocation = var.enclaves_memory_allocation
