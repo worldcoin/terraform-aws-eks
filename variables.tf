@@ -592,22 +592,14 @@ variable "enclaves_instance_type" {
 
 variable "enclaves_cpu_allocation" {
   description = "Number of CPUs to allocate for Nitro Enclaves per node"
-  type        = number
-  default     = 4
-  validation {
-    condition     = var.enclaves_cpu_allocation > 0 && var.enclaves_cpu_allocation <= 32
-    error_message = "Enclave CPU allocation must be between 1 and 32 CPUs"
-  }
+  type        = string
+  default     = "4"
 }
 
 variable "enclaves_memory_allocation" {
   description = "Memory in MiB to allocate for Nitro Enclaves per node"
-  type        = number
-  default     = 4096
-  validation {
-    condition     = var.enclaves_memory_allocation >= 1024 && var.enclaves_memory_allocation <= 65536
-    error_message = "Enclave memory allocation must be between 1024 MiB (1 GB) and 65536 MiB (64 GB)"
-  }
+  type        = string
+  default     = "4096"
 }
 
 variable "storage_class" {
