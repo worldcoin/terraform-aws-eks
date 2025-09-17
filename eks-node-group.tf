@@ -1,14 +1,6 @@
 locals {
-  al2023_name                = format("eks-node-al2023-%s", var.cluster_name)
-  al2023_name_prefix         = format("%s-", local.al2023_name)
-  al2023_x86_64_standard_ami = format("/aws/service/eks/optimized-ami/%s/amazon-linux-2023/x86_64/standard/recommended/image_id", var.cluster_version)
-  al2023_arm_64_standard_ami = format("/aws/service/eks/optimized-ami/%s/amazon-linux-2023/arm64/standard/recommended/image_id", var.cluster_version)
-}
-
-data "aws_ssm_parameter" "al2023_ami" {
-  count = var.eks_node_group != null ? 1 : 0
-
-  name = var.eks_node_group.arch == "arm64" ? local.al2023_arm_64_standard_ami : local.al2023_x86_64_standard_ami
+  al2023_name        = format("eks-node-al2023-%s", var.cluster_name)
+  al2023_name_prefix = format("%s-", local.al2023_name)
 }
 
 resource "aws_launch_template" "al2023" {
@@ -16,7 +8,7 @@ resource "aws_launch_template" "al2023" {
 
   name_prefix = local.al2023_name_prefix
 
-  image_id               = data.aws_ssm_parameter.al2023_ami[0].value
+  image_id               = data.aws_ssm_parameter.al2023_ami[try(var.eks_node_group.arch, "amd64")].value
   vpc_security_group_ids = [aws_security_group.node.id]
   ebs_optimized          = true
   update_default_version = true

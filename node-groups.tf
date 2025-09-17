@@ -3,7 +3,7 @@ resource "aws_launch_template" "this" {
 
   name_prefix = "eks-node-${var.cluster_name}-"
 
-  image_id                             = data.aws_ssm_parameter.al2023_ami[0].value
+  image_id                             = data.aws_ssm_parameter.al2023_ami[try(var.eks_node_group.arch, "amd64")].value
   vpc_security_group_ids               = [aws_security_group.node.id]
   ebs_optimized                        = true
   instance_initiated_shutdown_behavior = "terminate"
