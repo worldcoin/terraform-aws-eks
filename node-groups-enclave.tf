@@ -2,7 +2,7 @@ resource "aws_launch_template" "enclave" {
   count       = var.enclaves ? 1 : 0
   name_prefix = "eks-node-enclaves-${var.cluster_name}-"
 
-  image_id                             = data.aws_ami.this[0].image_id
+  image_id                             = data.aws_ssm_parameter.al2023_ami[try(var.eks_node_group.arch, "amd64")].value
   instance_type                        = var.enclaves_instance_type
   vpc_security_group_ids               = [aws_security_group.node.id]
   ebs_optimized                        = true
@@ -42,10 +42,14 @@ resource "aws_launch_template" "enclave" {
 
   user_data = base64encode(
     templatefile("${path.module}/templates/userdata-enclaves.sh.tpl", {
-      cluster_name           = aws_eks_cluster.this.name
-      cluster_endpoint       = aws_eks_cluster.this.endpoint
-      cluster_ca_certificate = aws_eks_cluster.this.certificate_authority[0].data
-      kubelet_extra_args     = "--node-labels=aws-nitro-enclaves-k8s-dp=enabled ${var.kubelet_extra_args}"
+      cluster_name              = aws_eks_cluster.this.name
+      cluster_endpoint          = aws_eks_cluster.this.endpoint
+      cluster_certificate       = aws_eks_cluster.this.certificate_authority[0].data
+      cluster_cidr              = data.aws_vpc.cluster_vpc.cidr_block
+      cluster_dns               = var.eks_node_group.dns
+      kubelet_extra_args        = "--node-labels=aws-nitro-enclaves-k8s-dp=enabled ${var.kubelet_extra_args}"
+      enclave_cpu_allocation    = var.enclaves_cpu_allocation
+      enclave_memory_allocation = var.enclaves_memory_allocation
     })
   )
 }

@@ -590,6 +590,18 @@ variable "enclaves_instance_type" {
   }
 }
 
+variable "enclaves_cpu_allocation" {
+  description = "Number of CPUs to allocate for Nitro Enclaves per node"
+  type        = string
+  default     = "4"
+}
+
+variable "enclaves_memory_allocation" {
+  description = "Memory in MiB to allocate for Nitro Enclaves per node"
+  type        = string
+  default     = "4096"
+}
+
 variable "storage_class" {
   description = "Configuration for the storage class that defines how volumes are allocated in Kubernetes."
 
