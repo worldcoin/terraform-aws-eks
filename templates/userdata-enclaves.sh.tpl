@@ -4,8 +4,8 @@ set -e
 # source: https://docs.aws.amazon.com/enclaves/latest/user/kubernetes.html
 readonly NE_ALLOCATOR_SPEC_PATH="/etc/nitro_enclaves/allocator.yaml"
 # Node resources that will be allocated for Nitro Enclaves
-readonly CPU_COUNT=4
-readonly MEMORY_MIB=4096
+readonly CPU_COUNT=${enclave_cpu_allocation}
+readonly MEMORY_MIB=${enclave_memory_allocation}
 
 # This step below is needed to install nitro-enclaves-allocator service.
 amazon-linux-extras install aws-nitro-enclaves-cli -y
