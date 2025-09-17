@@ -35,5 +35,24 @@ if [ -n "${kubelet_extra_args}" ]; then
   KUBELET_EXTRA_ARGS="--kubelet-extra-args ${kubelet_extra_args}"
 fi
 
---==MYBOUNDARY==--
+--==MYBOUNDARY==
+Content-Type: application/node.eks.aws
 
+---
+apiVersion: node.eks.aws/v1alpha1
+kind: NodeConfig
+spec:
+  cluster:
+    name: ${cluster_name}
+    apiServerEndpoint: ${cluster_endpoint}
+    certificateAuthority: ${cluster_certificate}
+    cidr: ${cluster_cidr}
+  kubelet:
+    config:
+      clusterDNS:
+        - "${cluster_dns}"
+      registerWithTaints:
+        - key: critical
+          effect: NoExecute
+
+--==MYBOUNDARY==
