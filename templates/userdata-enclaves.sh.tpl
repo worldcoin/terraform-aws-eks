@@ -50,6 +50,6 @@ spec:
         - key: enclave
           effect: NoExecute
     flags:            # List of kubelet flags
-       - --node-labels=intent=enclave
+       - --node-labels=aws-nitro-enclaves-k8s-dp=enabled
  
 --==MYBOUNDARY==
