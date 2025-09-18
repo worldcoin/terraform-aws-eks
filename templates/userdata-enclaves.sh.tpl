@@ -49,5 +49,7 @@ spec:
       registerWithTaints:
         - key: enclave
           effect: NoExecute
-
+    flags:            # List of kubelet flags
+       - --node-labels=intent=enclave
+ 
 --==MYBOUNDARY==
