@@ -573,6 +573,7 @@ variable "enclaves_autoscaling_group" {
     min_size = optional(number, 0)
     max_size = optional(number, 10)
   })
+  default = {}
   validation {
     condition     = can(regex("\\d+", var.enclaves_autoscaling_group.size)) && var.enclaves_autoscaling_group.size > 0
     error_message = "Invalid Nitro Enclaves autoscaling group configuration"
