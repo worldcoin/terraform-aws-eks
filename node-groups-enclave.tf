@@ -60,8 +60,8 @@ resource "aws_autoscaling_group" "enclave" {
   name                = "eks-node-enclaves-${var.cluster_name}"
   vpc_zone_identifier = var.vpc_config.private_subnets
   desired_capacity    = var.enclaves_autoscaling_group.size
-  min_size            = var.enclaves_autoscaling_group.size
-  max_size            = var.enclaves_autoscaling_group.size
+  min_size            = var.enclaves_autoscaling_group.min_size
+  max_size            = var.enclaves_autoscaling_group.max_size
 
   mixed_instances_policy {
     instances_distribution {
