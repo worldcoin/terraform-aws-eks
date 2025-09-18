@@ -569,11 +569,11 @@ variable "enclaves" {
 variable "enclaves_autoscaling_group" {
   description = "Configuration for Nitro Enclaves autoscaling group"
   type = object({
-    size = number
+    size     = optional(number, 1)
+    min_size = optional(number, 0)
+    max_size = optional(number, 10)
   })
-  default = {
-    size = 2
-  }
+  default = {}
   validation {
     condition     = can(regex("\\d+", var.enclaves_autoscaling_group.size)) && var.enclaves_autoscaling_group.size > 0
     error_message = "Invalid Nitro Enclaves autoscaling group configuration"

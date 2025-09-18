@@ -49,5 +49,7 @@ spec:
       registerWithTaints:
         - key: enclave
           effect: NoExecute
-
+    flags:            # List of kubelet flags
+       - --node-labels=aws-nitro-enclaves-k8s-dp=enabled
+ 
 --==MYBOUNDARY==
