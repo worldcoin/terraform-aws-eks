@@ -47,8 +47,8 @@ spec:
       clusterDNS:
         - "${cluster_dns}"
       registerWithTaints:
-        - key: enclave
-          effect: NoExecute
+        - key: nitro
+          effect: NoSchedule
     flags:            # List of kubelet flags
        - --node-labels=aws-nitro-enclaves-k8s-dp=enabled
  
