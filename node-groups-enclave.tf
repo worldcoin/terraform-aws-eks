@@ -78,12 +78,12 @@ resource "aws_autoscaling_group" "enclave" {
   tag {
     key                 = "k8s.io/cluster-autoscaler/enabled"
     value               = "true"
-    propagate_at_launch = true
+    propagate_at_launch = false
   }
 
   tag {
-    key                 = "k8s.io/cluster-autoscaler/world-chat-service-stage-eu-west-1"
+    key                 = "k8s.io/cluster-autoscaler/${var.cluster_name}"
     value               = "owned"
-    propagate_at_launch = true
+    propagate_at_launch = false
   }
 }
