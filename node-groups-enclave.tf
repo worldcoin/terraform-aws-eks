@@ -86,4 +86,29 @@ resource "aws_autoscaling_group" "enclave" {
     value               = "owned"
     propagate_at_launch = false
   }
+
+  tag {
+    key                 = "k8s.io/cluster-autoscaler/node-template/taint/enclave"
+    value               = "NoExecute"
+    propagate_at_launch = false
+  }
+
+  tag {
+    key                 = "k8s.io/cluster-autoscaler/node-template/label/intent"
+    value               = "enclave"
+    propagate_at_launch = false
+  }
+
+  tag {
+    key                 = "k8s.io/cluster-autoscaler/node-template/resources/aws.ec2.nitro/nitro_enclaves"
+    value               = "1"
+    propagate_at_launch = false
+  }
+
+  tag {
+    key                 = "k8s.io/cluster-autoscaler/node-template/resources/hugepages-1Gi"
+    value               = "1Gi"
+    propagate_at_launch = false
+  }
+
 }
