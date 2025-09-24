@@ -68,7 +68,7 @@ resource "aws_autoscaling_group" "gpu" {
 
   mixed_instances_policy {
     instances_distribution {
-      on_demand_base_capacity = var.gpu_autoscaling_group.size
+      on_demand_base_capacity = 3
     }
 
     launch_template {
