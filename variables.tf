@@ -566,6 +566,12 @@ variable "enclaves" {
   default     = false
 }
 
+variable "gpu" {
+  description = "Enabling GPU for the cluster"
+  type        = bool
+  default     = false
+}
+
 variable "enclaves_autoscaling_group" {
   description = "Configuration for Nitro Enclaves autoscaling group"
   type = object({
