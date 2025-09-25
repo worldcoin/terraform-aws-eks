@@ -42,7 +42,8 @@ data "aws_iam_policy_document" "karpenter" {
       "ec2:CreateLaunchTemplate",
       "ec2:CreateFleet",
       "ec2:DescribeSpotPriceHistory",
-      "pricing:GetProducts"
+      "pricing:GetProducts",
+      "ec2:DescribeCapacityReservations"
     ]
   }
   statement {
