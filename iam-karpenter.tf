@@ -67,7 +67,7 @@ data "aws_iam_policy_document" "karpenter" {
     sid       = "EKSClusterEndpointLookup"
     effect    = "Allow"
     actions   = ["eks:DescribeCluster"]
-    resources = ["arn:aws:eks:${data.aws_region.current.region}:${data.aws_caller_identity.account.id}:cluster/${var.cluster_name}"]
+    resources = ["arn:aws:eks:${var.region}:${data.aws_caller_identity.account.id}:cluster/${var.cluster_name}"]
   }
   statement {
     sid       = "AllowScopedInstanceProfileCreationActions"
@@ -84,7 +84,7 @@ data "aws_iam_policy_document" "karpenter" {
     condition {
       test     = "StringEquals"
       variable = "aws:RequestTag/topology.kubernetes.io/region"
-      values   = [data.aws_region.current.region]
+      values   = [var.region]
     }
     condition {
       test     = "StringLike"
@@ -107,7 +107,7 @@ data "aws_iam_policy_document" "karpenter" {
     condition {
       test     = "StringEquals"
       variable = "aws:RequestTag/topology.kubernetes.io/region"
-      values   = [data.aws_region.current.region]
+      values   = [var.region]
     }
     condition {
       test     = "StringEquals"
@@ -117,7 +117,7 @@ data "aws_iam_policy_document" "karpenter" {
     condition {
       test     = "StringEquals"
       variable = "aws:ResourceTag/topology.kubernetes.io/region"
-      values   = [data.aws_region.current.region]
+      values   = [var.region]
     }
     condition {
       test     = "StringLike"
@@ -147,7 +147,7 @@ data "aws_iam_policy_document" "karpenter" {
     condition {
       test     = "StringEquals"
       variable = "aws:ResourceTag/topology.kubernetes.io/region"
-      values   = [data.aws_region.current.region]
+      values   = [var.region]
     }
     condition {
       test     = "StringLike"

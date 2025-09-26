@@ -25,7 +25,7 @@ resource "aws_secretsmanager_secret" "this" {
   recovery_window_in_days = 0 # Force instant deletion
 
   dynamic "replica" {
-    for_each = setsubtract(local.replica_regions, [data.aws_region.current.region])
+    for_each = setsubtract(local.replica_regions, [var.region])
     content {
       region = replica.value
     }
