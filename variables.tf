@@ -20,8 +20,8 @@ variable "region" {
   description = "AWS Region"
   type        = string
   validation {
-    condition     = regex("^([a-z0-9]+(-[a-z0-9]+)*)$", var.region)
-    error_message = "AWS Region must be lowercase alphanumeric groups separated by single hyphens (e.g. us-east-1)"
+    condition     = can(regex("^([a-z0-9]+(-[a-z0-9]+)*)$", var.region)) && length(regex("^([a-z0-9]+(-[a-z0-9]+)*)$", var.region)) > 0
+    error_message = "AWS Region must contain only lowercase letters, digits and hyphens"
   }
 }
 
