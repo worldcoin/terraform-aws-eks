@@ -1,0 +1,121 @@
+Cluster recon for tfh-orb-dev-infra,us-west-1,orb-dev-us-west-1
+
+Updated context tfh-orb-dev-us-west-1 in /Users/lukasz.glowacki/.kube/config
+
+Current version: 1.33
+Next version: 1.33
+
+Checking addons...
+aws-ebs-csi-driver      v1.48.0-eksbuild.2
+coredns                 v1.11.4-eksbuild.22
+eks-pod-identity-agent  v1.3.8-eksbuild.2
+kube-proxy              v1.32.6-eksbuild.8
+snapshot-controller     v8.3.0-eksbuild.1
+vpc-cni                 v1.20.1-eksbuild.3
+
+Cluster version up to date - no update insights
+
+Show full cluster description:
+{
+    "cluster": {
+        "name": "orb-dev-us-west-1",
+        "arn": "arn:aws:eks:us-west-1:448049788227:cluster/orb-dev-us-west-1",
+        "createdAt": "2025-03-04T09:03:50.333000+01:00",
+        "version": "1.33",
+        "endpoint": "https://1E3AEE5A337B52C0BCB4E115B62BBEDC.yl4.us-west-1.eks.amazonaws.com",
+        "roleArn": "arn:aws:iam::448049788227:role/eks-cluster-orb-dev-us-west-1",
+        "resourcesVpcConfig": {
+            "subnetIds": [
+                "subnet-03d466f73dfeeb16c",
+                "subnet-0f5a02240ef066997"
+            ],
+            "securityGroupIds": [
+                "sg-0e63105d92c04692d"
+            ],
+            "clusterSecurityGroupId": "sg-0d9091d1b70b61424",
+            "vpcId": "vpc-0bacdccefe54b24cc",
+            "endpointPublicAccess": false,
+            "endpointPrivateAccess": true,
+            "publicAccessCidrs": [
+                "0.0.0.0/0"
+            ]
+        },
+        "kubernetesNetworkConfig": {
+            "serviceIpv4Cidr": "172.20.0.0/16",
+            "ipFamily": "ipv4",
+            "elasticLoadBalancing": {
+                "enabled": false
+            }
+        },
+        "logging": {
+            "clusterLogging": [
+                {
+                    "types": [
+                        "api",
+                        "audit",
+                        "authenticator",
+                        "controllerManager",
+                        "scheduler"
+                    ],
+                    "enabled": true
+                }
+            ]
+        },
+        "identity": {
+            "oidc": {
+                "issuer": "https://oidc.eks.us-west-1.amazonaws.com/id/1E3AEE5A337B52C0BCB4E115B62BBEDC"
+            }
+        },
+        "status": "ACTIVE",
+        "certificateAuthority": {
+            "data": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJYjcrT0dHOXdYK0F3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TlRBek1EUXdPREF6TURoYUZ3MHpOVEF6TURJd09EQTRNRGhhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUUNqU0tIZ0ZRZU82c1g2NDV3ZURUSXpDN3ZUYmcybVBqaTR5NTUvdzhNek5NeXZ4YVpubURRdTZxSFkKWnlzbzVrajB5WWdra3kzbHdJSnF3RGxzK2pMNTA2Q2hJL3hCaWdxOEovdHBIT2NqQWkvdWsrUzNPcHQ4V3JRWgphc1k0Y0IwVjVwYzhpOWVjUGdKYjVLZTRHNElmZnl2NCs2NjlJK2hUVGZUc1paZWhBVzhDN0IvZENrNnd6VmYwCnZneWdUT0FBYWNoYmRRbVA5R3JJUUlrWm9DQkhEYkh5QUhWaENXelZPU2RrR2hZUlV1WG5JRjFKTFM0eG4wTWQKcWYxNVVzOUhnNjNIbURTbFFpU0RybU5Pd3FSMm5wNmwvQndlblFqUDdNRFBvL3h4UGhXcWdaQXVjWDd2YmVVTgoweHVOOWZ5T2hoL1J2QzJGSXZpcWp5RGpDMldwQWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJTdWVtQ0MrM05QQkhGdXRqM0FxN2gvV1JqbGpEQVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQmVaaGRlNzUvRwpjdG5GbVAzY0Y4NHNITFVDZHM1MlZUYzJyTi9IYm51VHZtYUMwOVlrdkpFc3ozdWc5MXN6c0Y1RDN6MCt5dHRPCkdSbGVvRVZlRldWc1ROclNwQndwRERxT09YUUtXUVB0OUo5VTZCSE5rd28rM3RSVXVWaGs5TWtnMEttZEc2UXIKTXpTdjVscHdUSVJGQThwVTk0ZVBJbnMzMmFTZngwcW14UUs0akQrQUFPN09aM005RitpMTRzMVBRd0xXSFdnZwpxWXh3UTRNRG5yUTdiV1I0dEEvUFVJazRYbG5aQnVBcy9YcDlZREtkZm5Dd3lkbHBYemoySnZnaEtIeWdCSlo4ClY2VG1NQ3NNMExKcFlxTnd4dGh6U3d1ZGp3aklGdVhxZHl2VkcwR0lOV2JncjdWalVWM1lkODhRczdxMjZhdzAKMmkvMldnWVRRZ09VCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+        },
+        "platformVersion": "eks.13",
+        "tags": {
+            "Environment": "dev",
+            "karpenter.sh/discovery": "orb-dev-us-west-1",
+            "Team": "orb",
+            "CreatedBy": "terraform"
+        },
+        "encryptionConfig": [
+            {
+                "resources": [
+                    "secrets"
+                ],
+                "provider": {
+                    "keyArn": "arn:aws:kms:us-west-1:448049788227:key/80e24c8d-ad15-4360-b59a-07d1fc1095a3"
+                }
+            }
+        ],
+        "accessConfig": {
+            "authenticationMode": "API_AND_CONFIG_MAP"
+        },
+        "upgradePolicy": {
+            "supportType": "EXTENDED"
+        },
+        "deletionProtection": false
+    }
+}
+
+Cluster nodes list
+NAME                                        STATUS   ROLES    AGE   VERSION               INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION                    CONTAINER-RUNTIME
+ip-10-9-16-226.us-west-1.compute.internal   Ready    <none>   30m   v1.33.4-eks-99d6cc0   10.9.16.226   <none>        Amazon Linux 2023.8.20250818   6.12.40-63.114.amzn2023.x86_64    containerd://1.7.27
+ip-10-9-18-117.us-west-1.compute.internal   Ready    <none>   27m   v1.33.4-eks-99d6cc0   10.9.18.117   <none>        Amazon Linux 2023.8.20250818   6.12.40-63.114.amzn2023.aarch64   containerd://1.7.27
+ip-10-9-18-25.us-west-1.compute.internal    Ready    <none>   25m   v1.33.4-eks-99d6cc0   10.9.18.25    <none>        Amazon Linux 2023.8.20250818   6.12.40-63.114.amzn2023.x86_64    containerd://1.7.27
+ip-10-9-18-253.us-west-1.compute.internal   Ready    <none>   30m   v1.33.4-eks-99d6cc0   10.9.18.253   <none>        Amazon Linux 2023.8.20250818   6.12.40-63.114.amzn2023.x86_64    containerd://1.7.27
+ip-10-9-19-79.us-west-1.compute.internal    Ready    <none>   27m   v1.33.4-eks-99d6cc0   10.9.19.79    <none>        Amazon Linux 2023.8.20250818   6.12.40-63.114.amzn2023.x86_64    containerd://1.7.27
+
+Nodes with issues
+
+Pods with issues
+
+PodDisruptionBudgets
+NAMESPACE            NAME                           MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
+cluster-monitoring   cluster-monitoring-pdb         N/A             1                 1                     138d
+karpenter            karpenter                      N/A             1                 1                     196d
+kube-system          coredns                        N/A             1                 1                     196d
+kube-system          ebs-csi-controller             N/A             1                 1                     196d
+kyverno              kyverno-admission-controller   1               N/A               2                     196d
+orb-chain-registry   orb-chain-registry-pdb         N/A             1                 1                     47d
+
+Cluster version up to date - no pluto apis detection rquired

@@ -1,0 +1,4 @@
+tfh-internal-tools-infra,eu-central-1,teleport-tools-eu-central-1,tunnel-vpc-internal-tools-teleport-eu-central-1
+tfh-internal-tools-infra,eu-central-1,terraform-enterprise-eu-central-1,tunnel-vpc-terraform-enterprise-eu-central-1
+tfh-internal-tools-infra,us-east-1,teleport-orb-cluster-us-east-1,tunnel-vpc-teleport-orb-us-east-1
+tfh-internal-tools-infra,us-east-1,tools-us-east-1,tunnel-vpc-internal-tools-us-east-1

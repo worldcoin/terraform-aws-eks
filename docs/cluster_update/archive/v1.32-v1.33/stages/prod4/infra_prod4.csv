@@ -1,0 +1,8 @@
+tfh-orb-mini-prod-infra,ap-southeast-1,orb-mini-prod-ap-southeast-1,tunnel-vpc-orb-mini-prod-ap-southeast-1
+tfh-orb-prod-infra,af-south-1,orb-prod-v2-af-south-1,tunnel-vpc-orb-prod-af-south-1
+tfh-orb-prod-infra,ap-south-1,orb-prod-v2-ap-south-1,tunnel-vpc-orb-prod-ap-south-1
+tfh-orb-prod-infra,ap-southeast-1,orb-prod-v2-ap-southeast-1,tunnel-vpc-orb-prod-ap-southeast-1
+tfh-orb-prod-infra,eu-central-1,orb-prod-v2-eu-central-1,tunnel-vpc-orb-prod-v2-eu-central-1
+tfh-orb-prod-infra,eu-south-1,orb-prod-v2-eu-south-1,tunnel-vpc-orb-prod-eu-south-1
+tfh-orb-prod-infra,sa-east-1,orb-prod-v2-sa-east-1,tunnel-vpc-orb-prod-sa-east-1
+tfh-orb-prod-infra,us-east-1,orb-prod-v2-us-east-1,tunnel-vpc-orb-prod-us-east-1

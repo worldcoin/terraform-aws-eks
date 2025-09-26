@@ -1,0 +1,3 @@
+tfh-df-enclave-prod-infra,us-east-1,df-enclave-prod-us-east-1,tunnel-vpc-df-enclave-prod-us-east-1
+tfh-security-prod-infra,us-east-1,security-prod-us-east-1,tunnel-vpc-security-prod-us-east-1
+tfh-world-chat-service-prod-infra,eu-west-1,world-chat-service-prod-eu-west-1,tunnel-vpc-world-chat-service-prod-eu-west-1

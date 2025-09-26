@@ -1,0 +1,7 @@
+tfh-analytics-dev-infra,us-east-1,analytics-dev-us-east-1,tunnel-vpc-analytics-dev-us-east-1
+tfh-crypto-dev-infra,ap-northeast-1,crypto-dev-ap-northeast-1,tunnel-vpc-crypto-dev-ap-northeast-1
+tfh-crypto-dev-infra,eu-central-2,crypto-dev-eu-central-2,tunnel-vpc-crypto-dev-eu-central-2
+tfh-crypto-dev-infra,us-east-1,crypto-dev-us-east-1,tunnel-vpc-crypto-dev-us-east-1
+tfh-internal-tools-dev-infra,us-east-1,tools-dev-us-east-1,tunnel-vpc-internal-tools-dev-us-east-1
+tfh-orb-dev-infra,us-west-1,orb-dev-us-west-1,tunnel-vpc-orb-dev-us-west-1
+tfh-security-dev-infra,us-east-1,security-dev-us-east-1,tunnel-vpc-security-dev-us-east-1

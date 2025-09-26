@@ -1,0 +1,132 @@
+Cluster recon for tfh-crypto-dev-infra,us-east-1,test-eks-cluster
+
+[?25l[?1049h[2J[H[?25l[?2004h[H                                                
+  2 items                                       
+                                                
+                                                
+  1/2                                           
+                                                
+  ↑/k up • ↓/j down • / filter • q quit • ? more[7;H[H [J[1;H[2K[?2004l[?25h[?1002l[?1003l[?1006l[?1049l[?25h[?25l[?1049h[2J[H[?25l[?2004h[H                                                
+  41 items                                      
+                                                
+                                                
+  1/41                                          
+                                                
+  ↑/k up • ↓/j down • / filter • q quit • ? more[7;H[H [J[1;H[2K[?2004l[?25h[?1002l[?1003l[?1006l[?1049l[?25h
+Current version: 1.33
+Next version: 1.33
+
+Checking addons...
+
+Cluster version up to date - no update insights
+
+Show full cluster description:
+{
+    "cluster": {
+        "name": "test-eks-cluster",
+        "arn": "arn:aws:eks:us-east-1:348981876543:cluster/test-eks-cluster",
+        "createdAt": "2025-07-11T14:06:36.748000+02:00",
+        "version": "1.33",
+        "endpoint": "https://4750F5908AED39C27898FFFD32629BC1.sk1.us-east-1.eks.amazonaws.com",
+        "roleArn": "arn:aws:iam::348981876543:role/test-eks-cluster-cluster-20250711120610997500000004",
+        "resourcesVpcConfig": {
+            "subnetIds": [
+                "subnet-082250080e23ad6cf",
+                "subnet-0a4de9c3a34078c50",
+                "subnet-0fdbdd9a05efbf489",
+                "subnet-0e81ba36b8e1300d1",
+                "subnet-08d70452caa2f7336"
+            ],
+            "securityGroupIds": [
+                "sg-0af830fad6406e8dc"
+            ],
+            "clusterSecurityGroupId": "sg-009cb9bc2e6da8519",
+            "vpcId": "vpc-076d9b7e001f98317",
+            "endpointPublicAccess": true,
+            "endpointPrivateAccess": true,
+            "publicAccessCidrs": [
+                "46.171.217.197/32"
+            ]
+        },
+        "kubernetesNetworkConfig": {
+            "serviceIpv4Cidr": "10.100.0.0/16",
+            "ipFamily": "ipv4",
+            "elasticLoadBalancing": {
+                "enabled": false
+            }
+        },
+        "logging": {
+            "clusterLogging": [
+                {
+                    "types": [
+                        "api",
+                        "audit",
+                        "authenticator"
+                    ],
+                    "enabled": true
+                },
+                {
+                    "types": [
+                        "controllerManager",
+                        "scheduler"
+                    ],
+                    "enabled": false
+                }
+            ]
+        },
+        "identity": {
+            "oidc": {
+                "issuer": "https://oidc.eks.us-east-1.amazonaws.com/id/4750F5908AED39C27898FFFD32629BC1"
+            }
+        },
+        "status": "ACTIVE",
+        "certificateAuthority": {
+            "data": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJQ3FMUjRGTWFYdVl3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TlRBM01URXhNakEyTXpOYUZ3MHpOVEEzTURreE1qRXhNek5hTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUUREeFErbDJ1SXF3eVpyZ04xUEp2akN6cDlDTW9hNkNBMzRvR2h4RTVaYzZIRjJqa3RRR21IOE5YMWUKRW92NXJsZHNPTyt0UzNFUjl2cGpYekp3eFF1N3FIeGI2b1ZVRk9DSWtNaUhlbDF4djVXcHJXa1lNeEc3V1BsLwpaMFdLdm0zVHRQajR4d2J3KzNhZFVNbjhwbW5zVlptdVJ4WUxxdTUvWVVzajJpd0xyOE03cTdlNlF3WDB0MEZwCmovVHlHWVlWK1JidlYwNEUwZDdGbUZXWFhLUzI4emFwNFozWkhQZjBrYjgwQ2pvOVZTT0d3di9VbThDc3doNFkKRkZsbS9VNlZrZk5ER0VHdC9raU9mNktzUSs0a2xhcTM5MjRWQzhwZjlmUGpwWlpmb2RtbExBcFZWWFJ4VW93egpramVJK2JRVmFyT3BrbDdCRXNCbGczZFZFMWZ6QWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJTbUlZQ0NhYTY0WU5FTXVGdkszUzBRRTRQV1VEQVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQ2NlUnVobkorSwpWam5xRkQ2MFAvWGhMWTVWLzBmY0IwMFVCaVA2REdwWGV1cTdjVzJSMURta2lFd3MxUy9ZSitDclZBT2Z3eGltCndOUm5BK1JIRkxmR1hSeHZUQUJ4bUE3LzZCUS8yeHd6akpyOXBVSXpJZFlGaTNOMmRLc1lXUmdIVG1vYWdDN1QKK3EwVXJGRUZzRkZkeStFckYwOWMwV1BBd09CRnk1YS91R24zcjdQSkV4d29QUVhsc08wZ0l1Y3BIbENqajliWApWVnZFRUZ4cDhab2RuRFFuL1lLcjJ5NUgxaXA3VEpxMFpIdnNLYWZhV2xyTkFJazRTS0pUWnd4YndENHFmd3ArCkJZVm5aWGJMS0kwRU14d01PSzNUMCtodEVqNlRHVkZtRmQrM0xKdmV1U1laM2VmaERObHRwVDFycDZqMXhBMmYKaktXNUVlZVU1bzJrCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+        },
+        "platformVersion": "eks.11",
+        "tags": {
+            "Terraform": "true",
+            "Environment": "test",
+            "terraform-aws-modules": "eks"
+        },
+        "encryptionConfig": [
+            {
+                "resources": [
+                    "secrets"
+                ],
+                "provider": {
+                    "keyArn": "arn:aws:kms:us-east-1:348981876543:key/fe80e8c5-01be-4559-ada6-26312ff025a1"
+                }
+            }
+        ],
+        "accessConfig": {
+            "authenticationMode": "API_AND_CONFIG_MAP"
+        },
+        "upgradePolicy": {
+            "supportType": "EXTENDED"
+        },
+        "deletionProtection": false
+    }
+}
+
+Cluster nodes list
+NAME                                              STATUS   ROLES    AGE    VERSION               INTERNAL-IP    EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION                     CONTAINER-RUNTIME
+ip-10-45-48-231.ap-northeast-1.compute.internal   Ready    <none>   13h    v1.32.8-eks-99d6cc0   10.45.48.231   <none>        Amazon Linux 2023.8.20250818   6.1.147-172.266.amzn2023.aarch64   containerd://1.7.27
+ip-10-45-48-53.ap-northeast-1.compute.internal    Ready    <none>   21h    v1.32.8-eks-99d6cc0   10.45.48.53    <none>        Amazon Linux 2023.8.20250818   6.1.147-172.266.amzn2023.x86_64    containerd://1.7.27
+ip-10-45-50-75.ap-northeast-1.compute.internal    Ready    <none>   120m   v1.32.8-eks-99d6cc0   10.45.50.75    <none>        Amazon Linux 2023.8.20250818   6.1.147-172.266.amzn2023.x86_64    containerd://1.7.27
+ip-10-45-51-11.ap-northeast-1.compute.internal    Ready    <none>   13h    v1.32.8-eks-99d6cc0   10.45.51.11    <none>        Amazon Linux 2023.8.20250818   6.1.147-172.266.amzn2023.x86_64    containerd://1.7.27
+ip-10-45-53-125.ap-northeast-1.compute.internal   Ready    <none>   21h    v1.32.8-eks-99d6cc0   10.45.53.125   <none>        Amazon Linux 2023.8.20250818   6.1.147-172.266.amzn2023.x86_64    containerd://1.7.27
+
+Nodes with issues
+
+Pods with issues
+
+PodDisruptionBudgets
+NAMESPACE            NAME                           MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
+cluster-monitoring   cluster-monitoring-pdb         N/A             1                 1                     81d
+karpenter            karpenter                      N/A             1                 1                     81d
+kube-system          coredns                        N/A             1                 1                     81d
+kube-system          ebs-csi-controller             N/A             1                 1                     81d
+kyverno              kyverno-admission-controller   1               N/A               2                     81d
+
+Cluster version up to date - no pluto apis detection rquired

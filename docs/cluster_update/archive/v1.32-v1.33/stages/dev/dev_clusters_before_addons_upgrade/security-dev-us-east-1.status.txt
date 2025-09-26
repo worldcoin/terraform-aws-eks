@@ -1,0 +1,203 @@
+Cluster recon for tfh-security-dev-infra,us-east-1,security-dev-us-east-1
+
+Added new context tfh-security-dev-us-east-1 to /Users/lukasz.glowacki/.kube/config
+
+Current version: 1.32
+Next version: 1.33
+
+Checking addons...
+aws-ebs-csi-driver      v1.39.0-eksbuild.1
+coredns                 v1.11.4-eksbuild.10
+eks-pod-identity-agent  v1.3.5-eksbuild.2
+kube-proxy              v1.32.0-eksbuild.2
+snapshot-controller     v8.2.0-eksbuild.1
+vpc-cni                 v1.19.2-eksbuild.5
+
+Insights for the upcoming update to 1.33
+{
+    "insights": [
+        {
+            "id": "b2e435c2-7b0c-4b06-8452-e14f5dfdb416",
+            "name": "Kubelet version skew",
+            "category": "UPGRADE_READINESS",
+            "kubernetesVersion": "1.33",
+            "lastRefreshTime": "2025-09-15T17:54:05+02:00",
+            "lastTransitionTime": "2025-05-14T14:14:04+02:00",
+            "description": "Checks for kubelet versions of worker nodes in the cluster to see if upgrade would cause non compliance with supported Kubernetes kubelet version skew policy.",
+            "insightStatus": {
+                "status": "PASSING",
+                "reason": "Node kubelet versions match the cluster control plane version."
+            }
+        },
+        {
+            "id": "ec270a07-1222-42eb-b2f8-130742b01522",
+            "name": "EKS add-on version compatibility",
+            "category": "UPGRADE_READINESS",
+            "kubernetesVersion": "1.33",
+            "lastRefreshTime": "2025-09-15T17:54:13+02:00",
+            "lastTransitionTime": "2025-07-28T21:49:04+02:00",
+            "description": "Checks version of installed EKS add-ons to ensure they are compatible with the next version of Kubernetes. ",
+            "insightStatus": {
+                "status": "PASSING",
+                "reason": "All installed EKS add-on versions are compatible with next Kubernetes version."
+            }
+        },
+        {
+            "id": "79b071e1-941b-42eb-bafd-30e305d6ebc2",
+            "name": "kube-proxy version skew",
+            "category": "UPGRADE_READINESS",
+            "kubernetesVersion": "1.33",
+            "lastRefreshTime": "2025-09-15T17:54:05+02:00",
+            "lastTransitionTime": "2025-05-14T14:14:04+02:00",
+            "description": "Checks version of kube-proxy in cluster to see if upgrade would cause non compliance with supported Kubernetes kube-proxy version skew policy.",
+            "insightStatus": {
+                "status": "PASSING",
+                "reason": "kube-proxy versions match the cluster control plane version."
+            }
+        },
+        {
+            "id": "97d932aa-14c7-4043-b087-68ea37cd04b2",
+            "name": "Amazon Linux 2 compatibility",
+            "category": "UPGRADE_READINESS",
+            "kubernetesVersion": "1.33",
+            "lastRefreshTime": "2025-09-15T17:54:05+02:00",
+            "lastTransitionTime": "2025-09-05T13:49:05+02:00",
+            "description": "Checks if any nodes in the cluster are running Amazon Linux 2. Support for Amazon Linux 2 on Amazon EKS will end on November 26, 2025. Additionally, Amazon EKS will not release Amazon Linux 2 AMIs for Kubernetes version 1.33 and higher",
+            "insightStatus": {
+                "status": "PASSING",
+                "reason": "No Amazon Linux 2 nodes detected."
+            }
+        },
+        {
+            "id": "da55a94d-8249-4eb6-a769-4e071add279d",
+            "name": "Cluster health issues",
+            "category": "UPGRADE_READINESS",
+            "kubernetesVersion": "1.33",
+            "lastRefreshTime": "2025-09-15T17:54:13+02:00",
+            "lastTransitionTime": "2025-05-14T14:14:04+02:00",
+            "description": "Checks for any cluster health issues that prevent successful upgrade to the next Kubernetes version on EKS.",
+            "insightStatus": {
+                "status": "PASSING",
+                "reason": "No cluster health issues detected."
+            }
+        }
+    ]
+}
+
+Show full cluster description:
+{
+    "cluster": {
+        "name": "security-dev-us-east-1",
+        "arn": "arn:aws:eks:us-east-1:302263068167:cluster/security-dev-us-east-1",
+        "createdAt": "2025-05-14T13:53:11.013000+02:00",
+        "version": "1.32",
+        "endpoint": "https://152BF9D7C35B715FD142764ED3D5A83D.gr7.us-east-1.eks.amazonaws.com",
+        "roleArn": "arn:aws:iam::302263068167:role/eks-cluster-security-dev-us-east-1",
+        "resourcesVpcConfig": {
+            "subnetIds": [
+                "subnet-0a8e8b4eaca463e05",
+                "subnet-0f1e8bc2b0ae232f1",
+                "subnet-0ebfd0ab222aa6821"
+            ],
+            "securityGroupIds": [
+                "sg-0a049236a48de5d43"
+            ],
+            "clusterSecurityGroupId": "sg-06c0a4758260d0f06",
+            "vpcId": "vpc-05ab7c175bbfc9837",
+            "endpointPublicAccess": false,
+            "endpointPrivateAccess": true,
+            "publicAccessCidrs": [
+                "0.0.0.0/0"
+            ]
+        },
+        "kubernetesNetworkConfig": {
+            "serviceIpv4Cidr": "172.20.0.0/16",
+            "ipFamily": "ipv4",
+            "elasticLoadBalancing": {
+                "enabled": false
+            }
+        },
+        "logging": {
+            "clusterLogging": [
+                {
+                    "types": [
+                        "api",
+                        "audit",
+                        "authenticator",
+                        "controllerManager",
+                        "scheduler"
+                    ],
+                    "enabled": true
+                }
+            ]
+        },
+        "identity": {
+            "oidc": {
+                "issuer": "https://oidc.eks.us-east-1.amazonaws.com/id/152BF9D7C35B715FD142764ED3D5A83D"
+            }
+        },
+        "status": "ACTIVE",
+        "certificateAuthority": {
+            "data": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJVEZlOXlFb3BYazB3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TlRBMU1UUXhNVFV5TXpsYUZ3MHpOVEExTVRJeE1UVTNNemxhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUURUdFhKQ0NLYkFINHpxUDd5elA3c0ZBeUtLdmZUQzlOWWgrMGk5ZlJZeHRKNFl3T21LME5va2J2ZzYKdzl2ZHBWVngvODZkcjBJZzhZYWtXS1oxdDQyb1cyN3h6eHg3Z1VTeEppdUFJdG12dFcwZ3d5Z3FFY1lGa2tLbgpNWjN2NElRTWtmVGZjQnRVb3YxSjhyTEtRblcvOS83WE5LM2JUZlBpUUZ3RFNyM3k3dHppRW5FYTVzMmlyY2FsCjlpbEhKTGdoMUFGTm02bmhBWXJKdTh5OVQrQjdnSElqT1ExdE5tU1JJQVJTZW14ZnZlaVZuOEJGaEl3djRpbksKRzdsVEVhbzB4K1l0b2wyU29hSlJHQmMyanEwOGxBajVvYlo2YXdZaHc2dEJWWlNaaEh4ZjZOcXFDOHhpeThSNQpFRFJtZGJMQkRrRlJCam80R1IrVzNiTHdVeUpUQWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJTYXNEekp1YXJYOFYyQVphV3ZyYUtHOGNYOEl6QVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQy92bW5ENVhNSApNN2VLeWhOcHZqZ0hZbzdBL2dJSnBtR0VjYk5kbTRXMzcyRVFGeDZlM1B5NmZtY0FIbUlZc1FXUVcrbFE5Sk5vClMrVTBZWVhXdldhY0FNSS9KSnVGbVlUMjRXWFMzT0hLR2lSOGRjbGpzd2hzZmo5OFNLc2hMc3I5aHVwdnJrOFAKa2lNbEcxZ0ZNR2dNa1BxdkpvWmtxZWxjZVRUYXdJS1VsRURrRFZVK01zTS9KS1l4UUh5V0c4aXJYL0FnSXlQNAphbnJjYjlMcW5WQ3ZsS1Z4eVliR3V0K1J1d3RvWXZkZnhSZUhRdXpkVFZETkN1c1JLVUVhbDZtVHYzaHJnd244Ckd6RXVKN1JoRHdreGdEYjdYOStEL1ZCdWpCbDNlU05oR1ZLTGhMYWdxd1pmWjFKaHozSHJSbkVtK3A4dWY2K1QKQUF0ajZieTY1N3FqCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+        },
+        "platformVersion": "eks.16",
+        "tags": {
+            "Environment": "dev",
+            "karpenter.sh/discovery": "security-dev-us-east-1",
+            "Team": "security",
+            "CreatedBy": "terraform"
+        },
+        "encryptionConfig": [
+            {
+                "resources": [
+                    "secrets"
+                ],
+                "provider": {
+                    "keyArn": "arn:aws:kms:us-east-1:302263068167:key/dc11c29c-b54b-4d23-91fd-46486499568c"
+                }
+            }
+        ],
+        "accessConfig": {
+            "authenticationMode": "API_AND_CONFIG_MAP"
+        },
+        "upgradePolicy": {
+            "supportType": "EXTENDED"
+        },
+        "deletionProtection": false
+    }
+}
+
+Cluster nodes list
+NAME                           STATUS   ROLES    AGE     VERSION               INTERNAL-IP    EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION                    CONTAINER-RUNTIME
+ip-10-1-240-109.ec2.internal   Ready    <none>   12h     v1.32.8-eks-99d6cc0   10.1.240.109   <none>        Amazon Linux 2023.8.20250818   6.1.147-172.266.amzn2023.x86_64   containerd://1.7.27
+ip-10-1-240-201.ec2.internal   Ready    <none>   17h     v1.32.8-eks-99d6cc0   10.1.240.201   <none>        Amazon Linux 2023.8.20250818   6.1.147-172.266.amzn2023.x86_64   containerd://1.7.27
+ip-10-1-240-6.ec2.internal     Ready    <none>   172m    v1.32.8-eks-99d6cc0   10.1.240.6     <none>        Amazon Linux 2023.8.20250818   6.1.147-172.266.amzn2023.x86_64   containerd://1.7.27
+ip-10-1-241-15.ec2.internal    Ready    <none>   15h     v1.32.8-eks-99d6cc0   10.1.241.15    <none>        Amazon Linux 2023.8.20250818   6.1.147-172.266.amzn2023.x86_64   containerd://1.7.27
+ip-10-1-241-200.ec2.internal   Ready    <none>   12h     v1.32.8-eks-99d6cc0   10.1.241.200   <none>        Amazon Linux 2023.8.20250818   6.1.147-172.266.amzn2023.x86_64   containerd://1.7.27
+ip-10-1-241-54.ec2.internal    Ready    <none>   10d     v1.32.7-eks-3abbec1   10.1.241.54    <none>        Amazon Linux 2023.8.20250818   6.1.147-172.266.amzn2023.x86_64   containerd://1.7.27
+ip-10-1-241-88.ec2.internal    Ready    <none>   2d14h   v1.32.8-eks-99d6cc0   10.1.241.88    <none>        Amazon Linux 2023.8.20250818   6.1.147-172.266.amzn2023.x86_64   containerd://1.7.27
+ip-10-1-243-63.ec2.internal    Ready    <none>   7d22h   v1.32.8-eks-99d6cc0   10.1.243.63    <none>        Amazon Linux 2023.8.20250818   6.1.147-172.266.amzn2023.x86_64   containerd://1.7.27
+ip-10-1-244-67.ec2.internal    Ready    <none>   7d22h   v1.32.8-eks-99d6cc0   10.1.244.67    <none>        Amazon Linux 2023.8.20250818   6.1.147-172.266.amzn2023.x86_64   containerd://1.7.27
+
+Nodes with issues
+
+Pods with issues
+
+PodDisruptionBudgets
+NAMESPACE                     NAME                              MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
+cluster-monitoring            cluster-monitoring-pdb            N/A             1                 1                     124d
+commit-signing-verification   commit-signing-verification-pdb   N/A             1                 1                     75d
+fskp-signing-tools            fskp-signing-tools-pdb            N/A             1                 1                     70d
+karpenter                     karpenter                         N/A             1                 1                     124d
+kube-system                   coredns                           N/A             1                 1                     124d
+kube-system                   ebs-csi-controller                N/A             1                 1                     124d
+kyverno                       kyverno-admission-controller      1               N/A               2                     124d
+orb-os-signing-tools          orb-os-signing-tools-pdb          N/A             1                 1                     64d
+service-security-memgraph     service-security-memgraph-pdb     N/A             1                 1                     26d
+vuln-mgmt-app                 vuln-mgmt-api-pdb                 50%             N/A               0                     124d
+
+Detect deprecated or withdrawn apis with PLUTO
+Helm...
+There were no resources found with known deprecated apiVersions.
+All-in-cluster...
+There were no resources found with known deprecated apiVersions.

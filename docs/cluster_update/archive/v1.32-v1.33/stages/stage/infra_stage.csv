@@ -1,0 +1,10 @@
+tfh-analytics-stage-infra,us-east-1,analytics-stage-v2-us-east-1,tunnel-vpc-analytics-stage-us-east-1
+tfh-crypto-stage-infra,ap-northeast-1,crypto-stage-ap-northeast-1,tunnel-vpc-crypto-stage-ap-northeast-1
+tfh-crypto-stage-infra,eu-central-2,crypto-stage-eu-central-2,tunnel-vpc-crypto-stage-eu-central-2
+tfh-crypto-stage-infra,us-east-1,crypto-v2-stage-us-east-1,tunnel-vpc-crypto-stage-us-east-1
+tfh-df-enclave-stage-infra,us-east-1,df-enclave-stage-us-east-1,tunnel-vpc-df-enclave-stage-us-east-1
+tfh-ml-stage-infra,eu-central-1,ml-stage-eu-central-1,tunnel-vpc-ml-stage-eu-central-1
+tfh-orb-stage-infra,eu-central-1,orb-stage-v2-eu-central-1,tunnel-vpc-orb-stage-eu-central-1
+tfh-orb-stage-infra,eu-west-1,orb-stage-v2-eu-west-1,tunnel-vpc-orb-stage-eu-west-1
+tfh-orb-stage-infra,us-east-1,orb-stage-v2-us-east-1,tunnel-vpc-orb-stage-us-east-1
+tfh-world-chat-service-stage-infra,eu-west-1,world-chat-service-stage-eu-west-1,tunnel-vpc-world-chat-service-stage-eu-west-1

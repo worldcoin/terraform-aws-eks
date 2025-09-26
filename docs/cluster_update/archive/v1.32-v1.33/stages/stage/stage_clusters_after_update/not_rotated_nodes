@@ -1,0 +1,16 @@
+how many nodes are still running on the old version:
+
+5/11 analytics-stage-v2-us-east-1.status.md - done
+11/13 crypto-stage-eu-central-2.status.md - done
+14/16 crypto-v2-stage-us-east-1.status.md - done
+
+clear:
+crypto-stage-ap-northeast-1.status.md
+ml-stage-eu-central-1.status.md
+orb-stage-v2-eu-west-1.status.md
+orb-stage-v2-us-east-1.status.md
+
+out of scope:
+df-enclave-stage-us-east-1.status.md
+orb-stage-v2-eu-central-1.status.md
+world-chat-service-stage-eu-west-1.status.md
