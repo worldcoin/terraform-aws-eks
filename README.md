@@ -67,8 +67,9 @@ A minimal example of how to use this module.
 
 ```terraform
 module "eks" {
-    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
-  cluster_name = local.cluster_name
+    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v7.6.0"
+    cluster_name = local.cluster_name
+    region       = var.region
 
     vpc_config = module.vpc.config
 
@@ -86,8 +87,9 @@ Example of Internal load balancer setup
 
 ```terraform
 module "eks" {
-    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
-  cluster_name = local.cluster_name
+    source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v7.6.0"
+    cluster_name = local.cluster_name
+    region       = var.region
 
     vpc_config = module.vpc.config
 
@@ -108,8 +110,9 @@ Example off using Static Auto Scaling Group
 
 ```terraform
 module "eks" {
-  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
+  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v7.6.0"
   cluster_name = local.cluster_name
+  region       = var.region
 
   vpc_config           = module.vpc.config
   extra_role_mapping   = module.sso_roles.default_mappings
@@ -134,8 +137,9 @@ Example of using private subnets for internal NLB
 
 ```terraform
 module "eks" {
-  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
+  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v7.6.0"
   cluster_name = local.cluster_name
+  region       = var.region
 
   vpc_config                           = module.vpc.config
   extra_role_mapping                   = module.sso_roles.default_mappings
@@ -155,8 +159,9 @@ Example of using `additional_security_group_rules` to add rules to the node secu
 
 ```terraform
 module "eks" {
-  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
+  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v7.6.0"
   cluster_name = local.cluster_name
+  region       = var.region
 
   environment        = var.environment
   vpc_config         = module.vpc.config
@@ -210,8 +215,9 @@ The `access_entries` input allows you to associate access policies with access e
 
 ```terraform
 module "eks" {
-  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v4.5.0"
+  source       = "git@github.com:worldcoin/terraform-aws-eks?ref=v7.6.0"
   cluster_name = local.cluster_name
+  region       = var.region
 
   vpc_config = module.vpc.config
 
@@ -289,6 +295,10 @@ With this constrain only `create` operation work properly, other operation `upda
 Works like a charm for any case, from begining.
 
 ### Cluster update
+
+> [!NOTE]
+> Starting with version 7.6.0, specifying the AWS region via the `region` input variable is required.
+> Users must provide a valid region string (lowercase letters and digits, optionally separated by single hyphens), for example `us-east-1`.
 
 General steps to update EKS cluster:
 
@@ -427,7 +437,7 @@ To remove the cluster you have to:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.5 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
 | <a name="requirement_cloudflare"></a> [cloudflare](#requirement\_cloudflare) | >= 4.10 |
 | <a name="requirement_datadog"></a> [datadog](#requirement\_datadog) | >= 3.0 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.0 |
@@ -438,7 +448,7 @@ To remove the cluster you have to:
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.5 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
 | <a name="provider_cloudflare"></a> [cloudflare](#provider\_cloudflare) | >= 4.10 |
 | <a name="provider_datadog"></a> [datadog](#provider\_datadog) | >= 3.0 |
 | <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | >= 2.0 |
@@ -451,7 +461,7 @@ To remove the cluster you have to:
 |------|--------|---------|
 | <a name="module_alb"></a> [alb](#module\_alb) | git@github.com:worldcoin/terraform-aws-alb.git | v0.19.0 |
 | <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | git@github.com:worldcoin/terraform-datadog-kubernetes | v1.2.2 |
-| <a name="module_nlb"></a> [nlb](#module\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v1.1.0 |
+| <a name="module_nlb"></a> [nlb](#module\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v1.1.1 |
 
 ## Resources
 
@@ -537,7 +547,6 @@ To remove the cluster you have to:
 | [kubernetes_storage_class.efs](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class) | resource |
 | [kubernetes_storage_class.gp3](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class) | resource |
 | [random_password.dd_clusteragent_token](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
-| [aws_ami.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_caller_identity.account](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
 | [aws_eks_cluster_auth.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
@@ -596,8 +605,10 @@ To remove the cluster you have to:
 | <a name="input_efs_csi_driver_enabled"></a> [efs\_csi\_driver\_enabled](#input\_efs\_csi\_driver\_enabled) | Whether to enable the EFS CSI driver (IAM Role & StorageClass). | `bool` | `false` | no |
 | <a name="input_eks_node_group"></a> [eks\_node\_group](#input\_eks\_node\_group) | Configuration for EKS node group | <pre>object({<br>    arch  = string<br>    types = list(string)<br>    disk  = optional(number, 100)<br>    dns   = optional(string, "172.20.0.10")<br>  })</pre> | `null` | no |
 | <a name="input_enclaves"></a> [enclaves](#input\_enclaves) | Enabling Nitro Enclaves for the cluster | `bool` | `false` | no |
-| <a name="input_enclaves_autoscaling_group"></a> [enclaves\_autoscaling\_group](#input\_enclaves\_autoscaling\_group) | Configuration for Nitro Enclaves autoscaling group | <pre>object({<br>    size = number<br>  })</pre> | <pre>{<br>  "size": 2<br>}</pre> | no |
+| <a name="input_enclaves_autoscaling_group"></a> [enclaves\_autoscaling\_group](#input\_enclaves\_autoscaling\_group) | Configuration for Nitro Enclaves autoscaling group | <pre>object({<br>    size     = optional(number, 1)<br>    min_size = optional(number, 0)<br>    max_size = optional(number, 10)<br>  })</pre> | `{}` | no |
+| <a name="input_enclaves_cpu_allocation"></a> [enclaves\_cpu\_allocation](#input\_enclaves\_cpu\_allocation) | Number of CPUs to allocate for Nitro Enclaves per node | `string` | `"4"` | no |
 | <a name="input_enclaves_instance_type"></a> [enclaves\_instance\_type](#input\_enclaves\_instance\_type) | Instance type for Nitro Enclaves | `string` | `"m7a.2xlarge"` | no |
+| <a name="input_enclaves_memory_allocation"></a> [enclaves\_memory\_allocation](#input\_enclaves\_memory\_allocation) | Memory in MiB to allocate for Nitro Enclaves per node | `string` | `"4096"` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment of cluster | `string` | n/a | yes |
 | <a name="input_external_alb_enabled"></a> [external\_alb\_enabled](#input\_external\_alb\_enabled) | Internal Network load balancers to create. If true, the NLB will be created. | `bool` | `true` | no |
 | <a name="input_external_check_locations"></a> [external\_check\_locations](#input\_external\_check\_locations) | List of DD locations to check cluster availability from | `list(string)` | <pre>[<br>  "aws:af-south-1",<br>  "aws:ap-south-1",<br>  "aws:ap-southeast-1",<br>  "aws:eu-central-1",<br>  "aws:sa-east-1",<br>  "aws:us-east-1"<br>]</pre> | no |
@@ -621,6 +632,7 @@ To remove the cluster you have to:
 | <a name="input_node_monitoring_agent_enabled"></a> [node\_monitoring\_agent\_enabled](#input\_node\_monitoring\_agent\_enabled) | Enable node monitoring agent | `bool` | `false` | no |
 | <a name="input_on_demand_base_capacity"></a> [on\_demand\_base\_capacity](#input\_on\_demand\_base\_capacity) | The number of minimum on-demand instances to launch. | `number` | `1` | no |
 | <a name="input_open_to_all"></a> [open\_to\_all](#input\_open\_to\_all) | Set to `true` if you want to open the cluster to all traffic from internet | `bool` | `false` | no |
+| <a name="input_region"></a> [region](#input\_region) | AWS Region | `string` | n/a | yes |
 | <a name="input_s3_mountpoint_csi_driver_enabled"></a> [s3\_mountpoint\_csi\_driver\_enabled](#input\_s3\_mountpoint\_csi\_driver\_enabled) | Whether to enable the S3 mountpoint CSI driver | `bool` | `false` | no |
 | <a name="input_s3_mountpoint_csi_s3_bucket_arns"></a> [s3\_mountpoint\_csi\_s3\_bucket\_arns](#input\_s3\_mountpoint\_csi\_s3\_bucket\_arns) | List of S3 bucket ARNs to allow access from the S3 mountpoint CSI driver | `list(string)` | <pre>[<br>  "*"<br>]</pre> | no |
 | <a name="input_static_autoscaling_group"></a> [static\_autoscaling\_group](#input\_static\_autoscaling\_group) | Configuration for static autoscaling group | <pre>object({<br>    size = number<br>    arch = optional(string, null)<br>    type = string<br>  })</pre> | `null` | no |

@@ -16,6 +16,15 @@ variable "environment" {
   }
 }
 
+variable "region" {
+  description = "AWS Region"
+  type        = string
+  validation {
+    condition     = regex("^([a-z0-9]+(-[a-z0-9]+)*)$", var.region)
+    error_message = "AWS Region must be lowercase alphanumeric groups separated by single hyphens (e.g. us-east-1)"
+  }
+}
+
 variable "cluster_version" {
   description = "The Kubernetes version to use for the cluster."
   type        = string
