@@ -1,5 +1,6 @@
 cluster_name = "eks-test"
 environment  = "test"
+region       = "us-east-1"
 vpc_config = {
   vpc_id          = "vpc-1234567890abcdef0"
   private_subnets = ["subnet-1234567890abcdef0", "subnet-1234567890abcdef1", "subnet-1234567890abcdef2"]
