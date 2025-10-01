@@ -63,6 +63,10 @@ resource "aws_autoscaling_group" "enclave" {
   min_size            = var.enclaves_autoscaling_group.min_size
   max_size            = var.enclaves_autoscaling_group.max_size
 
+  lifecycle {
+    ignore_changes = [desired_capacity]
+  }
+
   mixed_instances_policy {
     instances_distribution {
       on_demand_base_capacity = var.enclaves_autoscaling_group.size
