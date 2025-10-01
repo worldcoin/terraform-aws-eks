@@ -668,3 +668,4 @@ To remove the cluster you have to:
 | <a name="output_nlb_zone_ids"></a> [nlb\_zone\_ids](#output\_nlb\_zone\_ids) | Map of zone IDs of the NLBs |
 | <a name="output_node_security_group_id"></a> [node\_security\_group\_id](#output\_node\_security\_group\_id) | The security group ID of the EKS nodes |
 <!-- END_TF_DOCS -->
+
