@@ -111,4 +111,11 @@ resource "aws_autoscaling_group" "enclave" {
     propagate_at_launch = false
   }
 
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 50
+      auto_rollback          = true
+    }
+  }
 }
