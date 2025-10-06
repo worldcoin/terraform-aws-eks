@@ -299,7 +299,7 @@ Example with enclave tracks for running multiple versions simultaneously:
 
 ```terraform
 module "eks" {
-  source = "git@github.com:worldcoin/terraform-aws-eks?ref=v7.6.0"
+  source = "git@github.com:worldcoin/terraform-aws-eks?ref=v7.11.0"
   
   # ... other configuration ...
   
