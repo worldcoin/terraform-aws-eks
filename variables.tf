@@ -611,6 +611,29 @@ variable "enclaves_memory_allocation" {
   default     = "4096"
 }
 
+variable "enclave_tracks" {
+  description = "Additional enclave tracks for multi-version deployments. Key is used as track identifier."
+  type = map(object({
+    autoscaling_group = optional(object({
+      size     = optional(number, 1)
+      min_size = optional(number, 0)
+      max_size = optional(number, 10)
+    }), {})
+    instance_type     = optional(string)
+    cpu_allocation    = optional(string)
+    memory_allocation = optional(string)
+  }))
+  default = {}
+
+  validation {
+    condition = alltrue([
+      for k, v in var.enclave_tracks :
+      can(regex("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$", k)) && length(k) <= 30
+    ])
+    error_message = "Track keys must be valid Kubernetes labels (lowercase alphanumeric, hyphens, max 30 chars)"
+  }
+}
+
 variable "storage_class" {
   description = "Configuration for the storage class that defines how volumes are allocated in Kubernetes."
 
