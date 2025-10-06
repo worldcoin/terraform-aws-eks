@@ -270,6 +270,89 @@ aws eks list-access-policies --output table --region us-east-1
 
 The module is creating a DataDog integration secret for the [apiKeyExistingSecret](https://github.com/DataDog/helm-charts/blob/main/charts/datadog/values.yaml#L38) of the DataDog helm chart.
 
+### Nitro Enclaves
+
+Example with basic enclave support:
+
+```terraform
+module "eks" {
+  source = "git@github.com:worldcoin/terraform-aws-eks?ref=v7.6.0"
+  
+  # ... other configuration ...
+  
+  # Enable basic enclave support (legacy)
+  enclaves               = true
+  enclaves_instance_type = "m7a.4xlarge"
+  enclaves_autoscaling_group = {
+    size     = 2
+    min_size = 1
+    max_size = 4
+  }
+  enclaves_cpu_allocation    = "8"
+  enclaves_memory_allocation = "8192"
+}
+```
+
+### Enclave Tracks (Multi-Version Support)
+
+Example with enclave tracks for running multiple versions simultaneously:
+
+```terraform
+module "eks" {
+  source = "git@github.com:worldcoin/terraform-aws-eks?ref=v7.6.0"
+  
+  # ... other configuration ...
+  
+  # Multiple enclave tracks for different versions
+  enclave_tracks = {
+    stable = {
+      autoscaling_group = {
+        size     = 3  # Spreads across AZs
+        min_size = 3
+        max_size = 9
+      }
+      instance_type     = "m7a.4xlarge"
+      cpu_allocation    = "8"
+      memory_allocation = "8192"
+    }
+    
+    canary = {
+      autoscaling_group = {
+        size     = 1
+        min_size = 0
+        max_size = 3
+      }
+      instance_type = "m7a.2xlarge"
+      # Uses default cpu/memory allocation if not specified
+    }
+  }
+}
+```
+
+Each track creates:
+- Dedicated ASG with nodes spread across availability zones
+- Node labels: `enclave.tools/track=<track_name>`
+- Node taints: `enclave.tools/track=<track_name>:NoSchedule`
+
+Deploy workloads to specific tracks using nodeSelector:
+
+```yaml
+nodeSelector:
+  aws-nitro-enclaves-k8s-dp: enabled
+  enclave.tools/track: "stable"
+
+tolerations:
+  - key: "enclave"
+    operator: "Exists"
+    effect: "NoExecute"
+  - key: "enclave.tools/track"
+    operator: "Equal"
+    value: "stable"
+    effect: "NoSchedule"
+```
+
+For detailed enclave tracks documentation, see [ENCLAVE_TRACKS.md](./ENCLAVE_TRACKS.md).
+
 ### Monitoring
 
 Monitoring the cluster using Datadog is also included, enabled by default, by using [terraform-datadog-kubernetes](https://github.com/kabisa/terraform-datadog-kubernetes).
@@ -609,6 +692,7 @@ To remove the cluster you have to:
 | <a name="input_enclaves_cpu_allocation"></a> [enclaves\_cpu\_allocation](#input\_enclaves\_cpu\_allocation) | Number of CPUs to allocate for Nitro Enclaves per node | `string` | `"4"` | no |
 | <a name="input_enclaves_instance_type"></a> [enclaves\_instance\_type](#input\_enclaves\_instance\_type) | Instance type for Nitro Enclaves | `string` | `"m7a.2xlarge"` | no |
 | <a name="input_enclaves_memory_allocation"></a> [enclaves\_memory\_allocation](#input\_enclaves\_memory\_allocation) | Memory in MiB to allocate for Nitro Enclaves per node | `string` | `"4096"` | no |
+| <a name="input_enclave_tracks"></a> [enclave\_tracks](#input\_enclave\_tracks) | Additional enclave tracks for multi-version deployments. Key is used as track identifier. | <pre>map(object({<br>    autoscaling_group = optional(object({<br>      size     = optional(number, 1)<br>      min_size = optional(number, 0)<br>      max_size = optional(number, 10)<br>    }), {})<br>    instance_type     = optional(string)<br>    cpu_allocation    = optional(string)<br>    memory_allocation = optional(string)<br>  }))</pre> | `{}` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment of cluster | `string` | n/a | yes |
 | <a name="input_external_alb_enabled"></a> [external\_alb\_enabled](#input\_external\_alb\_enabled) | Internal Network load balancers to create. If true, the NLB will be created. | `bool` | `true` | no |
 | <a name="input_external_check_locations"></a> [external\_check\_locations](#input\_external\_check\_locations) | List of DD locations to check cluster availability from | `list(string)` | <pre>[<br>  "aws:af-south-1",<br>  "aws:ap-south-1",<br>  "aws:ap-southeast-1",<br>  "aws:eu-central-1",<br>  "aws:sa-east-1",<br>  "aws:us-east-1"<br>]</pre> | no |
