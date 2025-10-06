@@ -305,7 +305,7 @@ module "eks" {
   
   # Multiple enclave tracks for different versions
   enclave_tracks = {
-    stable = {
+    v1 = {
       autoscaling_group = {
         size     = 3  # Spreads across AZs
         min_size = 3
@@ -316,7 +316,7 @@ module "eks" {
       memory_allocation = "8192"
     }
     
-    canary = {
+    v2 = {
       autoscaling_group = {
         size     = 1
         min_size = 0
