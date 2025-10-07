@@ -14,4 +14,5 @@ resource "cloudflare_dns_record" "monitoring" {
   type    = "CNAME"
   content = module.alb["traefik"].dns_name
   proxied = true
+  ttl     = 1
 }
