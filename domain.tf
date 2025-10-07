@@ -1,6 +1,8 @@
 data "cloudflare_zone" "worldcoin_dev" {
   count = var.monitoring_enabled ? 1 : 0
-  name  = "worldcoin.dev"
+  filter = {
+    name = "worldcoin.dev"
+  }
 }
 
 # dns record for cluster monitoring
