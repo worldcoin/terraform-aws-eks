@@ -156,7 +156,7 @@ variable "monitoring_notification_channel" {
   type        = string
   default     = "@slack-TFH-infrastructure-alerts"
   validation {
-    condition     = can(regex("^@slack-[A-Za-z0-9\\-]+$", var.monitoring_notification_channel))
+    condition     = can(regex("^@(?:slack|webhook)-[A-Za-z0-9\\-]+$", var.monitoring_notification_channel))
     error_message = "Invalid notification channel"
   }
 }
