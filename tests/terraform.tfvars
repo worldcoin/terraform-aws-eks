@@ -77,3 +77,5 @@ eks_node_group = {
   arch  = "amd64"
   types = ["t3a.large"]
 }
+
+monitoring_enabled = false
