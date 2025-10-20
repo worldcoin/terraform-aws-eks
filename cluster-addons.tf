@@ -58,6 +58,13 @@ locals {
     "1.32" = "v2.0.0-eksbuild.1"
     "1.33" = "v2.0.0-eksbuild.1"
   }
+
+  # https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
+  # aws eks describe-addon-versions --addon-name metrics-server --region us-east-1 --output json| jq '.addons[0].addonVersions[0]'
+  metrcis_server_version = {
+    "1.32" = "v0.8.0-eksbuild.2"
+    "1.33" = "v0.8.0-eksbuild.2"
+  }
 }
 
 resource "aws_eks_addon" "vpc_cni" {
@@ -166,6 +173,30 @@ resource "aws_eks_addon" "mountpoint_s3_csi" {
     {
       node : {
         tolerateAllTaints : true,
+      }
+    }
+  )
+}
+
+resource "aws_eks_addon" "metrics_server" {
+  cluster_name                = aws_eks_cluster.this.id
+  addon_name                  = "metrics-server"
+  addon_version               = local.metrcis_server_version[var.cluster_version]
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+
+  configuration_values = jsonencode(
+    {
+      replicas = 1
+      resources = {
+        requests = {
+          cpu    = "100m"
+          memory = "200Mi"
+        }
+        limits = {
+          cpu: "100m"
+          memory: "200Mi"
+        }
       }
     }
   )
