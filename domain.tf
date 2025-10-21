@@ -3,13 +3,17 @@ data "cloudflare_zone" "worldcoin_dev" {
   name  = "worldcoin.dev"
 }
 
-# dns record for cluster monitoring
-resource "cloudflare_record" "monitoring" {
-  count = var.monitoring_enabled && var.external_alb_enabled ? 1 : 0
+removed {
+  from = cloudflare_record.monitoring
 
-  zone_id = one(data.cloudflare_zone.worldcoin_dev).id
-  name    = format("%s.%s", var.cluster_name, "monitoring.worldcoin.dev")
-  type    = "CNAME"
-  content = module.alb["traefik"].dns_name
-  proxied = true
+  lifecycle {
+    destroy = false
+  }
+}
+
+# Dummy resource to ensure state is updated even if cloudflare_record resources weren't created
+resource "null_resource" "cloudflare_migration_marker" {
+  triggers = {
+    migration_timestamp = timestamp()
+  }
 }
