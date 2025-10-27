@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "karpenter" {
       "ec2:CreateFleet",
       "ec2:DescribeSpotPriceHistory",
       "pricing:GetProducts",
-      "ec2:DescribeCapacityReservations"
+      "ec2:DescribeCapacityReservations",
     ]
   }
   statement {
@@ -159,7 +159,10 @@ data "aws_iam_policy_document" "karpenter" {
     sid       = "AllowInstanceProfileReadActions"
     effect    = "Allow"
     resources = ["*"]
-    actions   = ["iam:GetInstanceProfile"]
+    actions = [
+      "iam:GetInstanceProfile",
+      "iam:ListInstanceProfiles",
+    ]
   }
   statement {
     sid    = "AllowSQSActions"
