@@ -34,15 +34,17 @@ variable "cluster_version" {
 variable "vpc_config" {
   description = "VPC configuration from aws/vps module"
   type = object({
-    vpc_id          = string
-    private_subnets = list(string)
-    public_subnets  = list(string)
+    vpc_id              = string
+    private_subnets     = list(string)
+    public_subnets      = list(string)
+    public_access_cidrs = optional(list(string), ["0.0.0.0/0"])
   })
   validation {
     condition = (
-      can(regex("^vpc-\\w", var.vpc_config.vpc_id)) &&
-      alltrue([for subnet in var.vpc_config.private_subnets : can(regex("subnet-\\w+", subnet))]) &&
-      alltrue([for subnet in var.vpc_config.public_subnets : can(regex("subnet-\\w+", subnet))])
+    can(regex("^vpc-\\w", var.vpc_config.vpc_id)) &&
+    alltrue([for subnet in var.vpc_config.private_subnets : can(regex("subnet-\\w+", subnet))]) &&
+    alltrue([for subnet in var.vpc_config.public_subnets : can(regex("subnet-\\w+", subnet))]) &&
+    alltrue([for cidr in var.vpc_config.public_access_cidrs : can(cidrnetmask(cidr))])
     )
     error_message = "Invalid VPC configuration"
   }
