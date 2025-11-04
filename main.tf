@@ -10,6 +10,7 @@ resource "aws_eks_cluster" "this" {
     endpoint_public_access  = var.cluster_endpoint_public_access
     security_group_ids      = [aws_security_group.cluster.id]
     subnet_ids              = var.vpc_config.public_subnets
+    public_access_cidrs     = var.vpc_config.public_access_cidrs
   }
 
   encryption_config {
