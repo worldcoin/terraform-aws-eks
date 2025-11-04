@@ -427,6 +427,16 @@ variable "cluster_endpoint_public_access" {
   default     = false
 }
 
+variable "public_access_cidrs" {
+  description = "List of CIDR blocks. Indicates which CIDR blocks can access the Amazon EKS public API server endpoint when enabled."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+  validation {
+    condition = alltrue([for cidr in var.public_access_cidrs : can(cidrnetmask(cidr))])
+    error_message = "All public access CIDRs must be valid CIDR blocks."
+  }
+}
+
 variable "acm_extra_arns" {
   description = "ARNs of ACM certificates used for TLS, attached as additional certificates to the ALB"
   type        = list(string)
