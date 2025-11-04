@@ -40,9 +40,9 @@ variable "vpc_config" {
   })
   validation {
     condition = (
-    can(regex("^vpc-\\w", var.vpc_config.vpc_id)) &&
-    alltrue([for subnet in var.vpc_config.private_subnets : can(regex("subnet-\\w+", subnet))]) &&
-    alltrue([for subnet in var.vpc_config.public_subnets : can(regex("subnet-\\w+", subnet))])
+      can(regex("^vpc-\\w", var.vpc_config.vpc_id)) &&
+      alltrue([for subnet in var.vpc_config.private_subnets : can(regex("subnet-\\w+", subnet))]) &&
+      alltrue([for subnet in var.vpc_config.public_subnets : can(regex("subnet-\\w+", subnet))])
     )
     error_message = "Invalid VPC configuration"
   }
