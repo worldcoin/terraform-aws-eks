@@ -250,7 +250,7 @@ variable "vpc_cni_enable_prefix_delegation" {
 variable "vpc_cni_warm_ip_target" {
   description = "Number of IPs to keep warm for each node to speed up pod scheduling"
   type        = string
-  default     = "8"
+  default     = "4"
 }
 
 variable "vpc_cni_warm_eni_target" {
@@ -432,7 +432,7 @@ variable "public_access_cidrs" {
   type        = list(string)
   default     = ["0.0.0.0/0"]
   validation {
-    condition = alltrue([for cidr in var.public_access_cidrs : can(cidrnetmask(cidr))])
+    condition     = alltrue([for cidr in var.public_access_cidrs : can(cidrnetmask(cidr))])
     error_message = "All public access CIDRs must be valid CIDR blocks."
   }
 }
@@ -685,7 +685,7 @@ variable "deploy_desired_vs_status_evaluation_period" {
 variable "vpc_cni_enable_pod_eni" {
   description = "Enable pod ENI support"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "vpc_cni_pod_security_group_enforcing_mode" {
