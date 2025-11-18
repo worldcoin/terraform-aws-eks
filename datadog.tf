@@ -65,7 +65,8 @@ data "datadog_synthetics_locations" "locations" {
 }
 
 resource "datadog_synthetics_test" "cluster_monitoring" {
-  count     = var.monitoring_enabled ? 1 : 0
+  count = var.monitoring_enabled && var.monitoring_external_enabled ? 1 : 0
+
   name      = "Cluster ${var.cluster_name} unreachable"
   type      = "api"
   subtype   = "http"

@@ -151,6 +151,12 @@ variable "monitoring_enabled" {
   default     = true
 }
 
+variable "monitoring_external_enabled" {
+  description = "Whether to enable external monitoring (Datadog Synthetics)."
+  type        = bool
+  default     = true
+}
+
 variable "monitoring_notification_channel" {
   description = "The Datadog notification channel to use for monitoring alerts."
   type        = string
