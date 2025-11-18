@@ -26,7 +26,7 @@ data "aws_iam_policy_document" "keda" {
     effect = "Allow"
 
     actions = [
-      "sqs:getqueueattributes",
+      "sqs:GetQueueAttributes",
     ]
 
     resources = ["*"]
