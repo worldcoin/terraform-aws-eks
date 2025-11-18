@@ -39,7 +39,7 @@ resource "aws_iam_role_policy" "keda" {
   policy = data.aws_iam_policy_document.keda.json
 }
 
-resource "aws_eks_pod_identity_association" "this" {
+resource "aws_eks_pod_identity_association" "keda" {
   cluster_name    = aws_eks_cluster.this.id
   namespace       = "keda"
   service_account = "keda-operator"
