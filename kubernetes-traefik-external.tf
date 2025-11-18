@@ -117,9 +117,4 @@ module "alb" {
   additional_open_ports      = var.additional_open_ports
   drop_invalid_header_fields = var.drop_invalid_header_fields
   acm_extra_arns             = var.acm_extra_arns
-
-  providers = {
-    aws                = aws
-    aws.internal-tools = aws.internal-tools
-  }
 }
