@@ -585,26 +585,6 @@ variable "gha_cidr" {
   }
 }
 
-variable "enclaves" {
-  description = "Enabling Nitro Enclaves for the cluster"
-  type        = bool
-  default     = false
-}
-
-variable "enclaves_autoscaling_group" {
-  description = "Configuration for Nitro Enclaves autoscaling group"
-  type = object({
-    size     = optional(number, 1)
-    min_size = optional(number, 0)
-    max_size = optional(number, 10)
-  })
-  default = {}
-  validation {
-    condition     = can(regex("\\d+", var.enclaves_autoscaling_group.size)) && var.enclaves_autoscaling_group.size > 0
-    error_message = "Invalid Nitro Enclaves autoscaling group configuration"
-  }
-}
-
 variable "enclaves_instance_type" {
   description = "Instance type for Nitro Enclaves"
   type        = string
