@@ -78,7 +78,7 @@ locals {
 resource "aws_autoscaling_group" "enclave_track" {
   for_each = local.subnet_track_combinations
 
-  name                = "eks-node-enclaves-${each.value.track_key}-${var.cluster_name}"
+  name                = "eks-enclave-${each.value.track_key}-${each.value.subnet}-${var.cluster_name}"
   vpc_zone_identifier = [each.value.subnet]
   desired_capacity    = each.value.track_value.autoscaling_group.size
   min_size            = each.value.track_value.autoscaling_group.min_size
