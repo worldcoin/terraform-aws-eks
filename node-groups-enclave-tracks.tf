@@ -120,12 +120,6 @@ resource "aws_autoscaling_group" "enclave_track" {
   }
 
   tag {
-    key                 = "k8s.io/cluster-autoscaler/node-template/taint/enclave.tools/track"
-    value               = "${each.value.track_key}:NoSchedule"
-    propagate_at_launch = false
-  }
-
-  tag {
     key                 = "k8s.io/cluster-autoscaler/node-template/label/intent"
     value               = "enclave"
     propagate_at_launch = false

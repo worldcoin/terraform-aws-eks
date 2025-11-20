@@ -253,6 +253,7 @@ Once the policy_arn is not specified, the default AmazonEKSAdminPolicy is used.
 #### AWS EKS Cluster Policies
 
 Most common used AWS policies for EKS clusters:
+
 - AmazonEKSClusterAdminPolicy: This policy grants administrator access to a cluster and is equivalent to the RBAC cluster-admin role with star permissions on everything.
 - AmazonEKSAdminPolicy: This policy is equivalent to the RBAC admin role. It provides broad permissions to resources, typically scoped to a specific namespace. It is somewhat restricted when it comes to modifying namespace configurations or affecting other namespaces. This policy is designed to support namespace-based multi-tenancy. If you want an IAM principal to have a more limited administrative scope, consider using AmazonEKSAdminPolicy instead of AmazonEKSClusterAdminPolicy.
 - AmazonEKSEditPolicy: This policy grants access to edit most Kubernetes resources, usually within a specific namespace. It allows reading secrets and editing resources, but it should not serve as a security boundary, as there are several possible privilege escalation paths to AmazonEKSClusterAdminPolicy.
@@ -330,6 +331,7 @@ module "eks" {
 ```
 
 Each track creates:
+
 - Dedicated ASG with nodes spread across availability zones
 - Node labels: `enclave.tools/track=<track_name>`
 - Node taints: `enclave.tools/track=<track_name>:NoSchedule`
@@ -345,10 +347,6 @@ tolerations:
   - key: "enclave"
     operator: "Exists"
     effect: "NoExecute"
-  - key: "enclave.tools/track"
-    operator: "Equal"
-    value: "stable"
-    effect: "NoSchedule"
 ```
 
 For detailed enclave tracks documentation, see [ENCLAVE_TRACKS.md](./ENCLAVE_TRACKS.md).
@@ -542,9 +540,9 @@ To remove the cluster you have to:
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_alb"></a> [alb](#module\_alb) | git@github.com:worldcoin/terraform-aws-alb.git | v0.19.0 |
-| <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | git@github.com:worldcoin/terraform-datadog-kubernetes | v1.2.2 |
-| <a name="module_nlb"></a> [nlb](#module\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v1.1.1 |
+| <a name="module_alb"></a> [alb](#module\_alb) | <git@github.com>:worldcoin/terraform-aws-alb.git | v0.19.0 |
+| <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | <git@github.com>:worldcoin/terraform-datadog-kubernetes | v1.2.2 |
+| <a name="module_nlb"></a> [nlb](#module\_nlb) | <git@github.com>:worldcoin/terraform-aws-nlb.git | v1.1.1 |
 
 ## Resources
 
@@ -727,7 +725,7 @@ To remove the cluster you have to:
 | <a name="input_use_private_subnets_for_internal_nlb"></a> [use\_private\_subnets\_for\_internal\_nlb](#input\_use\_private\_subnets\_for\_internal\_nlb) | Set to `true` if you want to use private subnets for internal NLB | `bool` | `false` | no |
 | <a name="input_vpc_cni_enable_pod_eni"></a> [vpc\_cni\_enable\_pod\_eni](#input\_vpc\_cni\_enable\_pod\_eni) | Enable pod ENI support | `bool` | `true` | no |
 | <a name="input_vpc_cni_enable_prefix_delegation"></a> [vpc\_cni\_enable\_prefix\_delegation](#input\_vpc\_cni\_enable\_prefix\_delegation) | Enable prefix delegation for IPv6, allocate IPs in /28 blocks (instead of all at once) | `bool` | `false` | no |
-| <a name="input_vpc_cni_external_snat"></a> [vpc\_cni\_external\_snat](#input\_vpc\_cni\_external\_snat) | Needed to enable cross-vpc pod-to-pod communication - see: https://github.com/aws/amazon-vpc-cni-k8s?tab=readme-ov-file#aws_vpc_k8s_cni_externalsnat | `string` | `false` | no |
+| <a name="input_vpc_cni_external_snat"></a> [vpc\_cni\_external\_snat](#input\_vpc\_cni\_external\_snat) | Needed to enable cross-vpc pod-to-pod communication - see: <https://github.com/aws/amazon-vpc-cni-k8s?tab=readme-ov-file#aws_vpc_k8s_cni_externalsnat> | `string` | `false` | no |
 | <a name="input_vpc_cni_pod_security_group_enforcing_mode"></a> [vpc\_cni\_pod\_security\_group\_enforcing\_mode](#input\_vpc\_cni\_pod\_security\_group\_enforcing\_mode) | Set pod security group enforcing mode | `string` | `"standard"` | no |
 | <a name="input_vpc_cni_version_override"></a> [vpc\_cni\_version\_override](#input\_vpc\_cni\_version\_override) | The version of the VPC CNI plugin to use. If not specified, the default version for the cluster version will be used. | `string` | `""` | no |
 | <a name="input_vpc_cni_warm_eni_target"></a> [vpc\_cni\_warm\_eni\_target](#input\_vpc\_cni\_warm\_eni\_target) | Number of ENIs to keep warm for each node to speed up pod scheduling | `string` | `"1"` | no |

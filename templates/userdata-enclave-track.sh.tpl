@@ -49,9 +49,6 @@ spec:
       registerWithTaints:
         - key: enclave
           effect: NoExecute
-        - key: enclave.tools/track
-          value: "${enclave_track}"
-          effect: NoSchedule
     flags:            # List of kubelet flags
        - --node-labels=aws-nitro-enclaves-k8s-dp=enabled,intent=enclave,enclave.tools/track=${enclave_track}
  
