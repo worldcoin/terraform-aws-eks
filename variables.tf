@@ -635,9 +635,10 @@ variable "enclave_tracks" {
       min_size = optional(number, 0)
       max_size = optional(number, 10)
     }), {})
-    instance_type     = optional(string)
-    cpu_allocation    = optional(string)
-    memory_allocation = optional(string)
+    instance_type      = optional(string)
+    availability_zones = optional(list(string))
+    cpu_allocation     = optional(string)
+    memory_allocation  = optional(string)
   }))
   default = {}
 
