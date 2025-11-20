@@ -59,14 +59,30 @@ resource "aws_launch_template" "enclave_track" {
   )
 }
 
-resource "aws_autoscaling_group" "enclave_track" {
-  for_each = var.enclave_tracks
+locals {
+  # create a map for each subnet and track combination
+  subnet_track_combinations = {
+    for combination in flatten([
+      for track_key, track_value in var.enclave_tracks : [
+        for subnet in var.vpc_config.private_subnets : {
+          key         = "${track_key}-${subnet}"
+          track_key   = track_key
+          track_value = track_value
+          subnet      = subnet
+        }
+      ]
+    ]) : combination.key => combination
+  }
+}
 
-  name                = "eks-node-enclaves-${each.key}-${var.cluster_name}"
-  vpc_zone_identifier = var.vpc_config.private_subnets
-  desired_capacity    = each.value.autoscaling_group.size
-  min_size            = each.value.autoscaling_group.min_size
-  max_size            = each.value.autoscaling_group.max_size
+resource "aws_autoscaling_group" "enclave_track" {
+  for_each = local.subnet_track_combinations
+
+  name                = "eks-enclave-${each.value.track_key}-${each.value.subnet}-${var.cluster_name}"
+  vpc_zone_identifier = [each.value.subnet]
+  desired_capacity    = each.value.track_value.autoscaling_group.size
+  min_size            = each.value.track_value.autoscaling_group.min_size
+  max_size            = each.value.track_value.autoscaling_group.max_size
 
   lifecycle {
     ignore_changes = [desired_capacity]
@@ -74,12 +90,12 @@ resource "aws_autoscaling_group" "enclave_track" {
 
   mixed_instances_policy {
     instances_distribution {
-      on_demand_base_capacity = each.value.autoscaling_group.size
+      on_demand_base_capacity = each.value.track_value.autoscaling_group.size
     }
 
     launch_template {
       launch_template_specification {
-        launch_template_id = aws_launch_template.enclave_track[each.key].id
+        launch_template_id = aws_launch_template.enclave_track[each.value.track_key].id
         version            = "$Latest"
       }
     }
@@ -105,7 +121,7 @@ resource "aws_autoscaling_group" "enclave_track" {
 
   tag {
     key                 = "k8s.io/cluster-autoscaler/node-template/taint/enclave.tools/track"
-    value               = "${each.key}:NoSchedule"
+    value               = "${each.value.track_key}:NoSchedule"
     propagate_at_launch = false
   }
 
@@ -117,7 +133,7 @@ resource "aws_autoscaling_group" "enclave_track" {
 
   tag {
     key                 = "k8s.io/cluster-autoscaler/node-template/label/enclave.tools/track"
-    value               = each.key
+    value               = each.value.track_key
     propagate_at_launch = false
   }
 
