@@ -734,3 +734,9 @@ variable "aws_autoscaling_group_enabled" {
   type        = bool
   default     = true
 }
+
+variable "mtls_enabled" {
+  description = "Enable mutual TLS (mTLS) on the ALB TLS listener"
+  type        = bool
+  default     = true
+}
