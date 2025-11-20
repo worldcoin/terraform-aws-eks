@@ -714,3 +714,9 @@ variable "aws_autoscaling_group_enabled" {
   type        = bool
   default     = true
 }
+
+variable "on_demand_percentage_above_base_capacity" {
+  description = "The percentage of on-demand instances to use above the base capacity"
+  type        = number
+  default     = 50
+}

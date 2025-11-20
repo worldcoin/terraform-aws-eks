@@ -90,7 +90,8 @@ resource "aws_autoscaling_group" "enclave_track" {
 
   mixed_instances_policy {
     instances_distribution {
-      on_demand_base_capacity = each.value.track_value.autoscaling_group.size
+      on_demand_base_capacity                  = each.value.track_value.autoscaling_group.size
+      on_demand_percentage_above_base_capacity = var.on_demand_percentage_above_base_capacity
     }
 
     launch_template {
