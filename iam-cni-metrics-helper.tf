@@ -41,7 +41,7 @@ resource "aws_iam_role_policy" "cni_metrics_helper" {
 
 resource "aws_eks_pod_identity_association" "cni_metrics_helper" {
   cluster_name    = aws_eks_cluster.this.id
-  namespace       = "cni-metrics-helper"
+  namespace       = "kube-system"
   service_account = "cni-metrics-helper"
   role_arn        = aws_iam_role.cni_metrics_helper.arn
 }
