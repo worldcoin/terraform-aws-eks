@@ -16,7 +16,7 @@ module "datadog_monitoring" {
     "CreatedBy:terraform"
   ]
 
-  deployment_multiple_restarts_filter_override = var.monitor_all_workload ? null : local.system_filter_str
+  deployment_multiple_restarts_filter_override = var.monitor_all_workload ? null : "${local.system_filter_str} AND kube_deployment:*"
   replicaset_unavailable_filter_override       = var.monitor_all_workload ? null : local.system_filter_str
   replicaset_incomplete_filter_override        = var.monitor_all_workload ? null : local.system_filter_str
 
