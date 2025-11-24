@@ -45,7 +45,7 @@ resource "datadog_monitor" "oom" {
 
   name  = "OOM kill detected on ${var.cluster_name}"
   type  = "metric alert"
-  query = "sum(last_4h):sum:oom_kill.oom_process.count{cluster_name:${local.oom_filter_str}} by {kube_namespace,kube_container_name}.as_count() >= 1"
+  query = "sum(last_4h):sum:oom_kill.oom_process.count{${local.oom_filter_str}} by {kube_namespace,kube_container_name}.as_count() >= 1"
 
   on_missing_data          = "default"
   group_retention_duration = "24h"
