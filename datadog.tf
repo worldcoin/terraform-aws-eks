@@ -1,6 +1,6 @@
 locals {
   all_filter_str    = format("kube_cluster_name:%s", var.cluster_name)
-  system_filter_str = format("%s AND kube_namespace IN (kube-system, argocd, cloudflared-tunnel, node-problem-detector, policy-reporter, karpenter, kube-ops, podsteward, cluster-autoscaler, cluster-monitoring, keda, kyverno*, prometheus, teleport-agent, traefik, traefik-internal, wiz)", local.all_filter_str)
+  system_filter_str = format("%s AND kube_namespace IN (kube-system, argocd, cloudflared-tunnel, node-problem-detector, policy-reporter, karpenter, kube-ops, podsteward, cluster-autoscaler, cluster-monitoring, keda, kyverno, kyverno-policy-reporter, prometheus, teleport-agent, traefik, traefik-internal, wiz)", local.all_filter_str)
 }
 
 module "datadog_monitoring" {
