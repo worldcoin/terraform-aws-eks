@@ -151,6 +151,12 @@ variable "monitoring_enabled" {
   default     = true
 }
 
+variable "monitor_all_workload" {
+  description = "Whether to monitor all workloads in the cluster. False will only monitor workloads in system namespaces."
+  type        = bool
+  default     = true # TEMP for testing
+}
+
 variable "monitoring_external_enabled" {
   description = "Whether to enable external monitoring (Datadog Synthetics)."
   type        = bool

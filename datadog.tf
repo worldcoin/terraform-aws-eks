@@ -1,3 +1,8 @@
+locals {
+  all_filter_str    = format("kube_cluster_name:%s", var.cluster_name)
+  system_filter_str = format("%s AND kube_namespace IN (kube-system, argocd, cloudflared*, node-problem-detector, policy-reporter, karpenter, kube-ops, podsteward, cluster-autoscaler, cluster-monitoring, keda, kyverno*, prometheus, teleport-*, traefik*, wiz)", local.all_filter_str)
+}
+
 module "datadog_monitoring" {
   count = var.monitoring_enabled ? 1 : 0
 
@@ -6,10 +11,12 @@ module "datadog_monitoring" {
   notification_channel = var.monitoring_notification_channel
   service              = format("EKS %s", var.cluster_name)
   env                  = var.environment
-  filter_str           = format("kube_cluster_name:%s", var.cluster_name)
+  filter_str           = local.all_filter_str
   additional_tags = [
     "CreatedBy:terraform"
   ]
+
+  deployment_multiple_restarts_filter_override = var.monitor_all_workload ? null : local.system_filter_str
 
   # don't alert on cpu overbooking
   cpu_limits_low_perc_enabled                = false
