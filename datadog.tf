@@ -36,12 +36,16 @@ module "datadog_monitoring" {
   node_memory_used_percent_warning      = null
 }
 
+locals {
+  oom_filter_str = var.monitor_all_workload ? local.all_filter_str : local.system_filter_str
+}
+
 resource "datadog_monitor" "oom" {
   count = var.monitoring_enabled ? 1 : 0
 
   name  = "OOM kill detected on ${var.cluster_name}"
   type  = "metric alert"
-  query = "sum(last_4h):sum:oom_kill.oom_process.count{cluster_name:${var.cluster_name}} by {kube_namespace,kube_container_name}.as_count() >= 1"
+  query = "sum(last_4h):sum:oom_kill.oom_process.count{cluster_name:${local.oom_filter_str}} by {kube_namespace,kube_container_name}.as_count() >= 1"
 
   on_missing_data          = "default"
   group_retention_duration = "24h"
