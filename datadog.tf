@@ -17,6 +17,8 @@ module "datadog_monitoring" {
   ]
 
   deployment_multiple_restarts_filter_override = var.monitor_all_workload ? null : local.system_filter_str
+  replicaset_unavailable_filter_override       = var.monitor_all_workload ? null : local.system_filter_str
+  replicaset_incomplete_filter_override        = var.monitor_all_workload ? null : local.system_filter_str
 
   # don't alert on cpu overbooking
   cpu_limits_low_perc_enabled                = false
