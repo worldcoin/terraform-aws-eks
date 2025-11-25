@@ -151,10 +151,10 @@ variable "monitoring_enabled" {
   default     = true
 }
 
-variable "monitor_all_workload" {
-  description = "Whether to monitor all workloads in the cluster. False will only monitor workloads in system namespaces."
+variable "monitor_system_workload_only" {
+  description = "Monitor system workloads only."
   type        = bool
-  default     = true # TEMP for testing
+  default     = false
 }
 
 variable "monitoring_external_enabled" {
