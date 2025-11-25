@@ -1,6 +1,11 @@
 locals {
   all_filter_str    = format("kube_cluster_name:%s", var.cluster_name)
   system_filter_str = format("%s AND kube_namespace IN (kube-system, argocd, cloudflared-tunnel, node-problem-detector, policy-reporter, karpenter, kube-ops, podsteward, cluster-autoscaler, cluster-monitoring, keda, kyverno, kyverno-policy-reporter, prometheus, teleport-agent, traefik, traefik-internal, wiz)", local.all_filter_str)
+  oom_filter_str    = var.monitor_system_workload_only ? local.system_filter_str : local.all_filter_str
+
+  deployment_multiple_restarts_filter_override = var.monitor_system_workload_only ? "${local.system_filter_str} AND kube_deployment:*" : null
+  replicaset_unavailable_filter_override       = var.monitor_system_workload_only ? local.system_filter_str : null
+  replicaset_incomplete_filter_override        = var.monitor_system_workload_only ? local.system_filter_str : null
 }
 
 module "datadog_monitoring" {
@@ -16,9 +21,9 @@ module "datadog_monitoring" {
     "CreatedBy:terraform"
   ]
 
-  deployment_multiple_restarts_filter_override = var.monitor_system_workload_only ? "${local.system_filter_str} AND kube_deployment:*" : null
-  replicaset_unavailable_filter_override       = var.monitor_system_workload_only ? local.system_filter_str : null
-  replicaset_incomplete_filter_override        = var.monitor_system_workload_only ? local.system_filter_str : null
+  deployment_multiple_restarts_filter_override = local.deployment_multiple_restarts_filter_override
+  replicaset_unavailable_filter_override       = local.replicaset_unavailable_filter_override
+  replicaset_incomplete_filter_override        = local.replicaset_incomplete_filter_override
 
   # don't alert on cpu overbooking
   cpu_limits_low_perc_enabled                = false
@@ -37,7 +42,6 @@ module "datadog_monitoring" {
 }
 
 locals {
-  oom_filter_str = var.monitor_system_workload_only ? local.all_filter_str : local.system_filter_str
 }
 
 resource "datadog_monitor" "oom" {
