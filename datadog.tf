@@ -16,9 +16,9 @@ module "datadog_monitoring" {
     "CreatedBy:terraform"
   ]
 
-  deployment_multiple_restarts_filter_override = var.monitor_all_workload ? null : "${local.system_filter_str} AND kube_deployment:*"
-  replicaset_unavailable_filter_override       = var.monitor_all_workload ? null : local.system_filter_str
-  replicaset_incomplete_filter_override        = var.monitor_all_workload ? null : local.system_filter_str
+  deployment_multiple_restarts_filter_override = var.monitor_system_workload_only ? "${local.system_filter_str} AND kube_deployment:*" : null
+  replicaset_unavailable_filter_override       = var.monitor_system_workload_only ? local.system_filter_str : null
+  replicaset_incomplete_filter_override        = var.monitor_system_workload_only ? local.system_filter_str : null
 
   # don't alert on cpu overbooking
   cpu_limits_low_perc_enabled                = false
@@ -37,7 +37,7 @@ module "datadog_monitoring" {
 }
 
 locals {
-  oom_filter_str = var.monitor_all_workload ? local.all_filter_str : local.system_filter_str
+  oom_filter_str = var.monitor_system_workload_only ? local.all_filter_str : local.system_filter_str
 }
 
 resource "datadog_monitor" "oom" {
