@@ -723,3 +723,9 @@ variable "on_demand_percentage_above_base_capacity" {
   type        = number
   default     = 50
 }
+
+variable "mtls_enabled" {
+  description = "Enable mutual TLS (mTLS) on the ALB TLS listener"
+  type        = bool
+  default     = true
+}
