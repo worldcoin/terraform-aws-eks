@@ -151,6 +151,12 @@ variable "monitoring_enabled" {
   default     = true
 }
 
+variable "monitor_system_workload_only" {
+  description = "Monitor system workloads only."
+  type        = bool
+  default     = false
+}
+
 variable "monitoring_external_enabled" {
   description = "Whether to enable external monitoring (Datadog Synthetics)."
   type        = bool
