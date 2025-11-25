@@ -118,6 +118,8 @@ module "alb" {
   drop_invalid_header_fields = var.drop_invalid_header_fields
   acm_extra_arns             = var.acm_extra_arns
 
-  mtls_enabled   = !var.open_to_all
+  # if open_to_all is true, mtls_enabled must be false
+  # if open_to_all is false, mtls_enabled can be true or false based on var.mtls_enabled
+  mtls_enabled   = var.open_to_all ? false : var.mtls_enabled
   mtls_s3_bucket = format("wld-mtls-ca-%s", var.region)
 }
