@@ -176,7 +176,7 @@ variable "monitoring_notification_channel" {
 variable "monitoring_reachability_fail_locations" {
   description = "Number of locations to fail to trigger the reachability test"
   type        = number
-  default     = 5
+  default     = 2
 }
 
 variable "monitoring_reachability_failure_duration" {
@@ -459,12 +459,9 @@ variable "external_check_locations" {
   description = "List of DD locations to check cluster availability from"
   type        = list(string)
   default = [
-    "aws:af-south-1",
-    "aws:ap-south-1",
-    "aws:ap-southeast-1",
+    "azure:eastus",
     "aws:eu-central-1",
-    "aws:sa-east-1",
-    "aws:us-east-1",
+    "gcp:asia-northeast1",
   ]
 }
 

@@ -116,7 +116,7 @@ resource "datadog_synthetics_test" "cluster_monitoring" {
   }
 
   options_list {
-    tick_every           = 300
+    tick_every           = 180
     monitor_priority     = 1
     min_location_failed  = min(var.monitoring_reachability_fail_locations, length(one(data.datadog_synthetics_locations.locations).locations))
     min_failure_duration = var.monitoring_reachability_failure_duration
