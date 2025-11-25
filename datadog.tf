@@ -18,7 +18,10 @@ module "datadog_monitoring" {
   env                  = var.environment
   filter_str           = local.all_filter_str
   additional_tags = [
-    "CreatedBy:terraform"
+    "CreatedBy:terraform",
+    "service:k8s",
+    "team:infrastructure",
+    "env:${var.environment}",
   ]
 
   deployment_multiple_restarts_filter_override = local.deployment_multiple_restarts_filter_override
@@ -39,9 +42,6 @@ module "datadog_monitoring" {
   pid_pressure_evaluation_period        = "last_1h"
   node_ready_enabled                    = false
   node_memory_used_percent_warning      = null
-}
-
-locals {
 }
 
 resource "datadog_monitor" "oom" {
@@ -73,7 +73,10 @@ Notify: ${var.monitoring_notification_channel}
 EOT
 
   tags = [
-    "CreatedBy:terraform"
+    "CreatedBy:terraform",
+    "service:k8s",
+    "team:infrastructure",
+    "env:${var.environment}",
   ]
 }
 
@@ -93,6 +96,8 @@ resource "datadog_synthetics_test" "cluster_monitoring" {
   tags = [
     "CreatedBy:terraform",
     "env:${var.environment}",
+    "service:k8s",
+    "team:infrastructure",
   ]
 
   request_definition {
