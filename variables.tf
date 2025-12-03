@@ -621,6 +621,7 @@ variable "enclave_tracks" {
     instance_type     = optional(string)
     cpu_allocation    = optional(string)
     memory_allocation = optional(string)
+    arch              = optional(string, "amd64")
   }))
   default = {}
 

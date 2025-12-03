@@ -6,7 +6,7 @@ resource "aws_launch_template" "enclave_track" {
 
   name_prefix = "eks-node-enclaves-${each.key}-${var.cluster_name}-"
 
-  image_id                             = data.aws_ssm_parameter.al2023_ami[try(var.eks_node_group.arch, "amd64")].value
+  image_id                             = data.aws_ssm_parameter.al2023_ami[each.value.arch].value
   instance_type                        = coalesce(each.value.instance_type, var.enclaves_instance_type)
   vpc_security_group_ids               = [aws_security_group.node.id]
   ebs_optimized                        = true
