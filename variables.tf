@@ -577,13 +577,24 @@ variable "tfe_cidr" {
   }
 }
 
-variable "gha_cidr" {
-  description = "GitHub Actions CIDR block"
+variable "gha_cidr_us_east_1" {
+  description = "GitHub Actions CIDR block for us-east-1"
   type        = string
   default     = "10.0.96.0/20"
 
   validation {
-    condition     = can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$", var.gha_cidr))
+    condition     = can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$", var.gha_cidr_us_east_1))
+    error_message = "GitHub Actions CIDR must be a valid CIDR block."
+  }
+}
+
+variable "gha_cidr_eu_central_1" {
+  description = "GitHub Actions CIDR block for eu-central-1"
+  type        = string
+  default     = "10.52.0.0/20"
+
+  validation {
+    condition     = can(regex("^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$", var.gha_cidr_eu_central_1))
     error_message = "GitHub Actions CIDR must be a valid CIDR block."
   }
 }

@@ -176,6 +176,6 @@ resource "aws_security_group_rule" "tfe_and_gha_cluster_ingress" {
   from_port         = 443
   to_port           = 443
   protocol          = "tcp"
-  cidr_blocks       = [var.tfe_cidr, var.gha_cidr]
+  cidr_blocks       = [var.tfe_cidr, var.gha_cidr_us_east_1, var.gha_cidr_eu_central_1]
   description       = "Allow TFE and GHA to communicate with the cluster API Server"
 }
