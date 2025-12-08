@@ -173,6 +173,26 @@ variable "monitoring_notification_channel" {
   }
 }
 
+variable "monitoring_user_workload_notification_channel" {
+  description = "The Datadog notification channel to use for monitoring user workload alerts."
+  type        = string
+  default     = ""
+  validation {
+    condition     = var.monitoring_user_workload_notification_channel == "" ? true : can(regex("^@(?:slack|webhook)-[A-Za-z0-9\\-]+$", var.monitoring_user_workload_notification_channel))
+    error_message = "Invalid notification channel"
+  }
+}
+
+variable "monitoring_user_workload_team" {
+  description = "The team to notify for monitoring user workload alerts."
+  type        = string
+  default     = ""
+  validation {
+    condition     = var.monitoring_user_workload_team == "" ? true : can(regex("^[a-z\\-]+$", var.monitoring_user_workload_team))
+    error_message = "Invalid notification channel"
+  }
+}
+
 variable "monitoring_reachability_fail_locations" {
   description = "Number of locations to fail to trigger the reachability test"
   type        = number

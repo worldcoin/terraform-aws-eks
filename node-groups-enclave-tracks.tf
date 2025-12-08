@@ -83,6 +83,7 @@ resource "aws_autoscaling_group" "enclave_track" {
   desired_capacity    = each.value.track_value.autoscaling_group.size
   min_size            = each.value.track_value.autoscaling_group.min_size
   max_size            = each.value.track_value.autoscaling_group.max_size
+  arch                = each.value.track_value.arch
 
   lifecycle {
     ignore_changes = [desired_capacity]

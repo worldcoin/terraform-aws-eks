@@ -44,6 +44,96 @@ module "datadog_monitoring" {
   node_memory_used_percent_warning      = null
 }
 
+module "datadog_monitoring_for_user" {
+  count = var.monitoring_user_workload_notification_channel != "" ? 1 : 0
+
+  source = "git@github.com:worldcoin/terraform-datadog-kubernetes?ref=v1.2.3"
+
+  notification_channel = var.monitoring_user_workload_notification_channel
+  service              = format("EKS %s", var.cluster_name)
+  env                  = var.environment
+  filter_str           = local.all_filter_str
+  additional_tags = [
+    "CreatedBy:terraform",
+    "service:k8s",
+    "team:${var.monitoring_user_workload_team}",
+    "env:${var.environment}",
+  ]
+
+  cpu_limits_low_perc_state_enabled               = false
+  cpu_limits_low_perc_state_alerting_enabled      = false
+  cpu_limits_low_perc_enabled                     = false
+  cpu_limits_low_perc_alerting_enabled            = false
+  cpu_limits_low_enabled                          = false
+  cpu_limits_low_alerting_enabled                 = false
+  cpu_on_dns_pods_high_enabled                    = false
+  cpu_on_dns_pods_high_alerting_enabled           = false
+  cpu_requests_low_perc_state_enabled             = false
+  cpu_requests_low_perc_state_alerting_enabled    = false
+  cpu_requests_low_perc_enabled                   = false
+  cpu_requests_low_perc_alerting_enabled          = false
+  cpu_requests_low_enabled                        = false
+  cpu_requests_low_alerting_enabled               = false
+  daemonset_incomplete_enabled                    = false
+  daemonset_incomplete_alerting_enabled           = false
+  daemonset_multiple_restarts_enabled             = false
+  daemonset_multiple_restarts_alerting_enabled    = false
+  datadog_agent_enabled                           = false
+  datadog_agent_alerting_enabled                  = false
+  deploy_desired_vs_status_enabled                = false
+  deploy_desired_vs_status_alerting_enabled       = false
+  deployment_multiple_restarts_enabled            = false
+  deployment_multiple_restarts_alerting_enabled   = false
+  hpa_status_enabled                              = false
+  hpa_status_alerting_enabled                     = false
+  memory_limits_low_perc_state_enabled            = false
+  memory_limits_low_perc_state_alerting_enabled   = false
+  memory_limits_low_perc_enabled                  = false
+  memory_limits_low_perc_alerting_enabled         = false
+  memory_limits_low_enabled                       = false
+  memory_limits_low_alerting_enabled              = false
+  memory_requests_low_perc_state_enabled          = false
+  memory_requests_low_perc_state_alerting_enabled = false
+  memory_requests_low_perc_enabled                = false
+  memory_requests_low_perc_alerting_enabled       = false
+  memory_requests_low_enabled                     = false
+  memory_requests_low_alerting_enabled            = false
+  network_unavailable_enabled                     = false
+  network_unavailable_alerting_enabled            = false
+  node_diskpressure_enabled                       = false
+  node_diskpressure_alerting_enabled              = false
+  node_memory_used_percent_enabled                = false
+  node_memory_used_percent_alerting_enabled       = false
+  node_memorypressure_enabled                     = false
+  node_memorypressure_alerting_enabled            = false
+  node_ready_enabled                              = false
+  node_ready_alerting_enabled                     = false
+  node_status_enabled                             = false
+  node_status_alerting_enabled                    = false
+  persistent_volumes_enabled                      = false
+  persistent_volumes_alerting_enabled             = false
+  pid_pressure_enabled                            = false
+  pid_pressure_alerting_enabled                   = false
+  pod_count_per_node_high_enabled                 = false
+  pod_count_per_node_high_alerting_enabled        = false
+  pod_ready_enabled                               = false
+  pod_ready_alerting_enabled                      = false
+  pod_restarts_enabled                            = false
+  pod_restarts_alerting_enabled                   = false
+  pods_failed_enabled                             = false
+  pods_failed_alerting_enabled                    = false
+  pods_pending_enabled                            = false
+  pods_pending_alerting_enabled                   = false
+  replicaset_incomplete_enabled                   = false
+  replicaset_incomplete_alerting_enabled          = false
+  replicaset_unavailable_enabled                  = false
+  replicaset_unavailable_alerting_enabled         = false
+  sts_desired_vs_status_enabled                   = false
+  sts_desired_vs_status_alerting_enabled          = false
+  sts_multiple_restarts_enabled                   = false
+  sts_multiple_restarts_alerting_enabled          = false
+}
+
 resource "datadog_monitor" "oom" {
   count = var.monitoring_enabled ? 1 : 0
 
