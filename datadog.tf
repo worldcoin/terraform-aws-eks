@@ -82,8 +82,7 @@ module "datadog_monitoring_for_user" {
   datadog_agent_alerting_enabled                  = false
   deploy_desired_vs_status_enabled                = false
   deploy_desired_vs_status_alerting_enabled       = false
-  deployment_multiple_restarts_enabled            = false
-  deployment_multiple_restarts_alerting_enabled   = false
+  deployment_multiple_restarts_enabled            = true
   hpa_status_enabled                              = false
   hpa_status_alerting_enabled                     = false
   memory_limits_low_perc_state_enabled            = false
