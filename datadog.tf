@@ -60,6 +60,10 @@ module "datadog_monitoring_for_user" {
     "env:${var.environment}",
   ]
 
+  deployment_multiple_restarts_enabled = true
+  deploy_desired_vs_status_enabled     = true
+
+  #disable rest:
   cpu_limits_low_perc_state_enabled               = false
   cpu_limits_low_perc_state_alerting_enabled      = false
   cpu_limits_low_perc_enabled                     = false
@@ -80,9 +84,7 @@ module "datadog_monitoring_for_user" {
   daemonset_multiple_restarts_alerting_enabled    = false
   datadog_agent_enabled                           = false
   datadog_agent_alerting_enabled                  = false
-  deploy_desired_vs_status_enabled                = false
   deploy_desired_vs_status_alerting_enabled       = false
-  deployment_multiple_restarts_enabled            = true
   hpa_status_enabled                              = false
   hpa_status_alerting_enabled                     = false
   memory_limits_low_perc_state_enabled            = false
