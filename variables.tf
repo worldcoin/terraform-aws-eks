@@ -152,7 +152,7 @@ variable "monitoring_enabled" {
 }
 
 variable "monitor_system_workload_only" {
-  description = "Monitor system workloads only."
+  description = "Monitor system workloads only (infra team)."
   type        = bool
   default     = false
 }
@@ -164,7 +164,7 @@ variable "monitoring_external_enabled" {
 }
 
 variable "monitoring_notification_channel" {
-  description = "The Datadog notification channel to use for monitoring alerts."
+  description = "The Datadog notification channel to use for monitoring alerts (infra team)."
   type        = string
   default     = "@slack-TFH-infrastructure-alerts"
   validation {
@@ -174,7 +174,7 @@ variable "monitoring_notification_channel" {
 }
 
 variable "monitoring_user_workload_notification_channel" {
-  description = "The Datadog notification channel to use for monitoring user workload alerts."
+  description = "Monitor user workload and send alerts to team channel/webhook)."
   type        = string
   default     = ""
   validation {
@@ -184,12 +184,13 @@ variable "monitoring_user_workload_notification_channel" {
 }
 
 variable "monitoring_user_workload_team" {
-  description = "The team to notify for monitoring user workload alerts."
+  description = "The team tag for monitoring user workload."
   type        = string
   default     = ""
   validation {
-    condition     = var.monitoring_user_workload_team == "" ? true : can(regex("^[a-z\\-]+$", var.monitoring_user_workload_team))
-    error_message = "Invalid notification channel"
+    # has to be set when monitoring_user_workload_notification_channel is set
+    condition     = var.monitoring_user_workload_notification_channel == "" ? true : can(regex("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$", var.monitoring_user_workload_team))
+    error_message = "Invalid team set"
   }
 }
 
