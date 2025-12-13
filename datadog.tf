@@ -25,10 +25,10 @@ module "datadog_monitoring" {
     "env:${var.environment}",
   ]
 
-  deployment_multiple_restarts_filter_override  = local.deployment_multiple_restarts_filter_override
-  replicaset_unavailable_filter_override        = local.replicaset_unavailable_filter_override
-  replicaset_incomplete_filter_override         = local.replicaset_incomplete_filter_override
-  statefulset_multiple_restarts_filter_override = local.statefulset_multiple_restarts_filter_override
+  deployment_multiple_restarts_filter_override = local.deployment_multiple_restarts_filter_override
+  replicaset_unavailable_filter_override       = local.replicaset_unavailable_filter_override
+  replicaset_incomplete_filter_override        = local.replicaset_incomplete_filter_override
+  sts_multiple_restarts_filter_override        = local.statefulset_multiple_restarts_filter_override
 
   # don't alert on cpu overbooking
   cpu_limits_low_perc_enabled                = false
