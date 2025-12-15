@@ -9,7 +9,7 @@ locals {
   )
 }
 
-resource "kubernetes_namespace" "traefik" {
+resource "kubernetes_namespace_v1" "traefik" {
   for_each = var.kubernetes_provider_enabled ? toset(local.load_balancers) : []
 
   metadata {

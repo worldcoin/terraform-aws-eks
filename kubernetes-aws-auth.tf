@@ -30,7 +30,7 @@ locals {
   )
 }
 
-resource "kubernetes_config_map" "aws_auth" {
+resource "kubernetes_config_map_v1" "aws_auth" {
   count = var.kubernetes_provider_enabled ? 1 : 0
 
   metadata {
