@@ -7,6 +7,7 @@ locals {
   replicaset_unavailable_filter_override       = var.monitor_system_workload_only ? local.system_filter_str : null
   replicaset_incomplete_filter_override        = var.monitor_system_workload_only ? local.system_filter_str : null
   sts_multiple_restarts_filter_override        = var.monitor_system_workload_only ? "${local.system_filter_str} AND kube_statefulset:*" : null
+  pod_ready_filter_override                    = var.monitor_system_workload_only ? local.system_filter_str : null
 }
 
 module "datadog_monitoring" {
