@@ -7,6 +7,7 @@ locals {
   replicaset_unavailable_filter_override       = var.monitor_system_workload_only ? local.system_filter_str : null
   replicaset_incomplete_filter_override        = var.monitor_system_workload_only ? local.system_filter_str : null
   sts_multiple_restarts_filter_override        = var.monitor_system_workload_only ? "${local.system_filter_str} AND kube_statefulset:*" : null
+  pod_ready_filter_override                    = var.monitor_system_workload_only ? local.system_filter_str : null
 }
 
 module "datadog_monitoring" {
@@ -29,6 +30,7 @@ module "datadog_monitoring" {
   replicaset_unavailable_filter_override       = local.replicaset_unavailable_filter_override
   replicaset_incomplete_filter_override        = local.replicaset_incomplete_filter_override
   sts_multiple_restarts_filter_override        = local.sts_multiple_restarts_filter_override
+  pod_ready_filter_override                    = local.pod_ready_filter_override
 
   # don't alert on cpu overbooking
   cpu_limits_low_perc_enabled                = false
