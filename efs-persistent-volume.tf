@@ -33,7 +33,7 @@ resource "aws_security_group_rule" "persistent_volume_from_node_ingress" {
   description              = "Allow nodes to communicate with the EFS mount target"
 }
 
-resource "kubernetes_storage_class" "efs" {
+resource "kubernetes_storage_class_v1" "efs" {
   count = var.efs_csi_driver_enabled ? 1 : 0
 
   metadata {
