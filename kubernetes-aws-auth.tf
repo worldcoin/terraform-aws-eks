@@ -7,12 +7,12 @@ locals {
     },
     {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/admin"
-      username = "admin"
+      username = "tfh-admin"
       groups   = ["tfh-cluster-admins"]
     },
     {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/tfe"
-      username = "admin"
+      username = "tfh-admin"
       groups   = ["tfh-cluster-admins"]
     },
     {
