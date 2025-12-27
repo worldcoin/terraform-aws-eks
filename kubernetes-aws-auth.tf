@@ -68,3 +68,9 @@ resource "kubernetes_config_map_v1" "aws_auth" {
     mapRoles = yamlencode(local.role_mapping)
   }
 }
+
+moved {
+  from = kubernetes_config_map.aws_auth
+  to   = kubernetes_config_map_v1.aws_auth
+
+}
