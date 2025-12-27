@@ -52,19 +52,22 @@ resource "kubernetes_cluster_role_binding_v1" "tfh_cluster_admins" {
   }
 }
 
-resource "kubernetes_config_map" "aws_auth" {
+resource "kubernetes_config_map_v1_data" "aws_auth" {
   count = var.kubernetes_provider_enabled ? 1 : 0
 
   metadata {
     name      = "aws-auth"
     namespace = "kube-system"
-
-    annotations = {
-      "CreatedBy" = "terraform"
-    }
   }
 
   data = {
     mapRoles = yamlencode(local.role_mapping)
+  }
+}
+
+removed {
+  from = kubernetes_config_map.aws_auth
+  lifecycle {
+    destroy = false
   }
 }
