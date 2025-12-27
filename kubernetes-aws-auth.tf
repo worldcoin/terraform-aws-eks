@@ -35,6 +35,9 @@ resource "kubernetes_cluster_role_binding_v1" "tfh_cluster_admins" {
 
   metadata {
     name = "tfh-cluster-admins-binding"
+    annotations = {
+      "CreatedBy" = "terraform"
+    }
   }
 
   role_ref {
