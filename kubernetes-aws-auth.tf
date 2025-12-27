@@ -52,7 +52,7 @@ resource "kubernetes_cluster_role_binding_v1" "tfh_cluster_admins" {
   }
 }
 
-resource "kubernetes_config_map_v1" "aws_auth" {
+resource "kubernetes_config_map" "aws_auth" {
   count = var.kubernetes_provider_enabled ? 1 : 0
 
   metadata {
@@ -67,10 +67,4 @@ resource "kubernetes_config_map_v1" "aws_auth" {
   data = {
     mapRoles = yamlencode(local.role_mapping)
   }
-}
-
-moved {
-  from = kubernetes_config_map.aws_auth
-  to   = kubernetes_config_map_v1.aws_auth
-
 }
