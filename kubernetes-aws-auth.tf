@@ -8,29 +8,48 @@ locals {
     {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/admin"
       username = "admin"
-      groups   = ["system:masters"]
+      groups   = ["tfh-cluster-admins"]
     },
     {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/tfe"
       username = "admin"
-      groups   = ["system:masters"]
+      groups   = ["tfh-cluster-admins"]
     },
     {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/github-deploy"
       username = "github-deploy"
-      groups   = ["system:masters"]
+      groups   = ["tfh-cluster-admins"]
     },
     { # This role is used by remote ArgoCD to deploy applications
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/eks-cluster-${var.cluster_name}"
       username = "eks-cluster-${var.cluster_name}"
-      groups   = ["system:masters"]
+      groups   = ["tfh-cluster-admins"]
     },
     ],
     var.extra_role_mapping,
   )
 }
 
-resource "kubernetes_config_map" "aws_auth" {
+resource "kubernetes_cluster_role_binding_v1" "tfh_cluster_admins" {
+  count = var.kubernetes_provider_enabled ? 1 : 0
+
+  metadata {
+    name = "tfh-cluster-admins-binding"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+  }
+
+  subject {
+    kind = "Group"
+    name = "tfh-cluster-admins"
+  }
+}
+
+resource "kubernetes_config_map_v1" "aws_auth" {
   count = var.kubernetes_provider_enabled ? 1 : 0
 
   metadata {
