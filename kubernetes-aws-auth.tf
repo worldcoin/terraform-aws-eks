@@ -12,12 +12,12 @@ locals {
     },
     {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/tfe"
-      username = "tfh-admin"
+      username = "tfh-tfe"
       groups   = ["tfh-cluster-admins"]
     },
     {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/github-deploy"
-      username = "github-deploy"
+      username = "tfh-github-deploy"
       groups   = ["tfh-cluster-admins"]
     },
     { # This role is used by remote ArgoCD to deploy applications
