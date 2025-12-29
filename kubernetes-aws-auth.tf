@@ -60,6 +60,8 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
     namespace = "kube-system"
   }
 
+  force = true
+
   data = {
     mapRoles = yamlencode(local.role_mapping)
   }
