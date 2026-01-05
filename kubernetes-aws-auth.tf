@@ -66,10 +66,3 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
     mapRoles = yamlencode(local.role_mapping)
   }
 }
-
-removed {
-  from = kubernetes_config_map.aws_auth
-  lifecycle {
-    destroy = false
-  }
-}
