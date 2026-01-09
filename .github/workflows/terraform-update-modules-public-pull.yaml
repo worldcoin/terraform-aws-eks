@@ -21,7 +21,7 @@ jobs:
       group: arc-public-medium-arm64-runner
     env:
       # Default list if client_payload.repos is not set
-      REPOS: ${{ github.event.client_payload.repos || 'terraform-aws-vpc terraform-aws-eks terraform-cf-modules terraform-aws-nlb terraform-aws-alb terraform-aws-s3-bucket terraform-github-modules terraform-mongo-modules' }}
+      REPOS: ${{ github.event.client_payload.repos || 'terraform-aws-eks terraform-aws-nlb terraform-aws-alb terraform-datadog-kubernetes' }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
