@@ -1,0 +1,58 @@
+name: Update terraform public modules
+# Description: Update terraform modules versions in .tf files based on cron for public repos, that cannot get GH tokens from secrets.
+on:
+  workflow_dispatch: {}
+  repository_dispatch:
+    types: [update-terraform-modules-public]
+  schedule:
+    - cron: '0 5 * * 5'  # Every Friday at 05:00 UTC
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+env:
+  GITHUB_TOKEN: ${{ github.token }}
+
+jobs:
+  update-specific:
+    runs-on:
+      group: arc-public-medium-arm64-runner
+    env:
+      # Default list if client_payload.repos is not set
+      REPOS: ${{ github.event.client_payload.repos || 'terraform-aws-eks terraform-aws-nlb terraform-aws-alb terraform-datadog-kubernetes' }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with:
+          path: terraform-aws-eks
+
+      - name: Bump module dependencies
+        uses: worldcoin/gh-actions/dependency-updater@dependency-updater-v0.0.2
+        with:
+          github_repos_list: ${{ env.REPOS }}
+          github_repo_token: ${{ github.token }}
+          github_repo_path: terraform-aws-eks
+
+      - name: Open PR with all .tf updates
+        uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725
+        with:
+          branch: bulk-update-tf-repo
+          base: main
+          delete-branch: true
+          commit-message: Update all TF module repos to latest
+          title: Update all TF module repos to latest
+          path: terraform-aws-eks
+          body: |
+            Update all TF module repos to latest
+
+            Changes:
+            - Updated all GH TF repos source references in .tf files
+            - Changed version to latest
+
+
+
+
+
+
