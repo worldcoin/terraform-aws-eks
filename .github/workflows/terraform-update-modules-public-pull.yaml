@@ -25,15 +25,20 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-        with:
-          path: terraform-aws-eks
+
 
       - name: Bump module dependencies
-        uses: worldcoin/gh-actions/dependency-updater@dependency-updater-v0.0.2
-        with:
-          github_repos_list: ${{ env.REPOS }}
-          github_repo_token: ${{ github.token }}
-          github_repo_path: terraform-aws-eks
+        run: |
+          MODULES="terraform-aws-nlb terraform-aws-alb terraform-datadog-kubernetes"
+
+          for MOD in $MODULES; do
+              V=$(curl -s https://api.github.com/repos/worldcoin/$MOD/releases/latest  -H "Accept: application/vnd.github+json"   -H "Authorization: Bearer $GITHUB_TOKEN"   -H "X-GitHub-Api-Version: 2022-11-28" \ | jq -r '.tag_name')
+              for i in $(git grep -l "source .*worldcoin/$MOD.*ref"); do
+                  echo "Bumping $MOD to $V in $i"
+                  sed -i "s/\(source .*worldcoin\/$MOD.*ref=\).*$/\1$V\"/" $i
+              done
+          done
+
 
       - name: Open PR with all .tf updates
         uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725
@@ -43,7 +48,6 @@ jobs:
           delete-branch: true
           commit-message: Update all TF module repos to latest
           title: Update all TF module repos to latest
-          path: terraform-aws-eks
           body: |
             Update all TF module repos to latest
 
