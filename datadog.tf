@@ -131,9 +131,3 @@ resource "datadog_synthetics_test" "cluster_monitoring" {
     }
   }
 }
-
-
-
-
-max(last_5m):( min:kubernetes_state.replicaset.replicas_ready{kube_cluster_name:ml-prod-eu-central-1 AND kube_namespace IN (kube-system, argocd, cloudflared-tunnel, node-problem-detector, policy-reporter, karpenter, kube-ops, podsteward, cluster-autoscaler, cluster-monitoring, keda, kyverno, kyverno-policy-reporter, prometheus, teleport-agent, traefik, traefik-internal, wiz)} by {kube_replica_set,kube_cluster_name} ) / min:kubernetes_state.replicaset.replicas_desired{kube_cluster_name:ml-prod-eu-central-1 AND kube_namespace IN (kube-system, argocd, cloudflared-tunnel, node-problem-detector, policy-reporter, karpenter, kube-ops, podsteward, cluster-autoscaler, cluster-monitoring, keda, kyverno, kyverno-policy-reporter, prometheus, teleport-agent, traefik, traefik-internal, wiz)} by {kube_replica_set,kube_cluster_name} / ( min:kubernetes_state.replicaset.replicas_desired{kube_cluster_name:ml-prod-eu-central-1 AND kube_namespace IN (kube-system, argocd, cloudflared-tunnel, node-problem-detector, policy-reporter, karpenter, kube-ops, podsteward, cluster-autoscaler, cluster-monitoring, keda, kyverno, kyverno-policy-reporter, prometheus, teleport-agent, traefik, traefik-internal, wiz)} by {kube_replica_set,kube_cluster_name} - 1 ) <= 0
-avg(last_15m):max:kubernetes_state.deployment.replicas_desired{kube_cluster_name:ml-prod-eu-central-1} by {kube_cluster_name} - max:kubernetes_state.deployment.replicas_available{kube_cluster_name:ml-prod-eu-central-1} by {kube_cluster_name} > 10
