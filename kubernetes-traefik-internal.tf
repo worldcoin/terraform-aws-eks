@@ -1,10 +1,10 @@
-resource "kubernetes_service" "traefik_nlb" {
+resource "kubernetes_service_v1" "traefik_nlb" {
   for_each               = var.kubernetes_provider_enabled ? var.internal_nlb_enabled ? toset([local.internal_nlb_name]) : [] : []
   wait_for_load_balancer = false
 
   metadata {
     name      = each.key
-    namespace = kubernetes_namespace.traefik[each.key].id
+    namespace = kubernetes_namespace_v1.traefik[each.key].id
 
     labels = {
       "app.kubernetes.io/name"     = "traefik"
