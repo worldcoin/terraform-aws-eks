@@ -1,4 +1,4 @@
-resource "kubernetes_storage_class" "gp3" {
+resource "kubernetes_storage_class_v1" "gp3" {
   count = var.kubernetes_provider_enabled ? 1 : 0
 
   metadata {

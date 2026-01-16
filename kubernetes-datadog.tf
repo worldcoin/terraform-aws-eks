@@ -1,4 +1,4 @@
-resource "kubernetes_secret" "datadog" {
+resource "kubernetes_secret_v1" "datadog" {
   count = var.kubernetes_provider_enabled ? 1 : 0
 
   metadata {
