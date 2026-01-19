@@ -329,15 +329,16 @@ data "aws_iam_policy_document" "aws_load_balancer" {
 }
 
 resource "aws_iam_role" "aws_load_balancer" {
-  count              = var.aws_load_balancer_iam_role_enabled ? 1 : 0
-  name               = "aws-load-balancer-controller-${var.cluster_name}"
+  count = var.aws_load_balancer_iam_role_enabled ? 1 : 0
+  name  = trimsuffix(substr("aws-load-balancer-controller-${var.cluster_name}", 0, 63), "-")
+
   path               = "/system/"
   assume_role_policy = data.aws_iam_policy_document.aws_load_balancer_assume_role_policy.json
 }
 
 resource "aws_iam_role_policy" "aws_load_balancer" {
   count  = var.aws_load_balancer_iam_role_enabled ? 1 : 0
-  name   = "aws-load-balancer-controller-${var.cluster_name}"
+  name   = trimsuffix(substr("aws-load-balancer-controller-${var.cluster_name}", 0, 63), "-")
   role   = aws_iam_role.aws_load_balancer[0].id
   policy = data.aws_iam_policy_document.aws_load_balancer.json
 }
