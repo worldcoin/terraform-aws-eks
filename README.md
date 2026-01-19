@@ -41,6 +41,49 @@ Release is created as draft, so you have to edit it manually and change it to fi
 
 ## Breaking changes
 
+### Version 10.0.0 - Kubernetes Resource Type Migration
+
+Version 10.0.0 introduces a breaking change due to upgrading deprecated `kubernetes_*` resources to their `kubernetes_*_v1` counterparts. This affects the following resources:
+
+- `kubernetes_namespace` → `kubernetes_namespace_v1`
+- `kubernetes_service` → `kubernetes_service_v1`
+- `kubernetes_secret` → `kubernetes_secret_v1`
+- `kubernetes_storage_class` → `kubernetes_storage_class_v1`
+
+**Why `moved` blocks don't work:**
+
+Terraform's `moved` block cannot be used for this migration because the Kubernetes provider does not support moving resource state across different resource types:
+
+```
+Error: Move Resource State Not Supported
+
+The "kubernetes_storage_class_v1" resource type does not support moving resource state across resource types.
+```
+
+**Suggested Solution:**
+
+Add the following `removed` and `import` blocks to your root module (e.g., `state.tf`) to migrate resources without destroying them:
+
+```terraform
+# Remove old resource from state without destroying it
+removed {
+  from = module.eks_security.kubernetes_storage_class.gp3
+
+  lifecycle {
+    destroy = false
+  }
+}
+# Import existing storage class into new resource type
+import {
+  to = module.eks_security.kubernetes_storage_class_v1.gp3[0]
+  id = "gp3"
+}
+```
+
+> After successful migration (`terraform apply`), you can remove the `removed` and `import` blocks from your configuration.
+
+### Version 4.0 - Authentication Mode Change
+
 Version 4.0 introduces an authentication mode change from CONFIG_MAP to API_AND_CONFIG_MAP. This change requires manual intervention to update the clusters. The following steps should be taken to update the clusters:
 
 ```
@@ -621,12 +664,12 @@ To remove the cluster you have to:
 | [datadog_synthetics_test.cluster_monitoring](https://registry.terraform.io/providers/DataDog/datadog/latest/docs/resources/synthetics_test) | resource |
 | [kubernetes_config_map.aws_auth](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/config_map) | resource |
 | [kubernetes_ingress_v1.treafik_ingress](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/ingress_v1) | resource |
-| [kubernetes_namespace.traefik](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace) | resource |
-| [kubernetes_secret.datadog](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret) | resource |
-| [kubernetes_service.traefik_alb](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service) | resource |
-| [kubernetes_service.traefik_nlb](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service) | resource |
-| [kubernetes_storage_class.efs](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class) | resource |
-| [kubernetes_storage_class.gp3](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class) | resource |
+| [kubernetes_namespace_v1.traefik](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace_v1) | resource |
+| [kubernetes_secret_v1.datadog](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret_v1) | resource |
+| [kubernetes_service_v1.traefik_alb](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service_v1) | resource |
+| [kubernetes_service_v1.traefik_nlb](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service_v1) | resource |
+| [kubernetes_storage_class_v1.efs](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class_v1) | resource |
+| [kubernetes_storage_class_v1.gp3](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class_v1) | resource |
 | [random_password.dd_clusteragent_token](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [aws_caller_identity.account](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
