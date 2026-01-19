@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "assume_role" {
 resource "aws_iam_role" "kube_ops" {
   count = var.kube_ops_enabled ? 1 : 0
 
-  name               = "kube-ops-${var.cluster_name}"
+  name               = trimsuffix(substr("kube-ops-${var.cluster_name}", 0, 63), "-")
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
   path               = "/system/"
 }
@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "kube_ops" {
 resource "aws_iam_role_policy" "kube_ops" {
   count = var.kube_ops_enabled ? 1 : 0
 
-  name   = "kube-ops-${var.cluster_name}"
+  name   = trimsuffix(substr("kube-ops-${var.cluster_name}", 0, 63), "-")
   role   = aws_iam_role.kube_ops[0].id
   policy = data.aws_iam_policy_document.kube_ops.json
 }

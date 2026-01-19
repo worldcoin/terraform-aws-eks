@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "keda_assume_role" {
 }
 
 resource "aws_iam_role" "keda" {
-  name               = "keda-${var.cluster_name}"
+  name               = trimsuffix(substr("keda-${var.cluster_name}", 0, 63), "-")
   assume_role_policy = data.aws_iam_policy_document.keda_assume_role.json
   path               = "/system/"
 }
@@ -34,7 +34,7 @@ data "aws_iam_policy_document" "keda" {
 }
 
 resource "aws_iam_role_policy" "keda" {
-  name   = "keda-${var.cluster_name}"
+  name   = trimsuffix(substr("keda-${var.cluster_name}", 0, 63), "-")
   role   = aws_iam_role.keda.id
   policy = data.aws_iam_policy_document.keda.json
 }

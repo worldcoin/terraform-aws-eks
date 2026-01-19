@@ -51,14 +51,14 @@ data "aws_iam_policy_document" "aws_efs_csi_driver" {
 
 resource "aws_iam_role" "aws_efs_csi_driver" {
   count              = var.efs_csi_driver_enabled ? 1 : 0
-  name               = "aws-efs-csi-driver-${var.cluster_name}"
+  name               = trimsuffix(substr("aws-efs-csi-driver-${var.cluster_name}", 0, 63), "-")
   path               = "/system/"
   assume_role_policy = data.aws_iam_policy_document.aws_efs_csi_driver_assume_role_policy.json
 }
 
 resource "aws_iam_role_policy" "aws_efs_csi_driver" {
   count  = var.efs_csi_driver_enabled ? 1 : 0
-  name   = "aws-efs-csi-driver-${var.cluster_name}"
+  name   = trimsuffix(substr("aws-efs-csi-driver-${var.cluster_name}", 0, 63), "-")
   role   = aws_iam_role.aws_efs_csi_driver[0].id
   policy = data.aws_iam_policy_document.aws_efs_csi_driver.json
 }
