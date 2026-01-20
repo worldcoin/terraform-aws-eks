@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "eks_pod_identity_assume_role" {
 }
 
 resource "aws_iam_role" "ebs_csi_controller" {
-  name = format("ebs-csi-controller-%s", var.cluster_name)
+  name = trimsuffix(substr(format("ebs-csi-controller-%s", var.cluster_name), 0, 63), "-")
 
   assume_role_policy = data.aws_iam_policy_document.eks_pod_identity_assume_role.json
   path               = "/system/"

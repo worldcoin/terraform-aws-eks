@@ -20,7 +20,7 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
 }
 
 resource "aws_iam_role" "cluster" {
-  name               = "eks-cluster-${var.cluster_name}"
+  name               = trimsuffix(substr("eks-cluster-${var.cluster_name}", 0, 63), "-")
   assume_role_policy = data.aws_iam_policy_document.cluster_assume_role_policy.json
 }
 

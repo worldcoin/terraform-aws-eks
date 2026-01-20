@@ -178,12 +178,12 @@ data "aws_iam_policy_document" "karpenter" {
 }
 
 resource "aws_iam_role" "karpenter" {
-  name               = "karpenter-controller-${var.cluster_name}"
+  name               = trimsuffix(substr("karpenter-controller-${var.cluster_name}", 0, 63), "-")
   assume_role_policy = data.aws_iam_policy_document.karpenter_assume_role_policy.json
 }
 
 resource "aws_iam_role_policy" "karpenter" {
-  name   = "karpenter-controller-${var.cluster_name}"
+  name   = trimsuffix(substr("karpenter-controller-${var.cluster_name}", 0, 63), "-")
   role   = aws_iam_role.karpenter.id
   policy = data.aws_iam_policy_document.karpenter.json
 }

@@ -51,7 +51,7 @@ resource "aws_launch_template" "al2023" {
 resource "aws_eks_node_group" "al2023" {
   count = var.eks_node_group != null ? 1 : 0
 
-  node_group_name = local.al2023_name
+  node_group_name = trimsuffix(substr(local.al2023_name, 0, 63), "-")
   node_role_arn   = aws_iam_role.node.arn
   cluster_name    = aws_eks_cluster.this.name
   subnet_ids      = var.vpc_config.private_subnets

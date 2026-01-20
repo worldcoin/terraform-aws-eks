@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "cni_metrics_helper_assume_role" {
 }
 
 resource "aws_iam_role" "cni_metrics_helper" {
-  name               = "cni-metrics-helper-${var.cluster_name}"
+  name               = trimsuffix(substr("cni-metrics-helper-${var.cluster_name}", 0, 63), "-")
   assume_role_policy = data.aws_iam_policy_document.cni_metrics_helper_assume_role.json
   path               = "/system/"
 }
@@ -34,7 +34,7 @@ data "aws_iam_policy_document" "cni_metrics_helper" {
 }
 
 resource "aws_iam_role_policy" "cni_metrics_helper" {
-  name   = "cni-metrics-helper-${var.cluster_name}"
+  name   = trimsuffix(substr("cni-metrics-helper-${var.cluster_name}", 0, 63), "-")
   role   = aws_iam_role.cni_metrics_helper.id
   policy = data.aws_iam_policy_document.cni_metrics_helper.json
 }
