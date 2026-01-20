@@ -199,6 +199,12 @@ resource "aws_eks_addon" "metrics_server" {
           memory : "200Mi"
         }
       }
+      tolerations = [
+        {
+          key : "critical",
+          operator : "Exists"
+        }
+      ]
     }
   )
 }
