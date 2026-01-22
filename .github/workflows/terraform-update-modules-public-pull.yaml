@@ -18,7 +18,7 @@ env:
 jobs:
   update-specific:
     runs-on:
-      group: arc-public-medium-arm64-runner
+      group: test-public-2xlarge-amd64-runner
     env:
       # Default list if client_payload.repos is not set
       REPOS: ${{ github.event.client_payload.repos || 'terraform-aws-eks terraform-aws-nlb terraform-aws-alb terraform-datadog-kubernetes' }}
