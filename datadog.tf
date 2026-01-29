@@ -9,6 +9,7 @@ locals {
   sts_multiple_restarts_filter_override        = var.monitor_system_workload_only ? "${local.system_filter_str} AND kube_statefulset:*" : null
   pod_ready_filter_override                    = var.monitor_system_workload_only ? local.system_filter_str : null
   deploy_desired_vs_status_filter_override     = var.monitor_system_workload_only ? local.system_filter_str : null
+
 }
 
 module "datadog_monitoring" {
@@ -131,4 +132,37 @@ resource "datadog_synthetics_test" "cluster_monitoring" {
       interval = 1000 # ms
     }
   }
+}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_lambda_function" "datadog_forwarder" {
+  count = var.datadog_control_plane_logs_forwarding_enabled ? 1 : 0
+
+  function_name = trimspace(var.datadog_forwarder_lambda_name) != "" ? trimspace(var.datadog_forwarder_lambda_name) : format("dd-forwarder-%s-%s-%s", var.account_name, var.environment, local.region)
+}
+
+resource "aws_lambda_permission" "datadog_forwarder_from_cwlogs" {
+  count = var.datadog_control_plane_logs_forwarding_enabled ? 1 : 0
+
+  statement_id  = "AllowCWLogsInvokeDatadogForwarder-${var.cluster_name}"
+  action        = "lambda:InvokeFunction"
+  function_name = data.aws_lambda_function.datadog_forwarder[0].arn
+  principal     = "logs.${var.region}.amazonaws.com"
+
+  source_account = data.aws_caller_identity.current.account_id
+  source_arn     = aws_cloudwatch_log_group.this.arn
+}
+
+resource "aws_cloudwatch_log_subscription_filter" "datadog_control_plane" {
+  count = var.datadog_control_plane_logs_forwarding_enabled ? 1 : 0
+
+  name            = "datadog-forwarder"
+  log_group_name  = aws_cloudwatch_log_group.this.name
+  destination_arn = data.aws_lambda_function.datadog_forwarder[0].arn
+
+  # Send everything.
+  filter_pattern = ""
+
+  depends_on = [aws_lambda_permission.datadog_forwarder_from_cwlogs]
 }

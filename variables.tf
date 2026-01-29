@@ -151,6 +151,18 @@ variable "monitoring_enabled" {
   default     = true
 }
 
+variable "datadog_control_plane_logs_forwarding_enabled" {
+  description = "Whether to forward the EKS control plane CloudWatch log group (/aws/eks/<cluster>/cluster) to the Datadog Forwarder Lambda via a subscription filter."
+  type        = bool
+  default     = false
+}
+
+variable "datadog_forwarder_lambda_name" {
+  description = "Name of the Datadog Forwarder Lambda. If set, this module will look up its ARN via aws_lambda_function. Ignored when datadog_control_plane_logs_forwarding_enabled is false."
+  type        = string
+  default     = ""
+}
+
 variable "monitor_system_workload_only" {
   description = "Monitor system workloads only (infra team)."
   type        = bool
