@@ -139,7 +139,7 @@ data "aws_caller_identity" "current" {}
 data "aws_lambda_function" "datadog_forwarder" {
   count = var.datadog_control_plane_logs_forwarding_enabled ? 1 : 0
 
-  function_name = trimspace(var.datadog_forwarder_lambda_name) != "" ? trimspace(var.datadog_forwarder_lambda_name) : format("dd-forwarder-%s-%s-%s", var.account_name, var.environment, local.region)
+  function_name = trimspace(var.datadog_forwarder_lambda_name) != "" ? trimspace(var.datadog_forwarder_lambda_name) : format("dd-forwarder-%s-%s-%s", var.account_name, var.environment, var.region)
 }
 
 resource "aws_lambda_permission" "datadog_forwarder_from_cwlogs" {

@@ -163,6 +163,12 @@ variable "datadog_forwarder_lambda_name" {
   default     = ""
 }
 
+variable "account_name" {
+  description = "same as in setup module"
+  type        = string
+  default     = ""
+}
+
 variable "monitor_system_workload_only" {
   description = "Monitor system workloads only (infra team)."
   type        = bool
