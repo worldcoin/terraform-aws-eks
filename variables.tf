@@ -1,3 +1,8 @@
+variable "enable_aws_load_balancer_controller_explicit_deny" {
+  description = "Safety switch: set to false to disable creating the aws-load-balancer-controller explicit deny policy and attachment."
+  type        = bool
+  default     = true
+}
 variable "cluster_name" {
   description = "The name of the cluster. Has to be unique per region per account."
   type        = string
