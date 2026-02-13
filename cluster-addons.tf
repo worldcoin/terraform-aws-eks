@@ -59,6 +59,13 @@ locals {
     "1.33" = "v2.0.0-eksbuild.1"
   }
 
+  # https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html
+  # aws eks describe-addon-versions --addon-name aws-efs-csi-driver --region us-east-1 --output json| jq '.addons[0].addonVersions[0]'
+  efs_csi_driver_version = {
+    "1.32" = "v2.3.0-eksbuild.1"
+    "1.33" = "v2.3.0-eksbuild.1"
+  }
+
   # https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
   # aws eks describe-addon-versions --addon-name metrics-server --region us-east-1 --output json| jq '.addons[0].addonVersions[0]'
   metrcis_server_version = {
@@ -169,6 +176,25 @@ resource "aws_eks_addon" "mountpoint_s3_csi" {
   resolve_conflicts_on_update = "OVERWRITE"
 
   service_account_role_arn = aws_iam_role.aws_s3_mountpoint_csi[0].arn
+
+  configuration_values = jsonencode(
+    {
+      node : {
+        tolerateAllTaints : true,
+      }
+    }
+  )
+}
+
+resource "aws_eks_addon" "efs_csi" {
+  count                       = var.efs_csi_driver_enabled ? 1 : 0
+  cluster_name                = aws_eks_cluster.this.id
+  addon_name                  = "aws-efs-csi-driver"
+  addon_version               = local.efs_csi_driver_version[var.cluster_version]
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+
+  service_account_role_arn = aws_iam_role.aws_efs_csi_driver[0].arn
 
   configuration_values = jsonencode(
     {
