@@ -11,6 +11,34 @@ data "aws_iam_policy_document" "assume_role" {
       "sts:AssumeRole",
       "sts:TagSession"
     ]
+
+    # https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-sourceaccount
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = [data.aws_caller_identity.account.id]
+    }
+
+    # https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-sourcearn
+    condition {
+      test     = "ArnEquals"
+      variable = "aws:SourceArn"
+      values   = [aws_eks_cluster.this.arn]
+    }
+
+    # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-role.html
+    # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-assign-target-role.html
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/kubernetes-namespace"
+      values   = ["kube-ops"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/kubernetes-service-account"
+      values   = ["kube-ops"]
+    }
   }
 }
 
@@ -20,6 +48,10 @@ resource "aws_iam_role" "kube_ops" {
   name               = trimsuffix(substr("kube-ops-${var.cluster_name}", 0, 63), "-")
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
   path               = "/system/"
+
+  tags = {
+    namespace = "kube-ops"
+  }
 }
 
 data "aws_iam_policy_document" "kube_ops" {
@@ -36,6 +68,12 @@ data "aws_iam_policy_document" "kube_ops" {
     ]
 
     resources = ["*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/namespace"
+      values   = ["$${ aws:PrincipalTag/namespace }"]
+    }
   }
 }
 
