@@ -7,8 +7,8 @@ variable "cluster_name" {
   description = "The name of the cluster. Has to be unique per region per account."
   type        = string
   validation {
-    condition     = can(regex("\\w-", var.cluster_name)) && length(var.cluster_name) <= 48
-    error_message = "Cluster name must be lowercase alphanumeric characters and be at most 48 characters long"
+    condition     = can(regex("^[a-z0-9]([a-z0-9-]*[a-z0-9])?$", var.cluster_name)) && length(var.cluster_name) <= 48
+    error_message = "Cluster name must contain only lowercase alphanumeric characters or hyphens and be at most 48 characters long"
   }
 }
 
