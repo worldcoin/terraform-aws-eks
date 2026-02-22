@@ -65,7 +65,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 }
 
 data "aws_iam_roles" "aws_load_balancer_controller" {
-  name_regex  = "^aws-load-balancer-controller-${var.cluster_name}$"
+  name_regex  = "^(aws-load-balancer-controller|aws-lbc)-${var.cluster_name}$"
   path_prefix = "/system/"
 }
 
@@ -84,7 +84,7 @@ data "aws_iam_policy_document" "aws_load_balancer_controller_explicit_deny" {
 
 resource "aws_iam_policy" "aws_load_balancer_controller_explicit_deny" {
   count  = local.aws_load_balancer_controller_role_exists ? 1 : 0
-  name   = "aws-load-balancer-controller-${var.cluster_name}-explicit-deny-elb"
+  name   = "aws-lbc-${var.cluster_name}-explicit-deny-elb"
   path   = "/system/"
   policy = data.aws_iam_policy_document.aws_load_balancer_controller_explicit_deny.json
 }
