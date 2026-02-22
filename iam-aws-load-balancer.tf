@@ -356,3 +356,13 @@ resource "aws_iam_role_policy" "aws_lbc" {
   role   = aws_iam_role.aws_lbc[0].id
   policy = data.aws_iam_policy_document.aws_load_balancer.json
 }
+
+moved {
+  from = aws_iam_role.aws_load_balancer
+  to   = aws_iam_role.aws_load_balancer[0]
+}
+
+moved {
+  from = aws_iam_role_policy.aws_load_balancer
+  to   = aws_iam_role_policy.aws_load_balancer[0]
+}
