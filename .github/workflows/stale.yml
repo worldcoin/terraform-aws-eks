@@ -1,0 +1,28 @@
+name: "Close stale issues and PRs"
+on:
+  schedule:
+    - cron: "10 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on:
+      group: arc-large-arm64-runner
+    steps:
+      - uses: actions/stale@b5d41d4e1d5dceea10e7104786b73624c18a190f
+        with:
+          start-date: "2024-11-05T00:00:00Z"
+          stale-pr-message: "This PR is stale because it has been open 4 days with no activity. Remove stale label or comment or this will be closed in 4 days."
+          close-pr-message: "This PR was closed because it has been stalled for 7 days with no activity."
+          # No issue should be closed because of Github Projects used in Devops team
+          days-before-issue-stale: -1
+          days-before-issue-close: -1
+          days-before-pr-stale: 4
+          days-before-pr-close: 8
+          delete-branch: true
+          operations-per-run: 50
