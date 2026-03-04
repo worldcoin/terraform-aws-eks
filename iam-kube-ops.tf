@@ -56,6 +56,17 @@ resource "aws_iam_role" "kube_ops" {
 
 data "aws_iam_policy_document" "kube_ops" {
   statement {
+    sid    = "listSecrets"
+    effect = "Allow"
+
+    actions = [
+      "secretsmanager:ListSecrets",
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
     sid    = "readSecretsManager"
     effect = "Allow"
 
@@ -64,16 +75,9 @@ data "aws_iam_policy_document" "kube_ops" {
       "secretsmanager:GetSecretValue",
       "secretsmanager:DescribeSecret",
       "secretsmanager:ListSecretVersionIds",
-      "secretsmanager:ListSecrets"
     ]
 
-    resources = ["*"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "aws:ResourceTag/namespace"
-      values   = ["$${ aws:PrincipalTag/namespace }"]
-    }
+    resources = ["arn:aws:secretsmanager:*:*:secret:${var.environment}/*"]
   }
 }
 
