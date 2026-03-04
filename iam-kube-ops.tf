@@ -12,13 +12,6 @@ data "aws_iam_policy_document" "assume_role" {
       "sts:TagSession"
     ]
 
-    # https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-sourceaccount
-    condition {
-      test     = "StringEquals"
-      variable = "aws:SourceAccount"
-      values   = [data.aws_caller_identity.account.id]
-    }
-
     # https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-sourcearn
     condition {
       test     = "ArnEquals"
