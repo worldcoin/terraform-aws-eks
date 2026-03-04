@@ -1,5 +1,5 @@
 locals {
-  namepsace       = "kube-ops"
+  namespace       = "kube-ops"
   service_account = "kube-ops"
 }
 
@@ -27,7 +27,7 @@ data "aws_iam_policy_document" "assume_role" {
     condition {
       test     = "StringEquals"
       variable = "aws:RequestTag/kubernetes-namespace"
-      values   = [local.namepsace]
+      values   = [local.namespace]
     }
 
     condition {
@@ -46,7 +46,7 @@ resource "aws_iam_role" "kube_ops" {
   path               = "/system/"
 
   tags = {
-    namespace = local.namepsace
+    namespace = local.namespace
   }
 }
 
@@ -89,7 +89,7 @@ resource "aws_eks_pod_identity_association" "this" {
   count = var.kube_ops_enabled ? 1 : 0
 
   cluster_name    = aws_eks_cluster.this.id
-  namespace       = local.namepsace
+  namespace       = local.namespace
   service_account = local.service_account
   role_arn        = aws_iam_role.kube_ops[0].arn
 }
