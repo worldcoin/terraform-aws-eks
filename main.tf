@@ -65,13 +65,13 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 }
 
 data "aws_iam_roles" "aws_load_balancer_controller" {
-  name_regex  = "^aws-load-balancer-controller-${var.cluster_name}$"
+  name_regex  = "^(aws-load-balancer-controller|aws-lbc)-${var.cluster_name}$"
   path_prefix = "/system/"
 }
 
 locals {
   aws_load_balancer_controller_role_exists = var.enable_aws_load_balancer_controller_explicit_deny ? length(data.aws_iam_roles.aws_load_balancer_controller.names) > 0 : false
-  aws_load_balancer_controller_role_name   = local.aws_load_balancer_controller_role_exists ? sort(tolist(data.aws_iam_roles.aws_load_balancer_controller.names))[0] : null
+  aws_load_balancer_controller_role_names  = local.aws_load_balancer_controller_role_exists ? toset(data.aws_iam_roles.aws_load_balancer_controller.names) : toset([])
 }
 
 data "aws_iam_policy_document" "aws_load_balancer_controller_explicit_deny" {
@@ -84,14 +84,14 @@ data "aws_iam_policy_document" "aws_load_balancer_controller_explicit_deny" {
 
 resource "aws_iam_policy" "aws_load_balancer_controller_explicit_deny" {
   count  = local.aws_load_balancer_controller_role_exists ? 1 : 0
-  name   = "aws-load-balancer-controller-${var.cluster_name}-explicit-deny-elb"
+  name   = "aws-lbc-${var.cluster_name}-explicit-deny-elb"
   path   = "/system/"
   policy = data.aws_iam_policy_document.aws_load_balancer_controller_explicit_deny.json
 }
 
 resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller_explicit_deny" {
-  count      = local.aws_load_balancer_controller_role_exists ? 1 : 0
-  role       = local.aws_load_balancer_controller_role_name
+  for_each   = local.aws_load_balancer_controller_role_names
+  role       = each.value
   policy_arn = aws_iam_policy.aws_load_balancer_controller_explicit_deny[0].arn
 }
   
