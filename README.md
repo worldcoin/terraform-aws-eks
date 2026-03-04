@@ -551,6 +551,8 @@ To remove the cluster you have to:
 
 1. Manually remove LB deletion protection from AWS (both external and internal) before final delete
 
+1. if there are other clusters in the same region, remove `aws_cloudwatch_event_rule.spot_aws_health aws_cloudwatch_event_rule.spot_aws_ec2` from the state manually.
+
 1. Remove module invocation to finally delete cluster itself.
 
 1. If above PR `apply` fails on deleting autoscalinggroups, terminate leftover instances and rerun `apply` (possible reason: race condition - karpenter didn't have enough time to clean instances)
