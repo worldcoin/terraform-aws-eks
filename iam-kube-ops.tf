@@ -12,15 +12,13 @@ data "aws_iam_policy_document" "assume_role" {
       "sts:TagSession"
     ]
 
-    # https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-sourcearn
+    # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-assign-target-role.html
     condition {
-      test     = "ArnEquals"
-      variable = "aws:SourceArn"
+      test     = "StringEquals"
+      variable = "aws:RequestTag/eks-cluster-arn"
       values   = [aws_eks_cluster.this.arn]
     }
 
-    # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-role.html
-    # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-assign-target-role.html
     condition {
       test     = "StringEquals"
       variable = "aws:RequestTag/kubernetes-namespace"
