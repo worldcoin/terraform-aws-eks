@@ -1,3 +1,8 @@
+locals {
+  namepsace       = "kube-ops"
+  service_account = "kube-ops"
+}
+
 data "aws_iam_policy_document" "assume_role" {
   statement {
     effect = "Allow"
@@ -22,13 +27,13 @@ data "aws_iam_policy_document" "assume_role" {
     condition {
       test     = "StringEquals"
       variable = "aws:RequestTag/kubernetes-namespace"
-      values   = ["kube-ops"]
+      values   = [local.namepsace]
     }
 
     condition {
       test     = "StringEquals"
       variable = "aws:RequestTag/kubernetes-service-account"
-      values   = ["kube-ops"]
+      values   = [local.service_account]
     }
   }
 }
@@ -41,7 +46,7 @@ resource "aws_iam_role" "kube_ops" {
   path               = "/system/"
 
   tags = {
-    namespace = "kube-ops"
+    namespace = local.namepsace
   }
 }
 
@@ -84,7 +89,7 @@ resource "aws_eks_pod_identity_association" "this" {
   count = var.kube_ops_enabled ? 1 : 0
 
   cluster_name    = aws_eks_cluster.this.id
-  namespace       = "kube-ops"
-  service_account = "kube-ops"
+  namespace       = local.namepsace
+  service_account = local.service_account
   role_arn        = aws_iam_role.kube_ops[0].arn
 }
