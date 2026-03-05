@@ -1,3 +1,8 @@
+locals {
+  namespace       = "kube-ops"
+  service_account = "kube-ops"
+}
+
 data "aws_iam_policy_document" "assume_role" {
   statement {
     effect = "Allow"
@@ -11,6 +16,25 @@ data "aws_iam_policy_document" "assume_role" {
       "sts:AssumeRole",
       "sts:TagSession"
     ]
+
+    # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-assign-target-role.html
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/eks-cluster-arn"
+      values   = [aws_eks_cluster.this.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/kubernetes-namespace"
+      values   = [local.namespace]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/kubernetes-service-account"
+      values   = [local.service_account]
+    }
   }
 }
 
@@ -20,9 +44,24 @@ resource "aws_iam_role" "kube_ops" {
   name               = trimsuffix(substr("kube-ops-${var.cluster_name}", 0, 63), "-")
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
   path               = "/system/"
+
+  tags = {
+    namespace = local.namespace
+  }
 }
 
 data "aws_iam_policy_document" "kube_ops" {
+  statement {
+    sid    = "listSecrets"
+    effect = "Allow"
+
+    actions = [
+      "secretsmanager:ListSecrets",
+    ]
+
+    resources = ["*"]
+  }
+
   statement {
     sid    = "readSecretsManager"
     effect = "Allow"
@@ -32,10 +71,9 @@ data "aws_iam_policy_document" "kube_ops" {
       "secretsmanager:GetSecretValue",
       "secretsmanager:DescribeSecret",
       "secretsmanager:ListSecretVersionIds",
-      "secretsmanager:ListSecrets"
     ]
 
-    resources = ["*"]
+    resources = ["arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.account.id}:secret:${var.environment}/*"]
   }
 }
 
@@ -51,7 +89,7 @@ resource "aws_eks_pod_identity_association" "this" {
   count = var.kube_ops_enabled ? 1 : 0
 
   cluster_name    = aws_eks_cluster.this.id
-  namespace       = "kube-ops"
-  service_account = "kube-ops"
+  namespace       = local.namespace
+  service_account = local.service_account
   role_arn        = aws_iam_role.kube_ops[0].arn
 }
