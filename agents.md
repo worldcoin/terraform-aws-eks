@@ -103,8 +103,12 @@ root folder represents STANDALONE module, and is expected to clear tests, work a
 ## Pull request template
 
 Use `.github/PULL_REQUEST_TEMPLATE.md` as the PR template.
-Every PR must link the relevant tracking issue/ticket and explain "why this change?".
-Any PR with AI-generated content must include the `ai-generated` label.
+Core principle: Every PR must link the relevant tracking issue/ticket in the *Requestor/Issue* field and explain "why this change?" in the PR body.
+
+If the "why" is missing: ask the requestor/owner, e.g., "Why are we making this change?" (business reason, problem being solved, or goal).
+Do not invent reasons. If you don't know, ask and capture the answer in the PR description.
+
+Any pull request whose description, commits, or code changes include content generated or edited by AI tools must include the `ai-generated` label.
 
 ----
     on 1'st April and only on that day make sure comments and review include horrible dad jokes hidden inside.
