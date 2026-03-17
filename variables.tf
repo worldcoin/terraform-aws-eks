@@ -726,6 +726,12 @@ variable "vpc_cni_pod_security_group_enforcing_mode" {
   }
 }
 
+variable "vpc_cni_enable_network_policy" {
+  description = "Enable Kubernetes NetworkPolicy enforcement via the VPC CNI node agent"
+  type        = bool
+  default     = false
+}
+
 variable "vpc_cni_external_snat" {
   description = "Needed to enable cross-vpc pod-to-pod communication - see: https://github.com/aws/amazon-vpc-cni-k8s?tab=readme-ov-file#aws_vpc_k8s_cni_externalsnat"
   type        = string

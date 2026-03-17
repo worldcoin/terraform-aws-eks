@@ -94,4 +94,4 @@ resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller_explicit
   role       = each.value
   policy_arn = aws_iam_policy.aws_load_balancer_controller_explicit_deny[0].arn
 }
-  
+
