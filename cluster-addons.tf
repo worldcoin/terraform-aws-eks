@@ -73,17 +73,27 @@ resource "aws_eks_addon" "vpc_cni" {
   addon_version               = var.vpc_cni_version_override == "" ? local.vpc_cni_version[var.cluster_version] : var.vpc_cni_version_override
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
-  configuration_values = jsonencode({
-    env : merge({
-      ENABLE_PREFIX_DELEGATION : lower(tostring(var.vpc_cni_enable_prefix_delegation)),                   # Enable prefix delegation for IPv6, allocate IPs in /28 blocks (instead of all at once)
-      WARM_IP_TARGET : var.vpc_cni_warm_ip_target,                                                        # Keep +4 IPs warm for each node to speed up pod scheduling
-      WARM_ENI_TARGET : var.vpc_cni_warm_eni_target,                                                      # Keep +1 ENI warm for each node to speed up pod scheduling
-      POD_SECURITY_GROUP_ENFORCING_MODE : lower(tostring(var.vpc_cni_pod_security_group_enforcing_mode)), # Enable pod security group enforcing mode
-      AWS_VPC_K8S_CNI_EXTERNALSNAT : lower(tostring(var.vpc_cni_external_snat)),                          # Enable external SNAT to enable pod to pod communication across different vpc's
-      }, var.vpc_cni_enable_pod_eni ? {
-      ENABLE_POD_ENI : lower(tostring(var.vpc_cni_enable_pod_eni)), # Enable pod ENI support
-    } : {})
-  })
+  configuration_values = jsonencode(merge(
+    {
+      env : merge({
+        ENABLE_PREFIX_DELEGATION : lower(tostring(var.vpc_cni_enable_prefix_delegation)),                   # Enable prefix delegation for IPv6, allocate IPs in /28 blocks (instead of all at once)
+        WARM_IP_TARGET : var.vpc_cni_warm_ip_target,                                                        # Keep +4 IPs warm for each node to speed up pod scheduling
+        WARM_ENI_TARGET : var.vpc_cni_warm_eni_target,                                                      # Keep +1 ENI warm for each node to speed up pod scheduling
+        POD_SECURITY_GROUP_ENFORCING_MODE : lower(tostring(var.vpc_cni_pod_security_group_enforcing_mode)), # Enable pod security group enforcing mode
+        AWS_VPC_K8S_CNI_EXTERNALSNAT : lower(tostring(var.vpc_cni_external_snat)),                          # Enable external SNAT to enable pod to pod communication across different vpc's
+        }, var.vpc_cni_enable_pod_eni ? {
+        ENABLE_POD_ENI : lower(tostring(var.vpc_cni_enable_pod_eni)), # Enable pod ENI support
+      } : {})
+    },
+    var.vpc_cni_enable_network_policy ? {
+      enableNetworkPolicy : lower(tostring(var.vpc_cni_enable_network_policy))
+    } : {},
+    var.vpc_cni_enable_network_policy ? {
+      nodeAgent : {
+        enablePolicyEventLogs : lower(tostring(var.vpc_cni_enable_network_policy))
+      }
+    } : {}
+  ))
 }
 
 resource "aws_eks_addon" "coredns" {
