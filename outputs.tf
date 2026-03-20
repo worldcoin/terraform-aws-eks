@@ -38,6 +38,47 @@ output "alb_arns" {
   value       = { for k, v in module.alb : k => v.arn }
 }
 
+# Gateway API load balancers
+output "gateway_api_external_alb_dns_name" {
+  description = "DNS name of the external Gateway API ALB"
+  value       = join("", [for k, v in module.gateway_api_external_alb : v.dns_name])
+}
+
+output "gateway_api_external_alb_arn" {
+  description = "ARN of the external Gateway API ALB"
+  value       = join("", [for k, v in module.gateway_api_external_alb : v.arn])
+}
+
+output "gateway_api_external_nlb_dns_name" {
+  description = "DNS name of the external Gateway API NLB"
+  value       = join("", [for k, v in module.gateway_api_external_nlb : v.dns_name])
+}
+
+output "gateway_api_external_nlb_arn" {
+  description = "ARN of the external Gateway API NLB"
+  value       = join("", [for k, v in module.gateway_api_external_nlb : v.arn])
+}
+
+output "gateway_api_internal_alb_dns_name" {
+  description = "DNS name of the internal Gateway API ALB"
+  value       = join("", [for k, v in module.gateway_api_internal_alb : v.dns_name])
+}
+
+output "gateway_api_internal_alb_arn" {
+  description = "ARN of the internal Gateway API ALB"
+  value       = join("", [for k, v in module.gateway_api_internal_alb : v.arn])
+}
+
+output "gateway_api_internal_nlb_dns_name" {
+  description = "DNS name of the internal Gateway API NLB"
+  value       = join("", [for k, v in module.gateway_api_internal_nlb : v.dns_name])
+}
+
+output "gateway_api_internal_nlb_arn" {
+  description = "ARN of the internal Gateway API NLB"
+  value       = join("", [for k, v in module.gateway_api_internal_nlb : v.arn])
+}
+
 output "cluster_oidc_issuer_url" {
   description = "The OIDC issuer URL for the EKS cluster"
   value       = local.oidc

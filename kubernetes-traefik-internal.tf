@@ -15,7 +15,7 @@ resource "kubernetes_service_v1" "traefik_nlb" {
       "service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled"   = "true"
       "service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"                     = "ip"
       "service.beta.kubernetes.io/aws-load-balancer-scheme"                              = "internal"
-      "service.beta.kubernetes.io/aws-load-balancer-ssl-cert"                            = var.internal_nlb_acm_arn != "" ? var.internal_nlb_acm_arn : var.traefik_cert_arn
+      "service.beta.kubernetes.io/aws-load-balancer-ssl-cert"                            = var.internal_cert_arn != "" ? var.internal_cert_arn : var.external_cert_arn
       "service.beta.kubernetes.io/aws-load-balancer-ssl-ports"                           = "443"
       "service.beta.kubernetes.io/aws-load-balancer-type"                                = "external"
       "service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy"              = module.nlb[each.key].ssl_policy
@@ -48,7 +48,7 @@ resource "kubernetes_service_v1" "traefik_nlb" {
     }
 
     dynamic "port" {
-      for_each = var.traefik_nlb_service_ports
+      for_each = var.internal_nlb_service_ports
 
       content {
         name        = port.value["name"]
@@ -70,7 +70,7 @@ resource "kubernetes_service_v1" "traefik_nlb" {
 }
 
 module "nlb" {
-  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v1.2.0"
+  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v1.3.0"
 
   for_each = var.internal_nlb_enabled ? toset([local.internal_nlb_name]) : []
 
@@ -83,7 +83,7 @@ module "nlb" {
   internal    = true
   application = format("%s/%s", each.key, each.key)
 
-  acm_arn         = var.internal_nlb_acm_arn != "" ? var.internal_nlb_acm_arn : var.traefik_cert_arn
+  acm_arn         = var.internal_cert_arn != "" ? var.internal_cert_arn : var.external_cert_arn
   vpc_id          = var.vpc_config.vpc_id
   public_subnets  = var.use_private_subnets_for_internal_nlb ? [] : var.vpc_config.public_subnets
   private_subnets = var.use_private_subnets_for_internal_nlb ? var.vpc_config.private_subnets : []

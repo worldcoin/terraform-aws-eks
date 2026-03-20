@@ -122,25 +122,24 @@ variable "use_private_subnets_for_internal_nlb" {
   default     = false
 }
 
-variable "internal_nlb_acm_arn" {
-  description = "The ARN of the certificate to use for internal NLB."
+variable "internal_cert_arn" {
+  description = "ACM certificate ARN for internal load balancers (falls back to external_cert_arn)"
   type        = string
   default     = ""
-  # commented due to tests passed, but in module it is not working
-  # regex match certificate arn
-  # validation {
-  #   condition     = can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.internal_nlb_acm_arn))
-  #   error_message = "Invalid ACM ARN"
-  # }
 }
 
-variable "traefik_cert_arn" {
-  description = "The ARN of the certificate to use for Traefik."
+variable "external_cert_arn" {
+  description = "ACM certificate ARN for external load balancers"
   type        = string
   default     = null
   validation {
-    condition     = var.internal_nlb_enabled || var.external_alb_enabled ? can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn)) : true
-    error_message = "Invalid `traefik_cert_arn` ARN"
+    condition = (
+      var.internal_nlb_enabled ||
+      var.external_alb_enabled ||
+      var.gateway_api_external_enabled ||
+      var.gateway_api_internal_enabled
+    ) ? can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn)) : true
+    error_message = "Invalid `external_cert_arn` ARN; required when any load balancer is enabled"
   }
 }
 
@@ -227,8 +226,8 @@ variable "alb_logs_bucket_id" {
   }
 }
 
-variable "traefik_nlb_service_ports" {
-  description = "List of additional ports for treafik k8s service"
+variable "internal_nlb_service_ports" {
+  description = "List of additional ports for internal NLB k8s service"
   type = list(object({
     name        = string
     port        = number
@@ -238,7 +237,7 @@ variable "traefik_nlb_service_ports" {
   default = []
   validation {
     condition = alltrue([
-      for port in var.traefik_nlb_service_ports : (
+      for port in var.internal_nlb_service_ports : (
         can(regex("\\w+", port.name)) &&
         (can(regex("\\d+", port.port)) && port.port > 0 && port.port <= 65535) &&
         can(regex("\\w+", port.target_port)) &&
@@ -772,4 +771,16 @@ variable "mtls_enabled" {
   description = "Enable mutual TLS (mTLS) on the ALB TLS listener"
   type        = bool
   default     = true
+}
+
+variable "gateway_api_external_enabled" {
+  description = "Create internet-facing ALB and NLB for Gateway API (external, external-nonhttp)"
+  type        = bool
+  default     = false
+}
+
+variable "gateway_api_internal_enabled" {
+  description = "Create internal ALB and NLB for Gateway API (internal, internal-nonhttp)"
+  type        = bool
+  default     = false
 }
