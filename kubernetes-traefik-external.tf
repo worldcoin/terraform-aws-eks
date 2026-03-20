@@ -123,6 +123,8 @@ module "alb" {
   mtls_enabled   = var.open_to_all ? false : var.mtls_enabled
   mtls_s3_bucket = format("wld-mtls-ca-%s", var.region)
 
+  enable_deletion_protection = var.enable_deletion_protection
+
   datadog = {
     monitoring_notification_channel = var.monitoring_notification_channel
   }
