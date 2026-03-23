@@ -6,17 +6,17 @@ locals {
       description      = "allow http from VPC"
       protocol         = "tcp"
       port             = 80
-      security_groups  = []
-      cidr_blocks      = [data.aws_vpc.cluster_vpc.cidr_block]
-      ipv6_cidr_blocks = []
+      security_groups  = tolist([])
+      cidr_blocks      = tolist([data.aws_vpc.cluster_vpc.cidr_block])
+      ipv6_cidr_blocks = tolist([])
     },
     {
       description      = "allow https from VPC"
       protocol         = "tcp"
       port             = 443
-      security_groups  = []
-      cidr_blocks      = [data.aws_vpc.cluster_vpc.cidr_block]
-      ipv6_cidr_blocks = []
+      security_groups  = tolist([])
+      cidr_blocks      = tolist([data.aws_vpc.cluster_vpc.cidr_block])
+      ipv6_cidr_blocks = tolist([])
     },
   ]
 }

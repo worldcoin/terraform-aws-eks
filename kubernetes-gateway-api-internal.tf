@@ -6,8 +6,8 @@ locals {
       description     = "Allow HTTPS from VPC"
       protocol        = "tcp"
       port            = 443
-      security_groups = []
-      cidr_blocks     = [data.aws_vpc.cluster_vpc.cidr_block]
+      security_groups = tolist([])
+      cidr_blocks     = tolist([data.aws_vpc.cluster_vpc.cidr_block])
     },
   ]
 }
