@@ -17,6 +17,8 @@ module "gateway_api_internal_nlb" {
   internal    = true
   application = each.key
 
+  create_default_listeners = false
+
   acm_arn         = var.internal_cert_arn != "" ? var.internal_cert_arn : var.external_cert_arn
   vpc_id          = var.vpc_config.vpc_id
   public_subnets  = var.use_private_subnets_for_internal_nlb ? [] : var.vpc_config.public_subnets

@@ -17,6 +17,8 @@ module "gateway_api_external_alb" {
   application = each.key
   namespace   = "kube-system"
 
+  # create_default_listener = false
+
   acm_arn        = var.external_cert_arn
   vpc_id         = var.vpc_config.vpc_id
   public_subnets = var.vpc_config.public_subnets
