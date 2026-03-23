@@ -1,22 +1,16 @@
 locals {
   gateway_api_internal_nlb_name = "gw-int-nlb"
 
-  gateway_api_internal_nlb_default_sg_rules = [
+  gateway_api_internal_nlb_sg_rules = var.gateway_api_internal_nlb_sg_rules != null ? var.gateway_api_internal_nlb_sg_rules : [
     {
-      description      = "allow http from VPC"
-      protocol         = "tcp"
-      port             = 80
-      security_groups  = tolist([])
-      cidr_blocks      = tolist([data.aws_vpc.cluster_vpc.cidr_block])
-      ipv6_cidr_blocks = tolist([])
+      description = "allow http from VPC"
+      port        = 80
+      cidr_blocks = [data.aws_vpc.cluster_vpc.cidr_block]
     },
     {
-      description      = "allow https from VPC"
-      protocol         = "tcp"
-      port             = 443
-      security_groups  = tolist([])
-      cidr_blocks      = tolist([data.aws_vpc.cluster_vpc.cidr_block])
-      ipv6_cidr_blocks = tolist([])
+      description = "allow https from VPC"
+      port        = 443
+      cidr_blocks = [data.aws_vpc.cluster_vpc.cidr_block]
     },
   ]
 }
@@ -43,5 +37,5 @@ module "gateway_api_internal_nlb" {
   public_subnets  = var.use_private_subnets_for_internal_nlb ? [] : var.vpc_config.public_subnets
   private_subnets = var.use_private_subnets_for_internal_nlb ? var.vpc_config.private_subnets : []
 
-  ingress_sg_rules = var.gateway_api_internal_nlb_sg_rules != null ? var.gateway_api_internal_nlb_sg_rules : local.gateway_api_internal_nlb_default_sg_rules
+  ingress_sg_rules = local.gateway_api_internal_nlb_sg_rules
 }

@@ -3,35 +3,23 @@ locals {
 
   gateway_api_external_nlb_default_sg_rules = [
     {
-      description      = "allow http from Cloudflare"
-      protocol         = "tcp"
-      port             = 80
-      security_groups  = tolist([])
-      cidr_blocks      = data.cloudflare_ip_ranges.cloudflare.ipv4_cidrs
-      ipv6_cidr_blocks = tolist([])
+      description = "allow http from Cloudflare"
+      port        = 80
+      cidr_blocks = data.cloudflare_ip_ranges.cloudflare.ipv4_cidrs
     },
     {
       description      = "allow http from Cloudflare (IPv6)"
-      protocol         = "tcp"
       port             = 80
-      security_groups  = tolist([])
-      cidr_blocks      = tolist([])
       ipv6_cidr_blocks = data.cloudflare_ip_ranges.cloudflare.ipv6_cidrs
     },
     {
-      description      = "allow https from Cloudflare"
-      protocol         = "tcp"
-      port             = 443
-      security_groups  = tolist([])
-      cidr_blocks      = data.cloudflare_ip_ranges.cloudflare.ipv4_cidrs
-      ipv6_cidr_blocks = tolist([])
+      description = "allow https from Cloudflare"
+      port        = 443
+      cidr_blocks = data.cloudflare_ip_ranges.cloudflare.ipv4_cidrs
     },
     {
       description      = "allow https from Cloudflare (IPv6)"
-      protocol         = "tcp"
       port             = 443
-      security_groups  = tolist([])
-      cidr_blocks      = tolist([])
       ipv6_cidr_blocks = data.cloudflare_ip_ranges.cloudflare.ipv6_cidrs
     },
   ]

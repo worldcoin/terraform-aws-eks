@@ -1,5 +1,10 @@
 locals {
   gateway_api_external_alb_name = "gw-ext-alb"
+
+  # Default is [] — the ALB module manages frontend SG ingress internally
+  # using open_to_all (Cloudflare IPs or 0.0.0.0/0). backend_ingress_rules
+  # only adds extra rules to the backend SG which has no ingress by default.
+  gateway_api_external_alb_sg_rules = var.gateway_api_external_alb_sg_rules != null ? var.gateway_api_external_alb_sg_rules : []
 }
 
 module "gateway_api_external_alb" {
@@ -29,7 +34,7 @@ module "gateway_api_external_alb" {
 
   additional_open_ports      = var.additional_open_ports
   drop_invalid_header_fields = var.drop_invalid_header_fields
-  backend_ingress_rules      = var.gateway_api_external_alb_sg_rules != null ? var.gateway_api_external_alb_sg_rules : []
+  backend_ingress_rules      = local.gateway_api_external_alb_sg_rules
 
   mtls_enabled   = var.open_to_all ? false : var.mtls_enabled
   mtls_s3_bucket = format("wld-mtls-ca-%s", var.region)
