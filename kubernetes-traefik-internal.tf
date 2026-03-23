@@ -70,7 +70,7 @@ resource "kubernetes_service_v1" "traefik_nlb" {
 }
 
 module "nlb" {
-  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v1.2.0"
+  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v1.3.0"
 
   for_each = var.internal_nlb_enabled ? toset([local.internal_nlb_name]) : []
 
@@ -89,4 +89,6 @@ module "nlb" {
   private_subnets = var.use_private_subnets_for_internal_nlb ? var.vpc_config.private_subnets : []
 
   extra_listeners = var.extra_nlb_listeners
+
+  enable_deletion_protection = var.enable_deletion_protection
 }
