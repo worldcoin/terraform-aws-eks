@@ -29,7 +29,6 @@ module "gateway_api_external_alb" {
 
   additional_open_ports      = var.additional_open_ports
   drop_invalid_header_fields = var.drop_invalid_header_fields
-  acm_extra_arns             = var.acm_extra_arns
 
   mtls_enabled   = var.open_to_all ? false : var.mtls_enabled
   mtls_s3_bucket = format("wld-mtls-ca-%s", var.region)

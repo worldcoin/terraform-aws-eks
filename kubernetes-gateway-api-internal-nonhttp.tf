@@ -23,6 +23,4 @@ module "gateway_api_internal_nlb" {
   vpc_id          = var.vpc_config.vpc_id
   public_subnets  = var.use_private_subnets_for_internal_nlb ? [] : var.vpc_config.public_subnets
   private_subnets = var.use_private_subnets_for_internal_nlb ? var.vpc_config.private_subnets : []
-
-  extra_listeners = var.extra_nlb_listeners
 }

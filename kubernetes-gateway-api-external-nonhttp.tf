@@ -22,6 +22,4 @@ module "gateway_api_external_nlb" {
   acm_arn        = var.external_cert_arn
   vpc_id         = var.vpc_config.vpc_id
   public_subnets = var.vpc_config.public_subnets
-
-  extra_listeners = var.extra_nlb_listeners
 }
