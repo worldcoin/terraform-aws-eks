@@ -3,7 +3,7 @@ locals {
 }
 
 module "gateway_api_internal_alb" {
-  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v1.4.0"
+  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=feat/add-create-default-listener-variable"
   for_each = var.gateway_api_internal_enabled ? toset([local.gateway_api_internal_alb_name]) : []
 
   name_suffix  = each.key
@@ -17,7 +17,7 @@ module "gateway_api_internal_alb" {
   application = each.key
   namespace   = "kube-system"
 
-  # create_default_listener = false
+  create_default_listener = false
 
   acm_arn        = var.internal_cert_arn != "" ? var.internal_cert_arn : var.external_cert_arn
   vpc_id         = var.vpc_config.vpc_id
