@@ -3,7 +3,7 @@ locals {
 }
 
 module "gateway_api_internal_alb" {
-  source = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v1.4.0"
+  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v1.4.0"
   for_each = var.gateway_api_internal_enabled ? toset([local.gateway_api_internal_alb_name]) : []
 
   name_suffix  = each.key
@@ -25,6 +25,9 @@ module "gateway_api_internal_alb" {
   idle_timeout      = var.alb_idle_timeout
 
   drop_invalid_header_fields = var.drop_invalid_header_fields
+
+  # mTLS on the internal ALB should be disabled because we want to allow traffic within the VPC
+  mtls_enabled = false
 
   datadog = {
     monitoring_notification_channel = var.monitoring_notification_channel
