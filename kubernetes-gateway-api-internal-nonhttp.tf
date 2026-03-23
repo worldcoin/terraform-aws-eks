@@ -24,7 +24,7 @@ module "gateway_api_internal_nlb" {
   public_subnets  = var.use_private_subnets_for_internal_nlb ? [] : var.vpc_config.public_subnets
   private_subnets = var.use_private_subnets_for_internal_nlb ? var.vpc_config.private_subnets : []
 
-  ingress_sg_rules = [
+  ingress_sg_rules = var.gateway_api_internal_nlb_sg_rules != null ? var.gateway_api_internal_nlb_sg_rules : [
     {
       description = "allow http from VPC"
       port        = 80

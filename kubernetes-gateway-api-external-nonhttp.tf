@@ -23,7 +23,7 @@ module "gateway_api_external_nlb" {
   vpc_id         = var.vpc_config.vpc_id
   public_subnets = var.vpc_config.public_subnets
 
-  ingress_sg_rules = [
+  ingress_sg_rules = var.gateway_api_external_nlb_sg_rules != null ? var.gateway_api_external_nlb_sg_rules : [
     {
       description = "allow http from Cloudflare"
       port        = 80
