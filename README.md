@@ -534,11 +534,13 @@ To remove the cluster you have to:
    ```
 
 1. Set these flags, the module will remove every usage of the Kubernetes provider and allow
-   you to remove the cluster module without any errors.
+   you to remove the cluster module without any errors. Setting `enable_deletion_protection = false`
+   disables deletion protection on the Traefik NLB/ALB load balancers so they can be removed by Terraform.
 
    ```yaml
-   efs_csi_driver_enabled = false
+   efs_csi_driver_enabled      = false
    kubernetes_provider_enabled = false
+   enable_deletion_protection  = false
    ```
 
 1. If above PR `apply` fails (possible reason: race condition - aws_auth removed too soon), remove all `kubernetes_*` resources from state:
@@ -548,8 +550,6 @@ To remove the cluster you have to:
 
    terraform state rm ...
    ```
-
-1. Manually remove LB deletion protection from AWS (both external and internal) before final delete
 
 1. if there are other clusters in the same region, remove `aws_cloudwatch_event_rule.spot_aws_health aws_cloudwatch_event_rule.spot_aws_ec2` from the state manually.
 
