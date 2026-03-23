@@ -22,4 +22,27 @@ module "gateway_api_external_nlb" {
   acm_arn        = var.external_cert_arn
   vpc_id         = var.vpc_config.vpc_id
   public_subnets = var.vpc_config.public_subnets
+
+  ingress_sg_rules = [
+    {
+      description = "allow http from Cloudflare"
+      port        = 80
+      cidr_blocks = data.cloudflare_ip_ranges.cloudflare.ipv4_cidrs
+    },
+    {
+      description      = "allow http from Cloudflare (IPv6)"
+      port             = 80
+      ipv6_cidr_blocks = data.cloudflare_ip_ranges.cloudflare.ipv6_cidrs
+    },
+    {
+      description = "allow https from Cloudflare"
+      port        = 443
+      cidr_blocks = data.cloudflare_ip_ranges.cloudflare.ipv4_cidrs
+    },
+    {
+      description      = "allow https from Cloudflare (IPv6)"
+      port             = 443
+      ipv6_cidr_blocks = data.cloudflare_ip_ranges.cloudflare.ipv6_cidrs
+    },
+  ]
 }
