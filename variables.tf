@@ -773,6 +773,12 @@ variable "mtls_enabled" {
   default     = true
 }
 
+variable "enable_deletion_protection" {
+  description = "Whether to enable deletion protection on the Traefik NLB/ALB load balancers. Set to false before destroying the cluster."
+  type        = bool
+  default     = true
+}
+
 variable "gateway_api_external_enabled" {
   description = "Create internet-facing ALB and NLB for Gateway API (external, external-nonhttp)"
   type        = bool
