@@ -34,8 +34,8 @@ resource "aws_eks_cluster" "this" {
   }
 
   timeouts {
-    create = "30m"
-    delete = "15m"
+    create = "60m"
+    delete = "30m"
   }
 
   tags = {
