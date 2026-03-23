@@ -1,0 +1,27 @@
+name: Terraform TFSec
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "**/*.tf"
+
+jobs:
+  tfsec:
+    name: tfsec
+    runs-on:
+      group: arc-large-amd64-runner
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: tfsec
+        uses: aquasecurity/tfsec-pr-commenter-action@7a44c5dcde5dfab737363e391800629e27b6376b
+        with:
+          # --ignore-hcl-errors to avoid error on terraform above 1.5
+          tfsec_args: --force-all-dirs --ignore-hcl-errors
+          tfsec_version: v1.28.14
+          github_token: ${{ secrets.GIT_HUB_TOKEN }}
