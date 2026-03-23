@@ -793,7 +793,7 @@ variable "gateway_api_internal_enabled" {
 
 variable "gateway_api_external_alb_sg_rules" {
   description = "Override LB security group ingress rules for the external Gateway API ALB. When null, the ALB module defaults apply (Cloudflare IPs or open_to_all)."
-  type = set(object({
+  type = list(object({
     description     = optional(string, "")
     protocol        = optional(string, "tcp")
     port            = optional(number, 443)
@@ -805,7 +805,7 @@ variable "gateway_api_external_alb_sg_rules" {
 
 variable "gateway_api_internal_alb_sg_rules" {
   description = "Override LB security group ingress rules for the internal Gateway API ALB. When null, allows HTTPS from VPC CIDR."
-  type = set(object({
+  type = list(object({
     description     = optional(string, "")
     protocol        = optional(string, "tcp")
     port            = optional(number, 443)
@@ -817,7 +817,7 @@ variable "gateway_api_internal_alb_sg_rules" {
 
 variable "gateway_api_external_nlb_sg_rules" {
   description = "Override LB security group ingress rules for the external Gateway API NLB. When null, allows ports 80 and 443 from Cloudflare IPs."
-  type = set(object({
+  type = list(object({
     description      = optional(string, "")
     protocol         = optional(string, "tcp")
     port             = optional(number, 443)
@@ -830,7 +830,7 @@ variable "gateway_api_external_nlb_sg_rules" {
 
 variable "gateway_api_internal_nlb_sg_rules" {
   description = "Override LB security group ingress rules for the internal Gateway API NLB. When null, allows ports 80 and 443 from VPC CIDR."
-  type = set(object({
+  type = list(object({
     description      = optional(string, "")
     protocol         = optional(string, "tcp")
     port             = optional(number, 443)

@@ -1,5 +1,15 @@
 locals {
   gateway_api_internal_alb_name = "gw-int-alb"
+
+  gateway_api_internal_alb_default_sg_rules = [
+    {
+      description     = "Allow HTTPS from VPC"
+      protocol        = "tcp"
+      port            = 443
+      security_groups = null
+      cidr_blocks     = [data.aws_vpc.cluster_vpc.cidr_block]
+    },
+  ]
 }
 
 module "gateway_api_internal_alb" {
@@ -23,13 +33,7 @@ module "gateway_api_internal_alb" {
   vpc_id         = var.vpc_config.vpc_id
   public_subnets = var.use_private_subnets_for_internal_nlb ? [] : var.vpc_config.public_subnets
 
-  backend_ingress_rules = var.gateway_api_internal_alb_sg_rules != null ? var.gateway_api_internal_alb_sg_rules : [
-    {
-      description = "Allow HTTPS from VPC"
-      port        = 443
-      cidr_blocks = [data.aws_vpc.cluster_vpc.cidr_block]
-    },
-  ]
+  backend_ingress_rules = var.gateway_api_internal_alb_sg_rules != null ? var.gateway_api_internal_alb_sg_rules : local.gateway_api_internal_alb_default_sg_rules
 
   s3_logs_bucket_id = var.alb_logs_bucket_id
   idle_timeout      = var.alb_idle_timeout
