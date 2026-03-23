@@ -6,32 +6,32 @@ locals {
       description      = "allow http from Cloudflare"
       protocol         = "tcp"
       port             = 80
-      security_groups  = null
+      security_groups  = []
       cidr_blocks      = data.cloudflare_ip_ranges.cloudflare.ipv4_cidrs
-      ipv6_cidr_blocks = null
+      ipv6_cidr_blocks = []
     },
     {
       description      = "allow http from Cloudflare (IPv6)"
       protocol         = "tcp"
       port             = 80
-      security_groups  = null
-      cidr_blocks      = null
+      security_groups  = []
+      cidr_blocks      = []
       ipv6_cidr_blocks = data.cloudflare_ip_ranges.cloudflare.ipv6_cidrs
     },
     {
       description      = "allow https from Cloudflare"
       protocol         = "tcp"
       port             = 443
-      security_groups  = null
+      security_groups  = []
       cidr_blocks      = data.cloudflare_ip_ranges.cloudflare.ipv4_cidrs
-      ipv6_cidr_blocks = null
+      ipv6_cidr_blocks = []
     },
     {
       description      = "allow https from Cloudflare (IPv6)"
       protocol         = "tcp"
       port             = 443
-      security_groups  = null
-      cidr_blocks      = null
+      security_groups  = []
+      cidr_blocks      = []
       ipv6_cidr_blocks = data.cloudflare_ip_ranges.cloudflare.ipv6_cidrs
     },
   ]
