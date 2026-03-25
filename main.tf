@@ -1,5 +1,5 @@
-#tfsec:ignore:aws-eks-no-public-cluster-access-to-cidr
-#tfsec:ignore:aws-eks-no-public-cluster-access
+#trivy:ignore:aws-eks-no-public-cluster-access-to-cidr
+#trivy:ignore:aws-eks-no-public-cluster-access
 resource "aws_eks_cluster" "this" {
   name     = var.cluster_name
   version  = var.cluster_version
