@@ -42,7 +42,7 @@ module "gateway_api_external_nlb" {
 
   create_default_listeners = false
 
-  acm_arn        = var.external_cert_arn
+  acm_arn        = local.effective_external_cert_arn
   vpc_id         = var.vpc_config.vpc_id
   public_subnets = var.vpc_config.public_subnets
 

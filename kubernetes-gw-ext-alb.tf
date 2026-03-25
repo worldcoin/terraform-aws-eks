@@ -24,7 +24,7 @@ module "gateway_api_external_alb" {
 
   create_default_listener = false
 
-  acm_arn        = var.external_cert_arn
+  acm_arn        = local.effective_external_cert_arn
   vpc_id         = var.vpc_config.vpc_id
   public_subnets = var.vpc_config.public_subnets
   open_to_all    = var.open_to_all

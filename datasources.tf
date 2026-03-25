@@ -6,6 +6,8 @@ data "aws_vpc" "cluster_vpc" {
 data "cloudflare_ip_ranges" "cloudflare" {}
 
 locals {
+  effective_external_cert_arn = var.external_cert_arn != null ? var.external_cert_arn : var.traefik_cert_arn
+
   al2023_standard_ami = {
     amd64 = format("/aws/service/eks/optimized-ami/%s/amazon-linux-2023/x86_64/standard/recommended/image_id", var.cluster_version)
     arm64 = format("/aws/service/eks/optimized-ami/%s/amazon-linux-2023/arm64/standard/recommended/image_id", var.cluster_version)

@@ -134,6 +134,12 @@ variable "internal_cert_arn" {
   default     = ""
 }
 
+variable "traefik_cert_arn" {
+  description = "Deprecated: use external_cert_arn instead."
+  type        = string
+  default     = null
+}
+
 variable "external_cert_arn" {
   description = "ACM certificate ARN for external load balancers"
   type        = string
@@ -144,8 +150,11 @@ variable "external_cert_arn" {
       var.external_alb_enabled ||
       var.gateway_api_external_enabled ||
       var.gateway_api_internal_enabled
-    ) ? can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn)) : true
-    error_message = "Invalid `external_cert_arn` ARN; required when any load balancer is enabled"
+    ) ? (
+      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn)) ||
+      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn))
+    ) : true
+    error_message = "A valid ACM certificate ARN must be set in external_cert_arn (or deprecated traefik_cert_arn) when any load balancer is enabled"
   }
 }
 

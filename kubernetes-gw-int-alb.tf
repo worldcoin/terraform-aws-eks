@@ -27,7 +27,7 @@ module "gateway_api_internal_alb" {
 
   create_default_listener = false
 
-  acm_arn        = coalesce(var.internal_cert_arn, var.internal_nlb_acm_arn, var.external_cert_arn)
+  acm_arn        = coalesce(var.internal_cert_arn, var.internal_nlb_acm_arn, local.effective_external_cert_arn)
   vpc_id         = var.vpc_config.vpc_id
   public_subnets = var.use_private_subnets_for_internal_nlb ? [] : var.vpc_config.public_subnets
 
