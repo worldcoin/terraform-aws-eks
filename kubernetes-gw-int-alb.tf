@@ -24,7 +24,7 @@ module "gateway_api_internal_alb" {
   for_each = var.gateway_api_internal_enabled ? toset([local.gateway_api_internal_alb_name]) : []
 
   name_suffix  = each.key
-  cluster_name = var.cluster_name
+  cluster_name = local.gateway_api_lb_name_prefix
   tag_prefix   = "gateway.k8s.aws.alb"
   tag_stack    = format("kube-system/%s", each.key)
 

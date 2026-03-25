@@ -893,3 +893,14 @@ variable "gateway_api_internal_nlb_sg_rules" {
     error_message = "Each rule must have a 'port' and at least one of 'cidr_blocks', 'ipv6_cidr_blocks', or 'security_groups'."
   }
 }
+
+variable "gateway_api_lb_name_prefix" {
+  description = "Prefix for Gateway API load balancer names. Defaults to cluster_name. Override when cluster_name is too long to fit within the 32-char AWS LB name limit (prefix + suffix like '-gw-ext-alb' must be <= 32)."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.gateway_api_lb_name_prefix == null || (length(var.gateway_api_lb_name_prefix) <= 21 && can(regex("^[a-z0-9]([a-z0-9-]*[a-z0-9])?$", var.gateway_api_lb_name_prefix)))
+    error_message = "gateway_api_lb_name_prefix must be <= 21 characters (to fit 32-char LB name limit with suffix) and contain only lowercase alphanumeric characters or hyphens."
+  }
+}

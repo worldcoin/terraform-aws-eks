@@ -35,3 +35,7 @@ provider "kubernetes" {
     data.aws_eks_cluster_auth.default.token
   )
 }
+
+locals {
+  gateway_api_lb_name_prefix = coalesce(var.gateway_api_lb_name_prefix, var.cluster_name)
+}
