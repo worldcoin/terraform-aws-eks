@@ -122,8 +122,14 @@ variable "use_private_subnets_for_internal_nlb" {
   default     = false
 }
 
+variable "internal_nlb_acm_arn" {
+  description = "Deprecated: use internal_cert_arn instead."
+  type        = string
+  default     = ""
+}
+
 variable "internal_cert_arn" {
-  description = "ACM certificate ARN for internal load balancers (falls back to external_cert_arn)"
+  description = "ACM certificate ARN for internal load balancers (falls back to external_cert_arn). If empty, internal_nlb_acm_arn is used for backwards compatibility."
   type        = string
   default     = ""
 }
@@ -224,6 +230,17 @@ variable "alb_logs_bucket_id" {
     )
     error_message = "Invalid S3 bucket ID"
   }
+}
+
+variable "traefik_nlb_service_ports" {
+  description = "Deprecated: use internal_nlb_service_ports instead."
+  type = list(object({
+    name        = string
+    port        = number
+    target_port = string
+    protocol    = string
+  }))
+  default = []
 }
 
 variable "internal_nlb_service_ports" {
