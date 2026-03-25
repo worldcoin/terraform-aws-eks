@@ -1,13 +1,22 @@
 locals {
   gateway_api_internal_alb_name = "gw-int-alb"
 
-  gateway_api_internal_alb_sg_rules = var.gateway_api_internal_alb_sg_rules != null ? var.gateway_api_internal_alb_sg_rules : [
-    {
-      description = "Allow HTTPS from VPC"
-      port        = 443
-      cidr_blocks = [data.aws_vpc.cluster_vpc.cidr_block]
-    },
-  ]
+  gateway_api_internal_alb_sg_rules = var.gateway_api_internal_alb_sg_rules != null ? var.gateway_api_internal_alb_sg_rules : concat(
+    [
+      {
+        description = "Allow HTTPS from VPC"
+        port        = 443
+        cidr_blocks = [data.aws_vpc.cluster_vpc.cidr_block]
+      },
+    ],
+    data.aws_vpc.cluster_vpc.ipv6_cidr_block != "" ? [
+      {
+        description      = "Allow HTTPS from VPC (IPv6)"
+        port             = 443
+        ipv6_cidr_blocks = [data.aws_vpc.cluster_vpc.ipv6_cidr_block]
+      },
+    ] : []
+  )
 }
 
 module "gateway_api_internal_alb" {
