@@ -123,38 +123,24 @@ variable "use_private_subnets_for_internal_nlb" {
 }
 
 variable "internal_nlb_acm_arn" {
-  description = "Deprecated: use internal_cert_arn instead."
+  description = "(Deprecated: use internal_cert_arn) The ARN of the certificate to use for internal NLB."
   type        = string
   default     = ""
-}
-
-variable "internal_cert_arn" {
-  description = "ACM certificate ARN for internal load balancers (falls back to external_cert_arn). If empty, internal_nlb_acm_arn is used for backwards compatibility."
-  type        = string
-  default     = ""
+  # commented due to tests passed, but in module it is not working
+  # regex match certificate arn
+  # validation {
+  #   condition     = can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.internal_nlb_acm_arn))
+  #   error_message = "Invalid ACM ARN"
+  # }
 }
 
 variable "traefik_cert_arn" {
-  description = "Deprecated: use external_cert_arn instead."
-  type        = string
-  default     = null
-}
-
-variable "external_cert_arn" {
-  description = "ACM certificate ARN for external load balancers"
+  description = "(Deprecated: use external_cert_arn) The ARN of the certificate to use for Traefik."
   type        = string
   default     = null
   validation {
-    condition = (
-      var.internal_nlb_enabled ||
-      var.external_alb_enabled ||
-      var.gateway_api_external_enabled ||
-      var.gateway_api_internal_enabled
-    ) ? (
-      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn)) ||
-      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn))
-    ) : true
-    error_message = "A valid ACM certificate ARN must be set in external_cert_arn (or deprecated traefik_cert_arn) when any load balancer is enabled"
+    condition     = var.traefik_cert_arn != null ? can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn)) : true
+    error_message = "Invalid `traefik_cert_arn` ARN"
   }
 }
 
@@ -242,18 +228,7 @@ variable "alb_logs_bucket_id" {
 }
 
 variable "traefik_nlb_service_ports" {
-  description = "Deprecated: use internal_nlb_service_ports instead."
-  type = list(object({
-    name        = string
-    port        = number
-    target_port = string
-    protocol    = string
-  }))
-  default = []
-}
-
-variable "internal_nlb_service_ports" {
-  description = "List of additional ports for internal NLB k8s service"
+  description = "(Deprecated: use internal_nlb_service_ports) List of additional ports for traefik k8s service"
   type = list(object({
     name        = string
     port        = number
@@ -263,7 +238,7 @@ variable "internal_nlb_service_ports" {
   default = []
   validation {
     condition = alltrue([
-      for port in var.internal_nlb_service_ports : (
+      for port in var.traefik_nlb_service_ports : (
         can(regex("\\w+", port.name)) &&
         (can(regex("\\d+", port.port)) && port.port > 0 && port.port <= 65535) &&
         can(regex("\\w+", port.target_port)) &&
@@ -803,6 +778,52 @@ variable "enable_deletion_protection" {
   description = "Whether to enable deletion protection on the Traefik NLB/ALB load balancers. Set to false before destroying the cluster."
   type        = bool
   default     = true
+}
+
+variable "external_cert_arn" {
+  description = "ACM certificate ARN for external load balancers. Overrides traefik_cert_arn when set."
+  type        = string
+  default     = null
+  validation {
+    condition = (
+      var.internal_nlb_enabled ||
+      var.external_alb_enabled ||
+      var.gateway_api_external_enabled ||
+      var.gateway_api_internal_enabled
+      ) ? (
+      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn)) ||
+      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn))
+    ) : true
+    error_message = "A valid ACM certificate ARN must be set in external_cert_arn (or traefik_cert_arn) when any load balancer is enabled"
+  }
+}
+
+variable "internal_cert_arn" {
+  description = "ACM certificate ARN for internal load balancers (falls back to external_cert_arn). If empty, internal_nlb_acm_arn is used for backwards compatibility."
+  type        = string
+  default     = ""
+}
+
+variable "internal_nlb_service_ports" {
+  description = "List of additional ports for internal NLB k8s service"
+  type = list(object({
+    name        = string
+    port        = number
+    target_port = string
+    protocol    = string
+  }))
+  default = []
+  validation {
+    condition = alltrue([
+      for port in var.internal_nlb_service_ports : (
+        can(regex("\\w+", port.name)) &&
+        (can(regex("\\d+", port.port)) && port.port > 0 && port.port <= 65535) &&
+        can(regex("\\w+", port.target_port)) &&
+        can(regex("TCP|UDP", port.protocol))
+      )
+    ])
+    error_message = "Invalid port configuration"
+  }
 }
 
 variable "gateway_api_external_enabled" {
