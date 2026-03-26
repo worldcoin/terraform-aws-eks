@@ -30,12 +30,13 @@ locals {
 }
 
 module "gateway_api_internal_nlb" {
-  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v1.3.0"
+  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v1.4.0"
 
   for_each = var.gateway_api_internal_enabled ? toset([local.gateway_api_internal_nlb_name]) : []
 
   name_suffix  = each.key
   cluster_name = local.gateway_api_lb_name_prefix
+  cluster_tag  = var.cluster_name
   tag_prefix   = "gateway.k8s.aws.nlb"
   tag_stack    = format("kube-system/%s", each.key)
 
