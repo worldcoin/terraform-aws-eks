@@ -39,3 +39,14 @@ provider "kubernetes" {
 locals {
   gateway_api_lb_name_prefix = coalesce(var.gateway_api_lb_name_prefix, var.cluster_name)
 }
+
+resource "terraform_data" "gateway_api_lb_name_validation" {
+  count = (var.gateway_api_external_enabled || var.gateway_api_internal_enabled) ? 1 : 0
+
+  lifecycle {
+    precondition {
+      condition     = length(local.gateway_api_lb_name_prefix) <= 21
+      error_message = "Resolved gateway_api_lb_name_prefix '${local.gateway_api_lb_name_prefix}' exceeds 21 characters (32-char LB name limit minus '-gw-ext-alb' suffix). Set gateway_api_lb_name_prefix explicitly when cluster_name is too long."
+    }
+  }
+}
