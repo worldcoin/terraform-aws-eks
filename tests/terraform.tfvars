@@ -9,12 +9,12 @@ vpc_config = {
 
 datadog_api_key = "{\"DD_API_KEY\":\"1234567890\"}"
 
-traefik_cert_arn = "arn:aws:acm:ap-south-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
+external_cert_arn = "arn:aws:acm:ap-south-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
 
 alb_logs_bucket_id = "some-bucket"
 
 internal_nlb_enabled = true
-internal_nlb_acm_arn = "arn:aws:acm:ap-south-1:123412341234:certificate/anlbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
+internal_cert_arn = "arn:aws:acm:ap-south-1:123412341234:certificate/anlbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
 
 wafv2_arn = "arn:aws:wafv2:ap-south-1:123123123123:regional/webacl/foo-bar-123-baz/1a2w3e4r-zaq1-2wsx-qwer-098aa8900990"
 

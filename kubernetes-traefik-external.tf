@@ -54,7 +54,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
 
     annotations = {
       "alb.ingress.kubernetes.io/scheme"                              = "internet-facing"
-      "alb.ingress.kubernetes.io/certificate-arn"                     = length(var.acm_extra_arns) != 0 ? join(",", var.acm_extra_arns, [var.traefik_cert_arn]) : var.traefik_cert_arn
+      "alb.ingress.kubernetes.io/certificate-arn"                     = length(var.acm_extra_arns) != 0 ? join(",", var.acm_extra_arns, [local.effective_external_cert_arn]) : local.effective_external_cert_arn
       "alb.ingress.kubernetes.io/group.name"                          = format("%s.%s", each.key, each.key)
       "alb.ingress.kubernetes.io/listen-ports"                        = "[{\"HTTPS\": 443}]"
       "alb.ingress.kubernetes.io/security-groups"                     = join(",", [for type, id in module.alb[each.key].sg_ids : id if id != null])
@@ -93,7 +93,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
 }
 
 module "alb" {
-  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v1.4.1"
+  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v1.4.2"
   for_each = var.external_alb_enabled ? toset([local.external_alb_name]) : []
 
   # because of lenght limitation of LB name we need to remove prefix treafik from internal NLB
@@ -106,7 +106,7 @@ module "alb" {
   application = each.key
   namespace   = each.key
 
-  acm_arn        = var.traefik_cert_arn
+  acm_arn        = local.effective_external_cert_arn
   vpc_id         = var.vpc_config.vpc_id
   public_subnets = var.vpc_config.public_subnets
   open_to_all    = var.open_to_all

@@ -123,7 +123,7 @@ variable "use_private_subnets_for_internal_nlb" {
 }
 
 variable "internal_nlb_acm_arn" {
-  description = "The ARN of the certificate to use for internal NLB."
+  description = "(Deprecated: use internal_cert_arn) The ARN of the certificate to use for internal NLB."
   type        = string
   default     = ""
   # commented due to tests passed, but in module it is not working
@@ -135,11 +135,11 @@ variable "internal_nlb_acm_arn" {
 }
 
 variable "traefik_cert_arn" {
-  description = "The ARN of the certificate to use for Traefik."
+  description = "(Deprecated: use external_cert_arn) The ARN of the certificate to use for Traefik."
   type        = string
   default     = null
   validation {
-    condition     = var.internal_nlb_enabled || var.external_alb_enabled ? can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn)) : true
+    condition     = var.traefik_cert_arn != null ? can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn)) : true
     error_message = "Invalid `traefik_cert_arn` ARN"
   }
 }
@@ -228,7 +228,7 @@ variable "alb_logs_bucket_id" {
 }
 
 variable "traefik_nlb_service_ports" {
-  description = "List of additional ports for treafik k8s service"
+  description = "(Deprecated: use internal_nlb_service_ports) List of additional ports for traefik k8s service"
   type = list(object({
     name        = string
     port        = number
@@ -778,4 +778,129 @@ variable "enable_deletion_protection" {
   description = "Whether to enable deletion protection on the Traefik NLB/ALB load balancers. Set to false before destroying the cluster."
   type        = bool
   default     = true
+}
+
+variable "external_cert_arn" {
+  description = "ACM certificate ARN for external load balancers. Overrides traefik_cert_arn when set."
+  type        = string
+  default     = null
+  validation {
+    condition = (
+      var.internal_nlb_enabled ||
+      var.external_alb_enabled ||
+      var.gateway_api_external_enabled ||
+      var.gateway_api_internal_enabled
+      ) ? (
+      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn)) ||
+      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn))
+    ) : true
+    error_message = "A valid ACM certificate ARN must be set in external_cert_arn (or traefik_cert_arn) when any load balancer is enabled"
+  }
+}
+
+variable "internal_cert_arn" {
+  description = "ACM certificate ARN for internal load balancers (falls back to external_cert_arn). If empty, internal_nlb_acm_arn is used for backwards compatibility."
+  type        = string
+  default     = ""
+}
+
+variable "internal_nlb_service_ports" {
+  description = "List of additional ports for internal NLB k8s service"
+  type = list(object({
+    name        = string
+    port        = number
+    target_port = string
+    protocol    = string
+  }))
+  default = []
+  validation {
+    condition = alltrue([
+      for port in var.internal_nlb_service_ports : (
+        can(regex("\\w+", port.name)) &&
+        (can(regex("\\d+", port.port)) && port.port > 0 && port.port <= 65535) &&
+        can(regex("\\w+", port.target_port)) &&
+        can(regex("TCP|UDP", port.protocol))
+      )
+    ])
+    error_message = "Invalid port configuration"
+  }
+}
+
+variable "gateway_api_external_enabled" {
+  description = "Create internet-facing ALB and NLB for Gateway API (external, external-nonhttp)"
+  type        = bool
+  default     = false
+}
+
+variable "gateway_api_internal_enabled" {
+  description = "Create internal ALB and NLB for Gateway API (internal, internal-nonhttp)"
+  type        = bool
+  default     = false
+}
+
+variable "gateway_api_external_alb_sg_rules" {
+  description = "Override LB security group ingress rules for the external Gateway API ALB. When null, the ALB module defaults apply (Cloudflare IPs or open_to_all)."
+  type        = any
+  default     = null
+
+  validation {
+    condition = var.gateway_api_external_alb_sg_rules == null || alltrue([
+      for r in var.gateway_api_external_alb_sg_rules :
+      can(r.port) && (can(r.cidr_blocks) || can(r.security_groups))
+    ])
+    error_message = "Each rule must have a 'port' and at least one of 'cidr_blocks' or 'security_groups'."
+  }
+}
+
+variable "gateway_api_internal_alb_sg_rules" {
+  description = "Override LB security group ingress rules for the internal Gateway API ALB. When null, allows HTTPS from VPC CIDR."
+  type        = any
+  default     = null
+
+  validation {
+    condition = var.gateway_api_internal_alb_sg_rules == null || alltrue([
+      for r in var.gateway_api_internal_alb_sg_rules :
+      can(r.port) && (can(r.cidr_blocks) || can(r.security_groups))
+    ])
+    error_message = "Each rule must have a 'port' and at least one of 'cidr_blocks' or 'security_groups'."
+  }
+}
+
+variable "gateway_api_external_nlb_sg_rules" {
+  description = "Override LB security group ingress rules for the external Gateway API NLB. When null, allows ports 80 and 443 from Cloudflare IPs."
+  type        = any
+  default     = null
+
+  validation {
+    condition = var.gateway_api_external_nlb_sg_rules == null || alltrue([
+      for r in var.gateway_api_external_nlb_sg_rules :
+      can(r.port) && (can(r.cidr_blocks) || can(r.ipv6_cidr_blocks) || can(r.security_groups))
+    ])
+    error_message = "Each rule must have a 'port' and at least one of 'cidr_blocks', 'ipv6_cidr_blocks', or 'security_groups'."
+  }
+}
+
+variable "gateway_api_internal_nlb_sg_rules" {
+  description = "Override LB security group ingress rules for the internal Gateway API NLB. When null, allows ports 80 and 443 from VPC CIDR."
+  type        = any
+  default     = null
+
+  validation {
+    condition = var.gateway_api_internal_nlb_sg_rules == null || alltrue([
+      for r in var.gateway_api_internal_nlb_sg_rules :
+      can(r.port) && (can(r.cidr_blocks) || can(r.ipv6_cidr_blocks) || can(r.security_groups))
+    ])
+    error_message = "Each rule must have a 'port' and at least one of 'cidr_blocks', 'ipv6_cidr_blocks', or 'security_groups'."
+  }
+}
+
+variable "gateway_api_lb_name_prefix" {
+  description = "Prefix for Gateway API load balancer names. Defaults to cluster_name. Override when cluster_name is too long to fit within the 32-char AWS LB name limit (prefix + suffix like '-gw-ext-alb' must be <= 32)."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.gateway_api_lb_name_prefix == null || (length(var.gateway_api_lb_name_prefix) <= 21 && can(regex("^[a-z0-9]([a-z0-9-]*[a-z0-9])?$", var.gateway_api_lb_name_prefix)))
+    error_message = "gateway_api_lb_name_prefix must be <= 21 characters (to fit 32-char LB name limit with suffix) and contain only lowercase alphanumeric characters or hyphens."
+  }
 }

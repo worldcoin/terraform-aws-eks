@@ -179,3 +179,55 @@ resource "aws_security_group_rule" "tfe_and_gha_cluster_ingress" {
   cidr_blocks       = [var.tfe_cidr, var.gha_cidr_us_east_1, var.gha_cidr_eu_central_1]
   description       = "Allow TFE and GHA to communicate with the cluster API Server"
 }
+
+# Gateway API LB -> node SG rules
+# All protocols/ports are allowed from LB to nodes because ingress is already
+# restricted at the LB security group level (allowed CIDRs and ports).
+
+resource "aws_security_group_rule" "gateway_api_external_alb_to_node" {
+  for_each = var.gateway_api_external_enabled ? toset([local.gateway_api_external_alb_name]) : []
+
+  security_group_id        = aws_security_group.node.id
+  type                     = "ingress"
+  from_port                = 0
+  to_port                  = 0
+  protocol                 = "-1"
+  source_security_group_id = module.gateway_api_external_alb[each.key].sg_ids["backend"]
+  description              = "Allow Gateway API external ALB to reach nodes"
+}
+
+resource "aws_security_group_rule" "gateway_api_internal_alb_to_node" {
+  for_each = var.gateway_api_internal_enabled ? toset([local.gateway_api_internal_alb_name]) : []
+
+  security_group_id        = aws_security_group.node.id
+  type                     = "ingress"
+  from_port                = 0
+  to_port                  = 0
+  protocol                 = "-1"
+  source_security_group_id = module.gateway_api_internal_alb[each.key].sg_ids["backend"]
+  description              = "Allow Gateway API internal ALB to reach nodes"
+}
+
+resource "aws_security_group_rule" "gateway_api_external_nlb_to_node" {
+  for_each = var.gateway_api_external_enabled ? toset([local.gateway_api_external_nlb_name]) : []
+
+  security_group_id        = aws_security_group.node.id
+  type                     = "ingress"
+  from_port                = 0
+  to_port                  = 0
+  protocol                 = "-1"
+  source_security_group_id = module.gateway_api_external_nlb[each.key].sg_nlb_id
+  description              = "Allow Gateway API external NLB to reach nodes"
+}
+
+resource "aws_security_group_rule" "gateway_api_internal_nlb_to_node" {
+  for_each = var.gateway_api_internal_enabled ? toset([local.gateway_api_internal_nlb_name]) : []
+
+  security_group_id        = aws_security_group.node.id
+  type                     = "ingress"
+  from_port                = 0
+  to_port                  = 0
+  protocol                 = "-1"
+  source_security_group_id = module.gateway_api_internal_nlb[each.key].sg_nlb_id
+  description              = "Allow Gateway API internal NLB to reach nodes"
+}
