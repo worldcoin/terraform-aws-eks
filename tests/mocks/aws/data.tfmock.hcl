@@ -39,8 +39,9 @@ EOF
 
 mock_data "aws_vpc" {
   defaults = {
-    id         = "vpc-1234567890abcdef3" # Must match the vpc_id in your test variables
-    cidr_block = "10.0.0.0/16"
+    id              = "vpc-1234567890abcdef3"
+    cidr_block      = "10.0.0.0/16"
+    ipv6_cidr_block = ""
   }
 }
 
