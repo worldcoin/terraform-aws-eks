@@ -37,7 +37,8 @@ provider "kubernetes" {
 }
 
 locals {
-  gateway_api_lb_name_prefix = coalesce(var.gateway_api_lb_name_prefix, var.cluster_name)
+  cluster_name_without_region = trimsuffix(var.cluster_name, "-${var.region}")
+  gateway_api_lb_name_prefix  = coalesce(var.gateway_api_lb_name_prefix, local.cluster_name_without_region)
 }
 
 resource "terraform_data" "gateway_api_lb_name_validation" {

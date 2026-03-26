@@ -108,6 +108,38 @@ run "gateway_api_lb_prefix_not_required_when_gateway_disabled" {
 }
 
 # =============================================================================
+# Test: cluster_name with region suffix gets trimmed
+# =============================================================================
+run "gateway_api_lb_prefix_trims_region_suffix" {
+  command = plan
+
+  variables {
+    cluster_name = "my-cluster-us-east-1"
+  }
+
+  assert {
+    condition     = local.gateway_api_lb_name_prefix == "my-cluster"
+    error_message = "gateway_api_lb_name_prefix should trim the -region suffix from cluster_name"
+  }
+}
+
+# =============================================================================
+# Test: cluster_name without region suffix stays unchanged
+# =============================================================================
+run "gateway_api_lb_prefix_no_trim_without_region" {
+  command = plan
+
+  variables {
+    cluster_name = "my-cluster"
+  }
+
+  assert {
+    condition     = local.gateway_api_lb_name_prefix == "my-cluster"
+    error_message = "gateway_api_lb_name_prefix should keep cluster_name unchanged when no region suffix"
+  }
+}
+
+# =============================================================================
 # Test: Long cluster_name + gateway enabled + no prefix → plan must fail
 # =============================================================================
 run "gateway_api_lb_prefix_missing_long_name_fails" {
