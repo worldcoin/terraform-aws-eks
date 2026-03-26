@@ -8,11 +8,12 @@ locals {
 }
 
 module "gateway_api_external_alb" {
-  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v1.4.2"
+  source   = "git@github.com:worldcoin/terraform-aws-alb.git?ref=v1.5.1"
   for_each = var.gateway_api_external_enabled ? toset([local.gateway_api_external_alb_name]) : []
 
   name_suffix  = each.key
   cluster_name = local.gateway_api_lb_name_prefix
+  cluster_tag  = var.cluster_name
   tag_prefix   = "gateway.k8s.aws.alb"
   tag_stack    = format("kube-system/%s", each.key)
 
