@@ -70,7 +70,7 @@ resource "kubernetes_service_v1" "traefik_nlb" {
 }
 
 module "nlb" {
-  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v1.3.0"
+  source = "git@github.com:worldcoin/terraform-aws-nlb.git?ref=v1.4.0"
 
   for_each = var.internal_nlb_enabled ? toset([local.internal_nlb_name]) : []
 
