@@ -786,15 +786,13 @@ variable "external_cert_arn" {
   default     = null
   validation {
     condition = (
-      var.internal_nlb_enabled ||
       var.external_alb_enabled ||
-      var.gateway_api_external_enabled ||
-      var.gateway_api_internal_enabled
+      var.gateway_api_external_enabled
       ) ? (
       can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn)) ||
       can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn))
     ) : true
-    error_message = "A valid ACM certificate ARN must be set in external_cert_arn (or traefik_cert_arn) when any load balancer is enabled"
+    error_message = "A valid ACM certificate ARN must be set in external_cert_arn (or traefik_cert_arn) when an external load balancer is enabled"
   }
 }
 
@@ -802,6 +800,18 @@ variable "internal_cert_arn" {
   description = "ACM certificate ARN for internal load balancers (falls back to external_cert_arn). If empty, internal_nlb_acm_arn is used for backwards compatibility."
   type        = string
   default     = ""
+  validation {
+    condition = (
+      var.internal_nlb_enabled ||
+      var.gateway_api_internal_enabled
+      ) ? (
+      var.internal_cert_arn != "" ||
+      var.internal_nlb_acm_arn != "" ||
+      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn)) ||
+      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn))
+    ) : true
+    error_message = "A valid ACM certificate ARN must be set in internal_cert_arn, internal_nlb_acm_arn, or external_cert_arn when an internal load balancer is enabled"
+  }
 }
 
 variable "internal_nlb_service_ports" {
