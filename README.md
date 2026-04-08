@@ -564,7 +564,7 @@ To remove the cluster you have to:
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.5 |
-| <a name="requirement_cloudflare"></a> [cloudflare](#requirement\_cloudflare) | >= 4.10 |
+| <a name="requirement_cloudflare"></a> [cloudflare](#requirement\_cloudflare) | >= 5.8 |
 | <a name="requirement_datadog"></a> [datadog](#requirement\_datadog) | >= 3.0 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.3 |
@@ -574,26 +574,32 @@ To remove the cluster you have to:
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.5 |
-| <a name="provider_cloudflare"></a> [cloudflare](#provider\_cloudflare) | >= 4.10 |
-| <a name="provider_datadog"></a> [datadog](#provider\_datadog) | >= 3.0 |
-| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | >= 2.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | >= 3.3 |
-| <a name="provider_tls"></a> [tls](#provider\_tls) | >= 4.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.39.0 |
+| <a name="provider_cloudflare"></a> [cloudflare](#provider\_cloudflare) | 5.18.0 |
+| <a name="provider_datadog"></a> [datadog](#provider\_datadog) | 3.91.0 |
+| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 3.0.1 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.8.1 |
+| <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | 4.2.1 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_alb"></a> [alb](#module\_alb) | <git@github.com>:worldcoin/terraform-aws-alb.git | v0.19.0 |
-| <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | <git@github.com>:worldcoin/terraform-datadog-kubernetes | v1.2.2 |
-| <a name="module_nlb"></a> [nlb](#module\_nlb) | <git@github.com>:worldcoin/terraform-aws-nlb.git | v1.1.1 |
+| <a name="module_alb"></a> [alb](#module\_alb) | git@github.com:worldcoin/terraform-aws-alb.git | v1.5.1 |
+| <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | git@github.com:worldcoin/terraform-datadog-kubernetes | v1.2.3 |
+| <a name="module_datadog_monitoring_for_user"></a> [datadog\_monitoring\_for\_user](#module\_datadog\_monitoring\_for\_user) | git@github.com:worldcoin/terraform-datadog-kubernetes | v1.2.3 |
+| <a name="module_gateway_api_external_alb"></a> [gateway\_api\_external\_alb](#module\_gateway\_api\_external\_alb) | git@github.com:worldcoin/terraform-aws-alb.git | v1.5.1 |
+| <a name="module_gateway_api_external_nlb"></a> [gateway\_api\_external\_nlb](#module\_gateway\_api\_external\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v1.4.0 |
+| <a name="module_gateway_api_internal_alb"></a> [gateway\_api\_internal\_alb](#module\_gateway\_api\_internal\_alb) | git@github.com:worldcoin/terraform-aws-alb.git | v1.5.1 |
+| <a name="module_gateway_api_internal_nlb"></a> [gateway\_api\_internal\_nlb](#module\_gateway\_api\_internal\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v1.4.0 |
+| <a name="module_nlb"></a> [nlb](#module\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v1.4.0 |
 
 ## Resources
 
 | Name | Type |
 |------|------|
-| [aws_autoscaling_group.enclave](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group) | resource |
+| [aws_autoscaling_group.enclave_track](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group) | resource |
 | [aws_autoscaling_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group) | resource |
 | [aws_cloudwatch_event_rule.spot_aws_ec2](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_rule.spot_aws_health](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
@@ -609,36 +615,47 @@ To remove the cluster you have to:
 | [aws_eks_addon.eks_node_monitoring_agent](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_addon.eks_pod_identity_agent](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_addon.kube_proxy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
+| [aws_eks_addon.metrics_server](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_addon.mountpoint_s3_csi](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_addon.snapshot_controller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_addon.vpc_cni](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster) | resource |
 | [aws_eks_node_group.al2023](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group) | resource |
+| [aws_eks_pod_identity_association.cni_metrics_helper](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_pod_identity_association) | resource |
 | [aws_eks_pod_identity_association.ebs_csi_controller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_pod_identity_association) | resource |
+| [aws_eks_pod_identity_association.keda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_pod_identity_association) | resource |
 | [aws_eks_pod_identity_association.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_pod_identity_association) | resource |
 | [aws_iam_instance_profile.node](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
 | [aws_iam_openid_connect_provider.oidc_provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_openid_connect_provider) | resource |
+| [aws_iam_policy.aws_load_balancer_controller_explicit_deny](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_role.aws_efs_csi_driver](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role.aws_lbc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.aws_load_balancer](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.aws_s3_mountpoint_csi](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role.cni_metrics_helper](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.ebs_csi_controller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.karpenter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role.keda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.kube_ops](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.node](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy.aws_efs_csi_driver](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.aws_lbc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.aws_load_balancer](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.aws_s3_mountpoint_csi](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.cni_metrics_helper](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.dockerhub_pull_through_cache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.karpenter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.keda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.kube_ops](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.node_inline_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy_attachment.aws_load_balancer_controller_explicit_deny](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.ebs_csi_controller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.node](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_kms_key.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
 | [aws_launch_template.al2023](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
-| [aws_launch_template.enclave](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
+| [aws_launch_template.enclave_track](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
 | [aws_launch_template.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
 | [aws_secretsmanager_secret.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret_version.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version) | resource |
@@ -649,6 +666,10 @@ To remove the cluster you have to:
 | [aws_security_group_rule.additional_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.cluster_egress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.cluster_from_node_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
+| [aws_security_group_rule.gateway_api_external_alb_to_node](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
+| [aws_security_group_rule.gateway_api_external_nlb_to_node](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
+| [aws_security_group_rule.gateway_api_internal_alb_to_node](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
+| [aws_security_group_rule.gateway_api_internal_nlb_to_node](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.node_allow_vpc_dns_tcp](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.node_allow_vpc_dns_udp](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.node_egress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
@@ -661,10 +682,12 @@ To remove the cluster you have to:
 | [aws_security_group_rule.traefik_from_alb_traffic](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_sqs_queue.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue) | resource |
 | [aws_sqs_queue_policy.spot_notifications_sqs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue_policy) | resource |
-| [cloudflare_record.monitoring](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/record) | resource |
+| [cloudflare_dns_record.monitoring](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/dns_record) | resource |
 | [datadog_monitor.oom](https://registry.terraform.io/providers/DataDog/datadog/latest/docs/resources/monitor) | resource |
+| [datadog_monitor.oom_for_user](https://registry.terraform.io/providers/DataDog/datadog/latest/docs/resources/monitor) | resource |
 | [datadog_synthetics_test.cluster_monitoring](https://registry.terraform.io/providers/DataDog/datadog/latest/docs/resources/synthetics_test) | resource |
-| [kubernetes_config_map.aws_auth](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/config_map) | resource |
+| [kubernetes_cluster_role_binding_v1.tfh_cluster_admins](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/cluster_role_binding_v1) | resource |
+| [kubernetes_config_map_v1_data.aws_auth](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/config_map_v1_data) | resource |
 | [kubernetes_ingress_v1.treafik_ingress](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/ingress_v1) | resource |
 | [kubernetes_namespace_v1.traefik](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace_v1) | resource |
 | [kubernetes_secret_v1.datadog](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret_v1) | resource |
@@ -673,6 +696,7 @@ To remove the cluster you have to:
 | [kubernetes_storage_class_v1.efs](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class_v1) | resource |
 | [kubernetes_storage_class_v1.gp3](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class_v1) | resource |
 | [random_password.dd_clusteragent_token](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [terraform_data.gateway_api_lb_name_validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [aws_caller_identity.account](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
 | [aws_eks_cluster_auth.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
@@ -683,20 +707,26 @@ To remove the cluster you have to:
 | [aws_iam_policy_document.aws_efs_csi_driver_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.aws_load_balancer](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.aws_load_balancer_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.aws_load_balancer_controller_explicit_deny](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.aws_s3_mountpoint_csi_s3_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.aws_s3_mountpoint_csi_s3_assume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.cluster_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.cni_metrics_helper](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.cni_metrics_helper_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.dockerhub_pull_through_cache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.eks_pod_identity_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.karpenter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.karpenter_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.keda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.keda_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.kms](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.kube_ops](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.node_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.spot_notification_sqs_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
+| [aws_iam_roles.aws_load_balancer_controller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_roles) | data source |
 | [aws_ssm_parameter.al2023_ami](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ssm_parameter) | data source |
 | [aws_vpc.cluster_vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/vpc) | data source |
+| [cloudflare_ip_ranges.cloudflare](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/data-sources/ip_ranges) | data source |
 | [cloudflare_zone.worldcoin_dev](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/data-sources/zone) | data source |
 | [datadog_synthetics_locations.locations](https://registry.terraform.io/providers/DataDog/datadog/latest/docs/data-sources/synthetics_locations) | data source |
 | [tls_certificate.this](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/data-sources/certificate) | data source |
@@ -719,7 +749,7 @@ To remove the cluster you have to:
 | <a name="input_aws_load_balancer_iam_role_enabled"></a> [aws\_load\_balancer\_iam\_role\_enabled](#input\_aws\_load\_balancer\_iam\_role\_enabled) | Whether to enable the IAM role for the AWS Load Balancer | `bool` | `true` | no |
 | <a name="input_cluster_endpoint_public_access"></a> [cluster\_endpoint\_public\_access](#input\_cluster\_endpoint\_public\_access) | Indicates whether or not the Amazon EKS public API server endpoint is enabled | `bool` | `false` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name of the cluster. Has to be unique per region per account. | `string` | n/a | yes |
-| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The Kubernetes version to use for the cluster. | `string` | `"1.32"` | no |
+| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The Kubernetes version to use for the cluster. | `string` | `"1.33"` | no |
 | <a name="input_coredns_max_replicas"></a> [coredns\_max\_replicas](#input\_coredns\_max\_replicas) | Maximum number of replicas for CoreDNS | `number` | `10` | no |
 | <a name="input_coredns_min_replicas"></a> [coredns\_min\_replicas](#input\_coredns\_min\_replicas) | Minimum number of replicas for CoreDNS | `number` | `2` | no |
 | <a name="input_datadog_api_key"></a> [datadog\_api\_key](#input\_datadog\_api\_key) | Datadog API key. Stored in kube-system namespace as a secret. | `string` | n/a | yes |
@@ -730,51 +760,70 @@ To remove the cluster you have to:
 | <a name="input_drop_invalid_header_fields"></a> [drop\_invalid\_header\_fields](#input\_drop\_invalid\_header\_fields) | Drop invalid header fields | `bool` | `false` | no |
 | <a name="input_efs_csi_driver_enabled"></a> [efs\_csi\_driver\_enabled](#input\_efs\_csi\_driver\_enabled) | Whether to enable the EFS CSI driver (IAM Role & StorageClass). | `bool` | `false` | no |
 | <a name="input_eks_node_group"></a> [eks\_node\_group](#input\_eks\_node\_group) | Configuration for EKS node group | <pre>object({<br>    arch  = string<br>    types = list(string)<br>    disk  = optional(number, 100)<br>    dns   = optional(string, "172.20.0.10")<br>  })</pre> | `null` | no |
-| <a name="input_enclaves"></a> [enclaves](#input\_enclaves) | Enabling Nitro Enclaves for the cluster | `bool` | `false` | no |
-| <a name="input_enclaves_autoscaling_group"></a> [enclaves\_autoscaling\_group](#input\_enclaves\_autoscaling\_group) | Configuration for Nitro Enclaves autoscaling group | <pre>object({<br>    size     = optional(number, 1)<br>    min_size = optional(number, 0)<br>    max_size = optional(number, 10)<br>  })</pre> | `{}` | no |
+| <a name="input_enable_aws_load_balancer_controller_explicit_deny"></a> [enable\_aws\_load\_balancer\_controller\_explicit\_deny](#input\_enable\_aws\_load\_balancer\_controller\_explicit\_deny) | Safety switch: set to false to disable creating the aws-load-balancer-controller explicit deny policy and attachment. | `bool` | `true` | no |
+| <a name="input_enable_deletion_protection"></a> [enable\_deletion\_protection](#input\_enable\_deletion\_protection) | Whether to enable deletion protection on the Traefik NLB/ALB load balancers. Set to false before destroying the cluster. | `bool` | `true` | no |
+| <a name="input_enclave_tracks"></a> [enclave\_tracks](#input\_enclave\_tracks) | Additional enclave tracks for multi-version deployments. Key is used as track identifier. | <pre>map(object({<br>    autoscaling_group = optional(object({<br>      size     = optional(number, 1)<br>      min_size = optional(number, 0)<br>      max_size = optional(number, 10)<br>    }), {})<br>    instance_type     = optional(string)<br>    cpu_allocation    = optional(string)<br>    memory_allocation = optional(string)<br>    arch              = optional(string, "amd64")<br>  }))</pre> | `{}` | no |
 | <a name="input_enclaves_cpu_allocation"></a> [enclaves\_cpu\_allocation](#input\_enclaves\_cpu\_allocation) | Number of CPUs to allocate for Nitro Enclaves per node | `string` | `"4"` | no |
 | <a name="input_enclaves_instance_type"></a> [enclaves\_instance\_type](#input\_enclaves\_instance\_type) | Instance type for Nitro Enclaves | `string` | `"m7a.2xlarge"` | no |
 | <a name="input_enclaves_memory_allocation"></a> [enclaves\_memory\_allocation](#input\_enclaves\_memory\_allocation) | Memory in MiB to allocate for Nitro Enclaves per node | `string` | `"4096"` | no |
-| <a name="input_enclave_tracks"></a> [enclave\_tracks](#input\_enclave\_tracks) | Additional enclave tracks for multi-version deployments. Key is used as track identifier. | <pre>map(object({<br>    autoscaling_group = optional(object({<br>      size     = optional(number, 1)<br>      min_size = optional(number, 0)<br>      max_size = optional(number, 10)<br>    }), {})<br>    instance_type     = optional(string)<br>    cpu_allocation    = optional(string)<br>    memory_allocation = optional(string)<br>  }))</pre> | `{}` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment of cluster | `string` | n/a | yes |
 | <a name="input_external_alb_enabled"></a> [external\_alb\_enabled](#input\_external\_alb\_enabled) | Internal Network load balancers to create. If true, the NLB will be created. | `bool` | `true` | no |
-| <a name="input_external_check_locations"></a> [external\_check\_locations](#input\_external\_check\_locations) | List of DD locations to check cluster availability from | `list(string)` | <pre>[<br>  "aws:af-south-1",<br>  "aws:ap-south-1",<br>  "aws:ap-southeast-1",<br>  "aws:eu-central-1",<br>  "aws:sa-east-1",<br>  "aws:us-east-1"<br>]</pre> | no |
+| <a name="input_external_cert_arn"></a> [external\_cert\_arn](#input\_external\_cert\_arn) | ACM certificate ARN for external load balancers. Overrides traefik\_cert\_arn when set. | `string` | `null` | no |
+| <a name="input_external_check_locations"></a> [external\_check\_locations](#input\_external\_check\_locations) | List of DD locations to check cluster availability from | `list(string)` | <pre>[<br>  "azure:eastus",<br>  "aws:eu-central-1",<br>  "gcp:asia-northeast1"<br>]</pre> | no |
 | <a name="input_external_tls_listener_version"></a> [external\_tls\_listener\_version](#input\_external\_tls\_listener\_version) | The version of the TLS listener to use for external ALB. | `string` | `"1.3"` | no |
 | <a name="input_extra_nlb_listeners"></a> [extra\_nlb\_listeners](#input\_extra\_nlb\_listeners) | List with configuration for additional listeners | <pre>list(object({<br>    name              = string<br>    port              = string<br>    protocol          = optional(string, "TCP")<br>    target_group_port = number<br>  }))</pre> | `[]` | no |
 | <a name="input_extra_role_mapping"></a> [extra\_role\_mapping](#input\_extra\_role\_mapping) | Extra role mappings to add to the aws-auth configmap. | <pre>list(object({<br>    rolearn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
-| <a name="input_gha_cidr"></a> [gha\_cidr](#input\_gha\_cidr) | GitHub Actions CIDR block | `string` | `"10.0.96.0/20"` | no |
+| <a name="input_gateway_api_external_alb_sg_rules"></a> [gateway\_api\_external\_alb\_sg\_rules](#input\_gateway\_api\_external\_alb\_sg\_rules) | Override LB security group ingress rules for the external Gateway API ALB. When null, the ALB module defaults apply (Cloudflare IPs or open\_to\_all). | `any` | `null` | no |
+| <a name="input_gateway_api_external_enabled"></a> [gateway\_api\_external\_enabled](#input\_gateway\_api\_external\_enabled) | Create internet-facing ALB and NLB for Gateway API (external, external-nonhttp) | `bool` | `false` | no |
+| <a name="input_gateway_api_external_nlb_sg_rules"></a> [gateway\_api\_external\_nlb\_sg\_rules](#input\_gateway\_api\_external\_nlb\_sg\_rules) | Override LB security group ingress rules for the external Gateway API NLB. When null, allows ports 80 and 443 from Cloudflare IPs. | `any` | `null` | no |
+| <a name="input_gateway_api_internal_alb_sg_rules"></a> [gateway\_api\_internal\_alb\_sg\_rules](#input\_gateway\_api\_internal\_alb\_sg\_rules) | Override LB security group ingress rules for the internal Gateway API ALB. When null, allows HTTPS from VPC CIDR. | `any` | `null` | no |
+| <a name="input_gateway_api_internal_enabled"></a> [gateway\_api\_internal\_enabled](#input\_gateway\_api\_internal\_enabled) | Create internal ALB and NLB for Gateway API (internal, internal-nonhttp) | `bool` | `false` | no |
+| <a name="input_gateway_api_internal_nlb_sg_rules"></a> [gateway\_api\_internal\_nlb\_sg\_rules](#input\_gateway\_api\_internal\_nlb\_sg\_rules) | Override LB security group ingress rules for the internal Gateway API NLB. When null, allows ports 80 and 443 from VPC CIDR. | `any` | `null` | no |
+| <a name="input_gateway_api_lb_name_prefix"></a> [gateway\_api\_lb\_name\_prefix](#input\_gateway\_api\_lb\_name\_prefix) | Prefix for Gateway API load balancer names. Defaults to cluster\_name. Override when cluster\_name is too long to fit within the 32-char AWS LB name limit (prefix + suffix like '-gw-ext-alb' must be <= 32). | `string` | `null` | no |
+| <a name="input_gha_cidr_eu_central_1"></a> [gha\_cidr\_eu\_central\_1](#input\_gha\_cidr\_eu\_central\_1) | GitHub Actions CIDR block for eu-central-1 | `string` | `"10.52.0.0/20"` | no |
+| <a name="input_gha_cidr_us_east_1"></a> [gha\_cidr\_us\_east\_1](#input\_gha\_cidr\_us\_east\_1) | GitHub Actions CIDR block for us-east-1 | `string` | `"10.0.96.0/20"` | no |
 | <a name="input_http_put_response_hop_limit"></a> [http\_put\_response\_hop\_limit](#input\_http\_put\_response\_hop\_limit) | The maximum number of hops allowed for HTTP PUT requests. Must be between 1 and 64. | `number` | `2` | no |
-| <a name="input_internal_nlb_acm_arn"></a> [internal\_nlb\_acm\_arn](#input\_internal\_nlb\_acm\_arn) | The ARN of the certificate to use for internal NLB. | `string` | `""` | no |
+| <a name="input_internal_cert_arn"></a> [internal\_cert\_arn](#input\_internal\_cert\_arn) | ACM certificate ARN for internal load balancers (falls back to external\_cert\_arn). If empty, internal\_nlb\_acm\_arn is used for backwards compatibility. | `string` | `""` | no |
+| <a name="input_internal_nlb_acm_arn"></a> [internal\_nlb\_acm\_arn](#input\_internal\_nlb\_acm\_arn) | (Deprecated: use internal\_cert\_arn) The ARN of the certificate to use for internal NLB. | `string` | `""` | no |
 | <a name="input_internal_nlb_enabled"></a> [internal\_nlb\_enabled](#input\_internal\_nlb\_enabled) | Internal Network load balancers to create. If true, the NLB will be created. | `bool` | `true` | no |
+| <a name="input_internal_nlb_service_ports"></a> [internal\_nlb\_service\_ports](#input\_internal\_nlb\_service\_ports) | List of additional ports for internal NLB k8s service | <pre>list(object({<br>    name        = string<br>    port        = number<br>    target_port = string<br>    protocol    = string<br>  }))</pre> | `[]` | no |
 | <a name="input_internal_tls_listener_version"></a> [internal\_tls\_listener\_version](#input\_internal\_tls\_listener\_version) | The version of the TLS listener to use for internal NLB. | `string` | `"1.3"` | no |
 | <a name="input_kube_ops_enabled"></a> [kube\_ops\_enabled](#input\_kube\_ops\_enabled) | Whether to create a role and association for kube-ops | `bool` | `true` | no |
 | <a name="input_kubelet_extra_args"></a> [kubelet\_extra\_args](#input\_kubelet\_extra\_args) | kubelet extra args to pass to the node group | `string` | `"--register-with-taints=critical:NoExecute"` | no |
 | <a name="input_kubernetes_provider_enabled"></a> [kubernetes\_provider\_enabled](#input\_kubernetes\_provider\_enabled) | Whether to create a Kubernetes provider for the cluster. Use as a prerequisite to cluster removal. | `bool` | `true` | no |
 | <a name="input_memory_limits_low_perc_enabled"></a> [memory\_limits\_low\_perc\_enabled](#input\_memory\_limits\_low\_perc\_enabled) | Enable memory limits low percentage alert | `bool` | `false` | no |
+| <a name="input_monitor_system_workload_only"></a> [monitor\_system\_workload\_only](#input\_monitor\_system\_workload\_only) | Monitor system workloads only (infra team). | `bool` | `false` | no |
 | <a name="input_monitoring_enabled"></a> [monitoring\_enabled](#input\_monitoring\_enabled) | Whether to enable monitoring (Datadog). | `bool` | `true` | no |
-| <a name="input_monitoring_notification_channel"></a> [monitoring\_notification\_channel](#input\_monitoring\_notification\_channel) | The Datadog notification channel to use for monitoring alerts. | `string` | `"@slack-TFH-infrastructure-alerts"` | no |
-| <a name="input_monitoring_reachability_fail_locations"></a> [monitoring\_reachability\_fail\_locations](#input\_monitoring\_reachability\_fail\_locations) | Number of locations to fail to trigger the reachability test | `number` | `5` | no |
+| <a name="input_monitoring_external_enabled"></a> [monitoring\_external\_enabled](#input\_monitoring\_external\_enabled) | Whether to enable external monitoring (Datadog Synthetics). | `bool` | `true` | no |
+| <a name="input_monitoring_notification_channel"></a> [monitoring\_notification\_channel](#input\_monitoring\_notification\_channel) | The Datadog notification channel to use for monitoring alerts (infra team). | `string` | `"@slack-TFH-infrastructure-alerts"` | no |
+| <a name="input_monitoring_reachability_fail_locations"></a> [monitoring\_reachability\_fail\_locations](#input\_monitoring\_reachability\_fail\_locations) | Number of locations to fail to trigger the reachability test | `number` | `2` | no |
 | <a name="input_monitoring_reachability_failure_duration"></a> [monitoring\_reachability\_failure\_duration](#input\_monitoring\_reachability\_failure\_duration) | Time after first error when the reachability test is triggered | `number` | `300` | no |
+| <a name="input_monitoring_user_workload_notification_channel"></a> [monitoring\_user\_workload\_notification\_channel](#input\_monitoring\_user\_workload\_notification\_channel) | Monitor user workload and send alerts to team channel/webhook). | `string` | `""` | no |
+| <a name="input_monitoring_user_workload_team"></a> [monitoring\_user\_workload\_team](#input\_monitoring\_user\_workload\_team) | The team tag for monitoring user workload. | `string` | `""` | no |
+| <a name="input_mtls_enabled"></a> [mtls\_enabled](#input\_mtls\_enabled) | Enable mutual TLS (mTLS) on the ALB TLS listener | `bool` | `true` | no |
 | <a name="input_node_instance_profile_inline_policies"></a> [node\_instance\_profile\_inline\_policies](#input\_node\_instance\_profile\_inline\_policies) | Inline policies to attach to the node instance profile. Key is the name of the policy, value is the policy document. | `map(string)` | `{}` | no |
 | <a name="input_node_monitoring_agent_enabled"></a> [node\_monitoring\_agent\_enabled](#input\_node\_monitoring\_agent\_enabled) | Enable node monitoring agent | `bool` | `false` | no |
 | <a name="input_on_demand_base_capacity"></a> [on\_demand\_base\_capacity](#input\_on\_demand\_base\_capacity) | The number of minimum on-demand instances to launch. | `number` | `1` | no |
+| <a name="input_on_demand_percentage_above_base_capacity"></a> [on\_demand\_percentage\_above\_base\_capacity](#input\_on\_demand\_percentage\_above\_base\_capacity) | The percentage of on-demand instances to use above the base capacity | `number` | `50` | no |
 | <a name="input_open_to_all"></a> [open\_to\_all](#input\_open\_to\_all) | Set to `true` if you want to open the cluster to all traffic from internet | `bool` | `false` | no |
+| <a name="input_public_access_cidrs"></a> [public\_access\_cidrs](#input\_public\_access\_cidrs) | List of CIDR blocks. Indicates which CIDR blocks can access the Amazon EKS public API server endpoint when enabled. | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS Region | `string` | n/a | yes |
 | <a name="input_s3_mountpoint_csi_driver_enabled"></a> [s3\_mountpoint\_csi\_driver\_enabled](#input\_s3\_mountpoint\_csi\_driver\_enabled) | Whether to enable the S3 mountpoint CSI driver | `bool` | `false` | no |
 | <a name="input_s3_mountpoint_csi_s3_bucket_arns"></a> [s3\_mountpoint\_csi\_s3\_bucket\_arns](#input\_s3\_mountpoint\_csi\_s3\_bucket\_arns) | List of S3 bucket ARNs to allow access from the S3 mountpoint CSI driver | `list(string)` | <pre>[<br>  "*"<br>]</pre> | no |
 | <a name="input_static_autoscaling_group"></a> [static\_autoscaling\_group](#input\_static\_autoscaling\_group) | Configuration for static autoscaling group | <pre>object({<br>    size = number<br>    arch = optional(string, null)<br>    type = string<br>  })</pre> | `null` | no |
 | <a name="input_storage_class"></a> [storage\_class](#input\_storage\_class) | Configuration for the storage class that defines how volumes are allocated in Kubernetes. | <pre>object({<br>    volume_binding_mode    = optional(string, "WaitForFirstConsumer")<br>    allow_volume_expansion = optional(bool, true)<br>  })</pre> | <pre>{<br>  "allow_volume_expansion": true,<br>  "volume_binding_mode": "WaitForFirstConsumer"<br>}</pre> | no |
 | <a name="input_tfe_cidr"></a> [tfe\_cidr](#input\_tfe\_cidr) | Terraform Enterprise CIDR block | `string` | `"10.52.160.0/20"` | no |
-| <a name="input_traefik_cert_arn"></a> [traefik\_cert\_arn](#input\_traefik\_cert\_arn) | The ARN of the certificate to use for Traefik. | `string` | `null` | no |
-| <a name="input_traefik_nlb_service_ports"></a> [traefik\_nlb\_service\_ports](#input\_traefik\_nlb\_service\_ports) | List of additional ports for treafik k8s service | <pre>list(object({<br>    name        = string<br>    port        = number<br>    target_port = string<br>    protocol    = string<br>  }))</pre> | `[]` | no |
+| <a name="input_traefik_cert_arn"></a> [traefik\_cert\_arn](#input\_traefik\_cert\_arn) | (Deprecated: use external\_cert\_arn) The ARN of the certificate to use for Traefik. | `string` | `null` | no |
+| <a name="input_traefik_nlb_service_ports"></a> [traefik\_nlb\_service\_ports](#input\_traefik\_nlb\_service\_ports) | (Deprecated: use internal\_nlb\_service\_ports) List of additional ports for traefik k8s service | <pre>list(object({<br>    name        = string<br>    port        = number<br>    target_port = string<br>    protocol    = string<br>  }))</pre> | `[]` | no |
 | <a name="input_use_private_subnets_for_internal_nlb"></a> [use\_private\_subnets\_for\_internal\_nlb](#input\_use\_private\_subnets\_for\_internal\_nlb) | Set to `true` if you want to use private subnets for internal NLB | `bool` | `false` | no |
-| <a name="input_vpc_cni_enable_pod_eni"></a> [vpc\_cni\_enable\_pod\_eni](#input\_vpc\_cni\_enable\_pod\_eni) | Enable pod ENI support | `bool` | `true` | no |
+| <a name="input_vpc_cni_enable_network_policy"></a> [vpc\_cni\_enable\_network\_policy](#input\_vpc\_cni\_enable\_network\_policy) | Enable Kubernetes NetworkPolicy enforcement via the VPC CNI node agent | `bool` | `false` | no |
+| <a name="input_vpc_cni_enable_pod_eni"></a> [vpc\_cni\_enable\_pod\_eni](#input\_vpc\_cni\_enable\_pod\_eni) | Enable pod ENI support | `bool` | `false` | no |
 | <a name="input_vpc_cni_enable_prefix_delegation"></a> [vpc\_cni\_enable\_prefix\_delegation](#input\_vpc\_cni\_enable\_prefix\_delegation) | Enable prefix delegation for IPv6, allocate IPs in /28 blocks (instead of all at once) | `bool` | `false` | no |
-| <a name="input_vpc_cni_external_snat"></a> [vpc\_cni\_external\_snat](#input\_vpc\_cni\_external\_snat) | Needed to enable cross-vpc pod-to-pod communication - see: <https://github.com/aws/amazon-vpc-cni-k8s?tab=readme-ov-file#aws_vpc_k8s_cni_externalsnat> | `string` | `false` | no |
+| <a name="input_vpc_cni_external_snat"></a> [vpc\_cni\_external\_snat](#input\_vpc\_cni\_external\_snat) | Needed to enable cross-vpc pod-to-pod communication - see: https://github.com/aws/amazon-vpc-cni-k8s?tab=readme-ov-file#aws_vpc_k8s_cni_externalsnat | `string` | `false` | no |
 | <a name="input_vpc_cni_pod_security_group_enforcing_mode"></a> [vpc\_cni\_pod\_security\_group\_enforcing\_mode](#input\_vpc\_cni\_pod\_security\_group\_enforcing\_mode) | Set pod security group enforcing mode | `string` | `"standard"` | no |
 | <a name="input_vpc_cni_version_override"></a> [vpc\_cni\_version\_override](#input\_vpc\_cni\_version\_override) | The version of the VPC CNI plugin to use. If not specified, the default version for the cluster version will be used. | `string` | `""` | no |
 | <a name="input_vpc_cni_warm_eni_target"></a> [vpc\_cni\_warm\_eni\_target](#input\_vpc\_cni\_warm\_eni\_target) | Number of ENIs to keep warm for each node to speed up pod scheduling | `string` | `"1"` | no |
-| <a name="input_vpc_cni_warm_ip_target"></a> [vpc\_cni\_warm\_ip\_target](#input\_vpc\_cni\_warm\_ip\_target) | Number of IPs to keep warm for each node to speed up pod scheduling | `string` | `"8"` | no |
+| <a name="input_vpc_cni_warm_ip_target"></a> [vpc\_cni\_warm\_ip\_target](#input\_vpc\_cni\_warm\_ip\_target) | Number of IPs to keep warm for each node to speed up pod scheduling | `string` | `"4"` | no |
 | <a name="input_vpc_config"></a> [vpc\_config](#input\_vpc\_config) | VPC configuration from aws/vps module | <pre>object({<br>    vpc_id          = string<br>    private_subnets = list(string)<br>    public_subnets  = list(string)<br>  })</pre> | n/a | yes |
 | <a name="input_wafv2_arn"></a> [wafv2\_arn](#input\_wafv2\_arn) | The ARN of the WAFv2 WebACL to associate with the ALB | `string` | `""` | no |
 
@@ -789,6 +838,14 @@ To remove the cluster you have to:
 | <a name="output_cluster_certificate_authority_data"></a> [cluster\_certificate\_authority\_data](#output\_cluster\_certificate\_authority\_data) | Base64 encoded certificate data required to communicate with the cluster |
 | <a name="output_cluster_endpoint"></a> [cluster\_endpoint](#output\_cluster\_endpoint) | Endpoint for your Kubernetes API server |
 | <a name="output_cluster_oidc_issuer_url"></a> [cluster\_oidc\_issuer\_url](#output\_cluster\_oidc\_issuer\_url) | The OIDC issuer URL for the EKS cluster |
+| <a name="output_gateway_api_external_alb_arn"></a> [gateway\_api\_external\_alb\_arn](#output\_gateway\_api\_external\_alb\_arn) | ARN of the external Gateway API ALB |
+| <a name="output_gateway_api_external_alb_dns_name"></a> [gateway\_api\_external\_alb\_dns\_name](#output\_gateway\_api\_external\_alb\_dns\_name) | DNS name of the external Gateway API ALB |
+| <a name="output_gateway_api_external_nlb_arn"></a> [gateway\_api\_external\_nlb\_arn](#output\_gateway\_api\_external\_nlb\_arn) | ARN of the external Gateway API NLB |
+| <a name="output_gateway_api_external_nlb_dns_name"></a> [gateway\_api\_external\_nlb\_dns\_name](#output\_gateway\_api\_external\_nlb\_dns\_name) | DNS name of the external Gateway API NLB |
+| <a name="output_gateway_api_internal_alb_arn"></a> [gateway\_api\_internal\_alb\_arn](#output\_gateway\_api\_internal\_alb\_arn) | ARN of the internal Gateway API ALB |
+| <a name="output_gateway_api_internal_alb_dns_name"></a> [gateway\_api\_internal\_alb\_dns\_name](#output\_gateway\_api\_internal\_alb\_dns\_name) | DNS name of the internal Gateway API ALB |
+| <a name="output_gateway_api_internal_nlb_arn"></a> [gateway\_api\_internal\_nlb\_arn](#output\_gateway\_api\_internal\_nlb\_arn) | ARN of the internal Gateway API NLB |
+| <a name="output_gateway_api_internal_nlb_dns_name"></a> [gateway\_api\_internal\_nlb\_dns\_name](#output\_gateway\_api\_internal\_nlb\_dns\_name) | DNS name of the internal Gateway API NLB |
 | <a name="output_name"></a> [name](#output\_name) | The name of the cluster |
 | <a name="output_nlb_arns"></a> [nlb\_arns](#output\_nlb\_arns) | Map of ARNs of the NLBs |
 | <a name="output_nlb_dns_names"></a> [nlb\_dns\_names](#output\_nlb\_dns\_names) | Map of dns names of the NLBs |
