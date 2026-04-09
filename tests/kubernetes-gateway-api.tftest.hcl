@@ -218,3 +218,153 @@ run "gateway_api_internal_only_no_cert_fails" {
     var.internal_cert_arn,
   ]
 }
+
+# =============================================================================
+# Test: K8s manifests disabled by default (gateway_api_*_enabled = false)
+# =============================================================================
+run "gateway_api_k8s_manifests_disabled_by_default" {
+  command = plan
+
+  assert {
+    condition     = length(kubernetes_manifest.gateway_api_crds) == 0
+    error_message = "CRDs should not be created when gateway API is disabled"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gateway_class_alb) == 0
+    error_message = "GatewayClass aws-alb should not be created when gateway API is disabled"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gateway_class_nlb) == 0
+    error_message = "GatewayClass aws-nlb should not be created when gateway API is disabled"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gw_ext_alb) == 0
+    error_message = "External ALB Gateway should not be created when gateway API is disabled"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gw_int_alb) == 0
+    error_message = "Internal ALB Gateway should not be created when gateway API is disabled"
+  }
+}
+
+# =============================================================================
+# Test: K8s manifests created when external gateway API is enabled
+# =============================================================================
+run "gateway_api_k8s_manifests_external_enabled" {
+  command = plan
+
+  variables {
+    kubernetes_provider_enabled   = true
+    gateway_api_external_enabled = true
+    gateway_api_lb_name_prefix   = "test"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gateway_api_crds) == 13
+    error_message = "All 13 Gateway API + AWS LBC CRDs should be created"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gateway_class_alb) == 1
+    error_message = "GatewayClass aws-alb should be created"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gateway_class_nlb) == 1
+    error_message = "GatewayClass aws-nlb should be created"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gw_ext_alb) == 1
+    error_message = "External ALB Gateway should be created"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gw_ext_alb_config) == 1
+    error_message = "External ALB LoadBalancerConfiguration should be created"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gw_ext_nlb) == 1
+    error_message = "External NLB Gateway should be created"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gw_ext_nlb_config) == 1
+    error_message = "External NLB LoadBalancerConfiguration should be created"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gw_int_alb) == 0
+    error_message = "Internal ALB Gateway should not be created when only external is enabled"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gw_int_nlb) == 0
+    error_message = "Internal NLB Gateway should not be created when only external is enabled"
+  }
+}
+
+# =============================================================================
+# Test: K8s manifests created when internal gateway API is enabled
+# =============================================================================
+run "gateway_api_k8s_manifests_internal_enabled" {
+  command = plan
+
+  variables {
+    kubernetes_provider_enabled   = true
+    gateway_api_internal_enabled = true
+    gateway_api_lb_name_prefix   = "test"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gateway_class_alb) == 1
+    error_message = "GatewayClass aws-alb should be created"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gw_int_alb) == 1
+    error_message = "Internal ALB Gateway should be created"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gw_int_alb_config) == 1
+    error_message = "Internal ALB LoadBalancerConfiguration should be created"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gw_int_nlb) == 1
+    error_message = "Internal NLB Gateway should be created"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gw_int_nlb_config) == 1
+    error_message = "Internal NLB LoadBalancerConfiguration should be created"
+  }
+
+  assert {
+    condition     = length(kubernetes_manifest.gw_ext_alb) == 0
+    error_message = "External ALB Gateway should not be created when only internal is enabled"
+  }
+}
+
+# =============================================================================
+# Test: SSL policy derived from TLS listener version
+# =============================================================================
+run "gateway_api_ssl_policy_mapping" {
+  command = plan
+
+  assert {
+    condition     = local.gateway_api_ssl_policies["1.3"] == "ELBSecurityPolicy-TLS13-1-3-2021-06"
+    error_message = "TLS 1.3 should map to ELBSecurityPolicy-TLS13-1-3-2021-06"
+  }
+
+  assert {
+    condition     = local.gateway_api_ssl_policies["1.2"] == "ELBSecurityPolicy-TLS-1-2-2017-01"
+    error_message = "TLS 1.2 should map to ELBSecurityPolicy-TLS-1-2-2017-01"
+  }
+}
