@@ -9,7 +9,10 @@ locals {
   _gateway_api_crd_docs = [
     for doc in split("\n---", file("${path.module}/manifests/crds-gateway-api.yaml")) :
     { for k, v in yamldecode(doc) : k => v if k != "status" }
-    if can(yamldecode(doc).metadata.name)
+    if can(yamldecode(doc).metadata.name) && can(yamldecode(doc).kind) && !contains([
+      "ValidatingAdmissionPolicy",
+      "ValidatingAdmissionPolicyBinding",
+    ], yamldecode(doc).kind)
   ]
 
   _aws_lbc_crd_docs = [
