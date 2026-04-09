@@ -1,18 +1,18 @@
 # Gateway API — import blocks for migrating from ArgoCD/Helm to Terraform.
 #
-# Usage:
+# Steps:
 #   1. Copy this file into your ROOT module (next to your module "eks" block)
 #   2. Replace "module.eks" below with your actual module name (sed/find-replace)
-#   3. Set local._gw_do_import (and _ext/_int) to true
+#   3. Adjust _gw_do_import_ext/_int to match your gateway_api_*_enabled flags
 #   4. Run: terraform plan  (verify imports + changes)
 #   5. Run: terraform apply (imports existing, creates new resources)
 #   6. Remove the gateway-api-* Helm charts from ArgoCD
 #   7. Delete this file
 
 locals {
-  _gw_do_import     = var.gateway_api_import_existing
-  _gw_do_import_ext = var.gateway_api_import_existing && var.gateway_api_external_enabled
-  _gw_do_import_int = var.gateway_api_import_existing && var.gateway_api_internal_enabled
+  _gw_do_import     = true
+  _gw_do_import_ext = true  # set to false if gateway_api_external_enabled = false
+  _gw_do_import_int = true  # set to false if gateway_api_internal_enabled = false
 }
 
 # =============================================================================
