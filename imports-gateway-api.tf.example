@@ -17,7 +17,7 @@ locals {
 
 # =============================================================================
 # CRDs — import those that already exist from previous Helm deployment.
-# New CRDs (listenersets, ValidatingAdmissionPolicy*) will be created fresh.
+# New CRDs (listenersets, xbackendtrafficpolicies, xmeshes, ValidatingAdmissionPolicy*) will be created fresh.
 # =============================================================================
 
 import {
@@ -28,7 +28,9 @@ import {
     "CustomResourceDefinition/grpcroutes.gateway.networking.k8s.io",
     "CustomResourceDefinition/httproutes.gateway.networking.k8s.io",
     "CustomResourceDefinition/referencegrants.gateway.networking.k8s.io",
+    "CustomResourceDefinition/tcproutes.gateway.networking.k8s.io",
     "CustomResourceDefinition/tlsroutes.gateway.networking.k8s.io",
+    "CustomResourceDefinition/udproutes.gateway.networking.k8s.io",
     "CustomResourceDefinition/listenerruleconfigurations.gateway.k8s.aws",
     "CustomResourceDefinition/loadbalancerconfigurations.gateway.k8s.aws",
     "CustomResourceDefinition/targetgroupconfigurations.gateway.k8s.aws",

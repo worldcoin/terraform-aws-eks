@@ -27,7 +27,7 @@ locals {
 # CRDs: Gateway API (v1.5.1) + AWS LBC Gateway CRDs (v3.2.1)
 #
 # source files in manifests/:
-# - crds-gateway-api.yaml = https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.1/standard-install.yaml
+# - crds-gateway-api.yaml = https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.1/experimental-install.yaml
 # - crds-aws-lbc.yaml     = https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v3.2.1/config/crd/gateway/gateway-crds.yaml
 resource "kubernetes_manifest" "gateway_api_crds" {
   for_each = {
