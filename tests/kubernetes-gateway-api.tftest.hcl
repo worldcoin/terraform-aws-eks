@@ -264,8 +264,8 @@ run "gateway_api_k8s_manifests_external_enabled" {
   }
 
   assert {
-    condition     = length(kubernetes_manifest.gateway_api_crds) == 15
-    error_message = "All 15 Gateway API (experimental) + AWS LBC CRDs should be created"
+    condition     = length(kubernetes_manifest.gateway_api_crds) == 17
+    error_message = "All 17 Gateway API (experimental) + AWS LBC resources should be created"
   }
 
   assert {

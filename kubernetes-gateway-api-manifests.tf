@@ -9,10 +9,7 @@ locals {
   _gateway_api_crd_docs = [
     for doc in split("\n---", file("${path.module}/manifests/crds-gateway-api.yaml")) :
     { for k, v in yamldecode(doc) : k => v if k != "status" }
-    if can(yamldecode(doc).metadata.name) && can(yamldecode(doc).kind) && !contains([
-      "ValidatingAdmissionPolicy",
-      "ValidatingAdmissionPolicyBinding",
-    ], yamldecode(doc).kind)
+    if can(yamldecode(doc).metadata.name)
   ]
 
   _aws_lbc_crd_docs = [
@@ -38,6 +35,8 @@ resource "kubernetes_manifest" "gateway_api_crds" {
     if var.kubernetes_provider_enabled && local.gateway_api_enabled
   }
   manifest = each.value
+
+  computed_fields = ["spec.conversion"]
 
   field_manager {
     force_conflicts = true
