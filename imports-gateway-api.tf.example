@@ -1,0 +1,110 @@
+# Gateway API — import blocks for migrating from ArgoCD/Helm to Terraform.
+#
+# Usage:
+#   1. Copy this file into your ROOT module (next to your module "eks" block)
+#   2. Replace "module.eks" below with your actual module name (sed/find-replace)
+#   3. Set local._gw_do_import (and _ext/_int) to true
+#   4. Run: terraform plan  (verify imports + changes)
+#   5. Run: terraform apply (imports existing, creates new resources)
+#   6. Remove the gateway-api-* Helm charts from ArgoCD
+#   7. Delete this file
+
+locals {
+  _gw_do_import     = var.gateway_api_import_existing
+  _gw_do_import_ext = var.gateway_api_import_existing && var.gateway_api_external_enabled
+  _gw_do_import_int = var.gateway_api_import_existing && var.gateway_api_internal_enabled
+}
+
+# =============================================================================
+# CRDs — import those that already exist from previous Helm deployment.
+# New CRDs (listenersets, ValidatingAdmissionPolicy*) will be created fresh.
+# =============================================================================
+
+import {
+  for_each = local._gw_do_import ? toset([
+    "CustomResourceDefinition/backendtlspolicies.gateway.networking.k8s.io",
+    "CustomResourceDefinition/gatewayclasses.gateway.networking.k8s.io",
+    "CustomResourceDefinition/gateways.gateway.networking.k8s.io",
+    "CustomResourceDefinition/grpcroutes.gateway.networking.k8s.io",
+    "CustomResourceDefinition/httproutes.gateway.networking.k8s.io",
+    "CustomResourceDefinition/referencegrants.gateway.networking.k8s.io",
+    "CustomResourceDefinition/tlsroutes.gateway.networking.k8s.io",
+    "CustomResourceDefinition/listenerruleconfigurations.gateway.k8s.aws",
+    "CustomResourceDefinition/loadbalancerconfigurations.gateway.k8s.aws",
+    "CustomResourceDefinition/targetgroupconfigurations.gateway.k8s.aws",
+  ]) : toset([])
+  to = module.eks.kubernetes_manifest.gateway_api_crds[each.value]
+  id = "apiVersion=apiextensions.k8s.io/v1,kind=CustomResourceDefinition,name=${split("/", each.value)[1]}"
+}
+
+# =============================================================================
+# GatewayClass
+# =============================================================================
+
+import {
+  for_each = local._gw_do_import ? toset(["do"]) : toset([])
+  to       = module.eks.kubernetes_manifest.gateway_class_alb[0]
+  id       = "apiVersion=gateway.networking.k8s.io/v1,kind=GatewayClass,name=aws-alb"
+}
+
+import {
+  for_each = local._gw_do_import ? toset(["do"]) : toset([])
+  to       = module.eks.kubernetes_manifest.gateway_class_nlb[0]
+  id       = "apiVersion=gateway.networking.k8s.io/v1,kind=GatewayClass,name=aws-nlb"
+}
+
+# =============================================================================
+# External ALB + NLB
+# =============================================================================
+
+import {
+  for_each = local._gw_do_import_ext ? toset(["do"]) : toset([])
+  to       = module.eks.kubernetes_manifest.gw_ext_alb_config[0]
+  id       = "apiVersion=gateway.k8s.aws/v1beta1,kind=LoadBalancerConfiguration,namespace=kube-system,name=gw-ext-alb"
+}
+
+import {
+  for_each = local._gw_do_import_ext ? toset(["do"]) : toset([])
+  to       = module.eks.kubernetes_manifest.gw_ext_alb[0]
+  id       = "apiVersion=gateway.networking.k8s.io/v1,kind=Gateway,namespace=kube-system,name=gw-ext-alb"
+}
+
+import {
+  for_each = local._gw_do_import_ext ? toset(["do"]) : toset([])
+  to       = module.eks.kubernetes_manifest.gw_ext_nlb_config[0]
+  id       = "apiVersion=gateway.k8s.aws/v1beta1,kind=LoadBalancerConfiguration,namespace=kube-system,name=gw-ext-nlb"
+}
+
+import {
+  for_each = local._gw_do_import_ext ? toset(["do"]) : toset([])
+  to       = module.eks.kubernetes_manifest.gw_ext_nlb[0]
+  id       = "apiVersion=gateway.networking.k8s.io/v1,kind=Gateway,namespace=kube-system,name=gw-ext-nlb"
+}
+
+# =============================================================================
+# Internal ALB + NLB
+# =============================================================================
+
+import {
+  for_each = local._gw_do_import_int ? toset(["do"]) : toset([])
+  to       = module.eks.kubernetes_manifest.gw_int_alb_config[0]
+  id       = "apiVersion=gateway.k8s.aws/v1beta1,kind=LoadBalancerConfiguration,namespace=kube-system,name=gw-int-alb"
+}
+
+import {
+  for_each = local._gw_do_import_int ? toset(["do"]) : toset([])
+  to       = module.eks.kubernetes_manifest.gw_int_alb[0]
+  id       = "apiVersion=gateway.networking.k8s.io/v1,kind=Gateway,namespace=kube-system,name=gw-int-alb"
+}
+
+import {
+  for_each = local._gw_do_import_int ? toset(["do"]) : toset([])
+  to       = module.eks.kubernetes_manifest.gw_int_nlb_config[0]
+  id       = "apiVersion=gateway.k8s.aws/v1beta1,kind=LoadBalancerConfiguration,namespace=kube-system,name=gw-int-nlb"
+}
+
+import {
+  for_each = local._gw_do_import_int ? toset(["do"]) : toset([])
+  to       = module.eks.kubernetes_manifest.gw_int_nlb[0]
+  id       = "apiVersion=gateway.networking.k8s.io/v1,kind=Gateway,namespace=kube-system,name=gw-int-nlb"
+}

@@ -915,8 +915,3 @@ variable "gateway_api_lb_name_prefix" {
   }
 }
 
-variable "gateway_api_import_existing" {
-  description = "Import Gateway API resources previously created by ArgoCD/Helm into Terraform state. Set to true during migration, then back to false"
-  type        = bool
-  default     = false
-}
