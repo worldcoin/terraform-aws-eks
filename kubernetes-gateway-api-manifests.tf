@@ -32,7 +32,7 @@ locals {
 resource "kubernetes_manifest" "gateway_api_crds" {
   for_each = {
     for k, v in local.gateway_api_crds : k => v
-    if var.kubernetes_provider_enabled && local.gateway_api_enabled
+    if local.kubernetes_provider_enabled && local.gateway_api_enabled
   }
   manifest = each.value
 
@@ -44,7 +44,7 @@ resource "kubernetes_manifest" "gateway_api_crds" {
 }
 
 resource "kubernetes_manifest" "gateway_class_alb" {
-  count = var.kubernetes_provider_enabled && local.gateway_api_enabled ? 1 : 0
+  count = local.kubernetes_provider_enabled && local.gateway_api_enabled ? 1 : 0
 
   field_manager {
     force_conflicts = true
@@ -65,7 +65,7 @@ resource "kubernetes_manifest" "gateway_class_alb" {
 }
 
 resource "kubernetes_manifest" "gateway_class_nlb" {
-  count = var.kubernetes_provider_enabled && local.gateway_api_enabled ? 1 : 0
+  count = local.kubernetes_provider_enabled && local.gateway_api_enabled ? 1 : 0
 
   field_manager {
     force_conflicts = true
@@ -86,7 +86,7 @@ resource "kubernetes_manifest" "gateway_class_nlb" {
 }
 
 resource "kubernetes_manifest" "gw_ext_alb_config" {
-  count = var.kubernetes_provider_enabled && var.gateway_api_external_enabled ? 1 : 0
+  count = local.kubernetes_provider_enabled && var.gateway_api_external_enabled ? 1 : 0
 
   field_manager {
     force_conflicts = true
@@ -117,7 +117,7 @@ resource "kubernetes_manifest" "gw_ext_alb_config" {
 }
 
 resource "kubernetes_manifest" "gw_ext_alb" {
-  count = var.kubernetes_provider_enabled && var.gateway_api_external_enabled ? 1 : 0
+  count = local.kubernetes_provider_enabled && var.gateway_api_external_enabled ? 1 : 0
 
   field_manager {
     force_conflicts = true
@@ -164,7 +164,7 @@ resource "kubernetes_manifest" "gw_ext_alb" {
 }
 
 resource "kubernetes_manifest" "gw_ext_nlb_config" {
-  count = var.kubernetes_provider_enabled && var.gateway_api_external_enabled ? 1 : 0
+  count = local.kubernetes_provider_enabled && var.gateway_api_external_enabled ? 1 : 0
 
   field_manager {
     force_conflicts = true
@@ -195,7 +195,7 @@ resource "kubernetes_manifest" "gw_ext_nlb_config" {
 }
 
 resource "kubernetes_manifest" "gw_ext_nlb" {
-  count = var.kubernetes_provider_enabled && var.gateway_api_external_enabled ? 1 : 0
+  count = local.kubernetes_provider_enabled && var.gateway_api_external_enabled ? 1 : 0
 
   field_manager {
     force_conflicts = true
@@ -262,7 +262,7 @@ resource "kubernetes_manifest" "gw_ext_nlb" {
 }
 
 resource "kubernetes_manifest" "gw_int_alb_config" {
-  count = var.kubernetes_provider_enabled && var.gateway_api_internal_enabled ? 1 : 0
+  count = local.kubernetes_provider_enabled && var.gateway_api_internal_enabled ? 1 : 0
 
   field_manager {
     force_conflicts = true
@@ -293,7 +293,7 @@ resource "kubernetes_manifest" "gw_int_alb_config" {
 }
 
 resource "kubernetes_manifest" "gw_int_alb" {
-  count = var.kubernetes_provider_enabled && var.gateway_api_internal_enabled ? 1 : 0
+  count = local.kubernetes_provider_enabled && var.gateway_api_internal_enabled ? 1 : 0
 
   field_manager {
     force_conflicts = true
@@ -340,7 +340,7 @@ resource "kubernetes_manifest" "gw_int_alb" {
 }
 
 resource "kubernetes_manifest" "gw_int_nlb_config" {
-  count = var.kubernetes_provider_enabled && var.gateway_api_internal_enabled ? 1 : 0
+  count = local.kubernetes_provider_enabled && var.gateway_api_internal_enabled ? 1 : 0
 
   field_manager {
     force_conflicts = true
@@ -371,7 +371,7 @@ resource "kubernetes_manifest" "gw_int_nlb_config" {
 }
 
 resource "kubernetes_manifest" "gw_int_nlb" {
-  count = var.kubernetes_provider_enabled && var.gateway_api_internal_enabled ? 1 : 0
+  count = local.kubernetes_provider_enabled && var.gateway_api_internal_enabled ? 1 : 0
 
   field_manager {
     force_conflicts = true

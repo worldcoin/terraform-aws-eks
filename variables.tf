@@ -70,9 +70,9 @@ variable "on_demand_base_capacity" {
 }
 
 variable "kubernetes_provider_enabled" {
-  description = "Whether to create a Kubernetes provider for the cluster. Use as a prerequisite to cluster removal."
+  description = "Create Kubernetes resources. Auto-detects cluster existence when null. Set to false before cluster removal."
   type        = bool
-  default     = true
+  default     = null
 }
 
 variable "kube_ops_enabled" {

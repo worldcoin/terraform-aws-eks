@@ -1,5 +1,5 @@
 resource "kubernetes_service_v1" "traefik_nlb" {
-  for_each               = var.kubernetes_provider_enabled ? var.internal_nlb_enabled ? toset([local.internal_nlb_name]) : [] : []
+  for_each               = local.kubernetes_provider_enabled ? var.internal_nlb_enabled ? toset([local.internal_nlb_name]) : [] : []
   wait_for_load_balancer = false
 
   metadata {
