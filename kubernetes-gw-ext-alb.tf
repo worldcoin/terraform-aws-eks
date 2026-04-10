@@ -43,4 +43,6 @@ module "gateway_api_external_alb" {
   datadog = {
     monitoring_notification_channel = var.monitoring_notification_channel
   }
+
+  enable_deletion_protection = var.enable_deletion_protection
 }
