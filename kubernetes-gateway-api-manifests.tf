@@ -36,7 +36,7 @@ resource "kubernetes_manifest" "gateway_api_crds" {
   }
   manifest = each.value
 
-  computed_fields = ["spec.conversion"]
+  computed_fields = ["spec.conversion", "spec.versions"]
 
   field_manager {
     force_conflicts = true
