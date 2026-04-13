@@ -39,13 +39,11 @@ provider "kubernetes" {
 locals {
   cluster_name_without_region = trimsuffix(var.cluster_name, "-${var.region}")
   gateway_api_lb_name_prefix  = coalesce(var.gateway_api_lb_name_prefix, local.cluster_name_without_region)
-  cluster_exists              = contains(data.aws_eks_clusters.this.names, var.cluster_name)
-  kubernetes_provider_enabled = var.kubernetes_provider_enabled == null ? local.cluster_exists : var.kubernetes_provider_enabled
   gateway_api_crds_ready      = try(length(data.kubernetes_resources.gateway_api_crds_check[0].objects) > 0, false)
 }
 
 data "kubernetes_resources" "gateway_api_crds_check" {
-  count          = local.kubernetes_provider_enabled && local.gateway_api_enabled ? 1 : 0
+  count          = var.kubernetes_provider_enabled && var.gateway_api_crds_enabled ? 1 : 0
   api_version    = "apiextensions.k8s.io/v1"
   kind           = "CustomResourceDefinition"
   field_selector = "metadata.name=gateways.gateway.networking.k8s.io"

@@ -1,5 +1,5 @@
 resource "kubernetes_secret_v1" "datadog" {
-  count = local.kubernetes_provider_enabled ? 1 : 0
+  count = var.kubernetes_provider_enabled ? 1 : 0
 
   metadata {
     name      = "datadog"

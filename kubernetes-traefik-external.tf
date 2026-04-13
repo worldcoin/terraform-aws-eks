@@ -1,5 +1,5 @@
 resource "kubernetes_service_v1" "traefik_alb" {
-  for_each               = local.kubernetes_provider_enabled ? var.external_alb_enabled ? toset([local.external_alb_name]) : [] : []
+  for_each               = var.kubernetes_provider_enabled ? var.external_alb_enabled ? toset([local.external_alb_name]) : [] : []
   wait_for_load_balancer = false
 
   metadata {
@@ -41,7 +41,7 @@ resource "kubernetes_service_v1" "traefik_alb" {
 }
 
 resource "kubernetes_ingress_v1" "treafik_ingress" {
-  for_each = local.kubernetes_provider_enabled ? var.external_alb_enabled ? toset([local.external_alb_name]) : [] : []
+  for_each = var.kubernetes_provider_enabled ? var.external_alb_enabled ? toset([local.external_alb_name]) : [] : []
 
   metadata {
     name      = format("%s-alb", each.key)

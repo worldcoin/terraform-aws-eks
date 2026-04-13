@@ -81,6 +81,7 @@ run "gateway_api_lb_prefix_required_when_cluster_name_too_long" {
 
   variables {
     cluster_name                 = "this-is-a-very-long-cluster-name-exceeding-limit"
+    gateway_api_crds_enabled     = true
     gateway_api_external_enabled = true
     gateway_api_lb_name_prefix   = "short-prefix"
   }
@@ -147,6 +148,7 @@ run "gateway_api_lb_prefix_missing_long_name_fails" {
 
   variables {
     cluster_name                 = "this-is-a-very-long-cluster-name-exceeding-limit"
+    gateway_api_crds_enabled     = true
     gateway_api_external_enabled = true
   }
 
@@ -162,6 +164,7 @@ run "gateway_api_internal_only_no_external_cert" {
   command = plan
 
   variables {
+    gateway_api_crds_enabled     = true
     gateway_api_internal_enabled = true
     external_alb_enabled         = false
     internal_nlb_enabled         = false
@@ -183,6 +186,7 @@ run "gateway_api_internal_only_nlb_acm_fallback" {
   command = plan
 
   variables {
+    gateway_api_crds_enabled     = true
     gateway_api_internal_enabled = true
     external_alb_enabled         = false
     internal_nlb_enabled         = false
@@ -205,6 +209,7 @@ run "gateway_api_internal_only_no_cert_fails" {
   command = plan
 
   variables {
+    gateway_api_crds_enabled     = true
     gateway_api_internal_enabled = true
     external_alb_enabled         = false
     internal_nlb_enabled         = false
@@ -259,6 +264,7 @@ run "gateway_api_k8s_manifests_external_enabled" {
 
   variables {
     kubernetes_provider_enabled   = true
+    gateway_api_crds_enabled     = true
     gateway_api_external_enabled = true
     gateway_api_lb_name_prefix   = "test"
   }
@@ -317,6 +323,7 @@ run "gateway_api_k8s_manifests_internal_enabled" {
 
   variables {
     kubernetes_provider_enabled   = true
+    gateway_api_crds_enabled     = true
     gateway_api_internal_enabled = true
     gateway_api_lb_name_prefix   = "test"
   }

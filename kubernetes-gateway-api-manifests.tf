@@ -32,7 +32,7 @@ locals {
 resource "kubernetes_manifest" "gateway_api_crds" {
   for_each = {
     for k, v in local.gateway_api_crds : k => v
-    if local.kubernetes_provider_enabled && local.gateway_api_enabled
+    if var.kubernetes_provider_enabled && var.gateway_api_crds_enabled
   }
   manifest = each.value
 

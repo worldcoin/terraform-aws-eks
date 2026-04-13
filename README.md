@@ -404,19 +404,54 @@ The module comes with the IAM role for [Amazon EFS CSI driver](https://docs.aws.
 
 ## Terraform tips and tricks
 
-1. Module from begining, has defined `kubernetes` provider inside on it, configured based on information from terraform resource `aws_eks_cluster` to authenticate to the eks cluster.
-With this constrain only `create` operation work properly, other operation `update`, `remove` doesn't work.
+### Gateway API
 
-1. With version `v4.2.0` we have change for `kubernetes` provider. It's configured based on informatiom from data source about `aws_eks_cluster`, and if provider can't be configure with this way terraform resource `aws_eks_cluster` is used. PR with: [fix kubernetes provider](https://github.com/worldcoin/terraform-aws-eks/pull/176). With this change `create` and `update` operation work perfectly, `remove` operation still doesn't work.
+The module manages Gateway API CRDs, GatewayClass, LoadBalancerConfiguration, and Gateway resources via `kubernetes_manifest`.
+Due to a [known provider limitation](https://github.com/hashicorp/terraform-provider-kubernetes/issues/1782), `kubernetes_manifest` requires the API server to be reachable and CRDs to be registered during `plan` — not just `apply`.
 
-1. In the feature versions of `terraform-aws-eks module`, `remove` operation can be fixed to work properly. For this `kubernetes` provider must be moved from module to workspace. It can be tested with PRs:
+This means enabling Gateway API on a new cluster requires **3 applies**:
 
-- [remove kubernetes provider from terraform-aws-eks module](https://github.com/worldcoin/terraform-aws-eks/pull/177)
-- [test if remove kubernetes provider from tf module works](https://github.com/worldcoin/infrastructure/pull/13175)
+| Apply | What changes | What happens |
+|-------|-------------|--------------|
+| 1     | `kubernetes_provider_enabled = true` | Cluster + AWS infra + basic K8s resources (namespaces, storage class, aws-auth, etc.) |
+| 2     | `gateway_api_crds_enabled = true` | Gateway API + AWS LBC CRDs installed |
+| 3     | `gateway_api_external_enabled = true` and/or `gateway_api_internal_enabled = true` | GatewayClass + Gateway + LoadBalancerConfiguration |
+
+**Example (final state):**
+
+```terraform
+module "eks" {
+  source = "git@github.com:worldcoin/terraform-aws-eks?ref=vX.Y.Z"
+
+  cluster_name = "my-cluster-us-east-1"
+  region       = "us-east-1"
+  environment  = "dev"
+
+  vpc_config         = module.vpc.config
+  extra_role_mapping = module.sso_roles.default_mappings
+  datadog_api_key    = var.datadog_api_key
+  alb_logs_bucket_id = module.region.alb_logs_bucket_id
+
+  external_cert_arn = module.acm.cert_arn
+  internal_cert_arn = module.acm.cert_arn
+
+  gateway_api_crds_enabled     = true
+  gateway_api_external_enabled = true
+  gateway_api_internal_enabled = true
+}
+```
+
+**Migrating from ArgoCD Helm charts:**
+
+For clusters currently using the `gateway-api-crds`, `gateway-api-external`, and `gateway-api-internal` Helm charts, see [`imports-gateway-api.tf.example`](./imports-gateway-api.tf.example) for import blocks that enable zero-downtime migration.
+
+1. Copy `imports-gateway-api.tf.example` to your root module
+2. Replace `module.eks` with your module name
+3. `terraform apply` — imports existing resources
+4. Remove the gateway-api-* Helm charts from ArgoCD
+5. Delete the import file
 
 ### Cluster create
-
-Works like a charm for any case, from begining.
 
 ### Cluster update
 

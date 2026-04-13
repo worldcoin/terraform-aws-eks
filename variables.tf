@@ -70,9 +70,9 @@ variable "on_demand_base_capacity" {
 }
 
 variable "kubernetes_provider_enabled" {
-  description = "Create Kubernetes resources. Auto-detects cluster existence when null. Set to false before cluster removal."
+  description = "Create Kubernetes resources. Set to false for initial cluster creation and before cluster removal."
   type        = bool
-  default     = null
+  default     = true
 }
 
 variable "kube_ops_enabled" {
@@ -836,14 +836,20 @@ variable "internal_nlb_service_ports" {
   }
 }
 
+variable "gateway_api_crds_enabled" {
+  description = "Install Gateway API and AWS LBC CRDs. Must be enabled before gateway_api_external_enabled or gateway_api_internal_enabled."
+  type        = bool
+  default     = false
+}
+
 variable "gateway_api_external_enabled" {
-  description = "Create internet-facing ALB and NLB for Gateway API (external, external-nonhttp)"
+  description = "Create internet-facing ALB and NLB for Gateway API (external, external-nonhttp). Requires gateway_api_crds_enabled = true."
   type        = bool
   default     = false
 }
 
 variable "gateway_api_internal_enabled" {
-  description = "Create internal ALB and NLB for Gateway API (internal, internal-nonhttp)"
+  description = "Create internal ALB and NLB for Gateway API (internal, internal-nonhttp). Requires gateway_api_crds_enabled = true."
   type        = bool
   default     = false
 }
