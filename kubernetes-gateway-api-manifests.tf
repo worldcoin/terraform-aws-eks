@@ -1,6 +1,4 @@
 locals {
-  gateway_api_enabled = var.gateway_api_external_enabled || var.gateway_api_internal_enabled
-
   gateway_api_ssl_policies = {
     "1.3" = "ELBSecurityPolicy-TLS13-1-3-2021-06"
     "1.2" = "ELBSecurityPolicy-TLS-1-2-2017-01"
