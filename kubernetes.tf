@@ -39,6 +39,14 @@ provider "kubernetes" {
 locals {
   cluster_name_without_region = trimsuffix(var.cluster_name, "-${var.region}")
   gateway_api_lb_name_prefix  = coalesce(var.gateway_api_lb_name_prefix, local.cluster_name_without_region)
+  gateway_api_crds_ready      = try(length(data.kubernetes_resources.gateway_api_crds_check[0].objects) > 0, false)
+}
+
+data "kubernetes_resources" "gateway_api_crds_check" {
+  count          = var.kubernetes_provider_enabled && var.gateway_api_crds_enabled ? 1 : 0
+  api_version    = "apiextensions.k8s.io/v1"
+  kind           = "CustomResourceDefinition"
+  field_selector = "metadata.name=gateways.gateway.networking.k8s.io"
 }
 
 resource "terraform_data" "gateway_api_lb_name_validation" {

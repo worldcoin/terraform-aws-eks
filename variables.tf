@@ -70,7 +70,7 @@ variable "on_demand_base_capacity" {
 }
 
 variable "kubernetes_provider_enabled" {
-  description = "Whether to create a Kubernetes provider for the cluster. Use as a prerequisite to cluster removal."
+  description = "Create Kubernetes resources. Set to false for initial cluster creation and before cluster removal."
   type        = bool
   default     = true
 }
@@ -836,14 +836,20 @@ variable "internal_nlb_service_ports" {
   }
 }
 
+variable "gateway_api_crds_enabled" {
+  description = "Install Gateway API and AWS LBC CRDs. Must be enabled before gateway_api_external_enabled or gateway_api_internal_enabled."
+  type        = bool
+  default     = false
+}
+
 variable "gateway_api_external_enabled" {
-  description = "Create internet-facing ALB and NLB for Gateway API (external, external-nonhttp)"
+  description = "Create internet-facing ALB and NLB for Gateway API (external, external-nonhttp). Requires gateway_api_crds_enabled = true."
   type        = bool
   default     = false
 }
 
 variable "gateway_api_internal_enabled" {
-  description = "Create internal ALB and NLB for Gateway API (internal, internal-nonhttp)"
+  description = "Create internal ALB and NLB for Gateway API (internal, internal-nonhttp). Requires gateway_api_crds_enabled = true."
   type        = bool
   default     = false
 }
@@ -914,3 +920,4 @@ variable "gateway_api_lb_name_prefix" {
     error_message = "gateway_api_lb_name_prefix must be <= 21 characters (to fit 32-char LB name limit with suffix) and contain only lowercase alphanumeric characters or hyphens."
   }
 }
+
