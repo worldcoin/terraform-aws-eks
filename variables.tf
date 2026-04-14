@@ -910,6 +910,162 @@ variable "gateway_api_internal_nlb_sg_rules" {
   }
 }
 
+variable "gateway_api_ext_alb_listeners" {
+  description = "Gateway listeners for the external ALB (gw-ext-alb)."
+  type        = any
+  default = [{
+    name     = "https"
+    protocol = "HTTPS"
+    port     = 443
+    tls = {
+      mode = "Terminate"
+      certificateRefs = [{
+        group = ""
+        kind  = "Secret"
+        name  = "default-cert"
+      }]
+    }
+    allowedRoutes = {
+      namespaces = {
+        from = "All"
+      }
+    }
+  }]
+}
+
+variable "gateway_api_ext_nlb_listeners" {
+  description = "Gateway listeners for the external NLB (gw-ext-nlb)."
+  type        = any
+  default = [
+    {
+      name     = "tcp"
+      protocol = "TCP"
+      port     = 80
+      allowedRoutes = {
+        namespaces = {
+          from = "All"
+        }
+        kinds = [{
+          group = "gateway.networking.k8s.io"
+          kind  = "TCPRoute"
+        }]
+      }
+    },
+    {
+      name     = "tls"
+      protocol = "TLS"
+      port     = 443
+      tls = {
+        mode = "Terminate"
+        certificateRefs = [{
+          group = ""
+          kind  = "Secret"
+          name  = "default-cert"
+        }]
+      }
+      allowedRoutes = {
+        namespaces = {
+          from = "All"
+        }
+        kinds = [{
+          group = "gateway.networking.k8s.io"
+          kind  = "TLSRoute"
+        }]
+      }
+    },
+  ]
+}
+
+variable "gateway_api_int_alb_listeners" {
+  description = "Gateway listeners for the internal ALB (gw-int-alb)."
+  type        = any
+  default = [{
+    name     = "https"
+    protocol = "HTTPS"
+    port     = 443
+    tls = {
+      mode = "Terminate"
+      certificateRefs = [{
+        group = ""
+        kind  = "Secret"
+        name  = "default-cert"
+      }]
+    }
+    allowedRoutes = {
+      namespaces = {
+        from = "All"
+      }
+    }
+  }]
+}
+
+variable "gateway_api_int_nlb_listeners" {
+  description = "Gateway listeners for the internal NLB (gw-int-nlb)."
+  type        = any
+  default = [
+    {
+      name     = "tcp"
+      protocol = "TCP"
+      port     = 80
+      allowedRoutes = {
+        namespaces = {
+          from = "All"
+        }
+        kinds = [{
+          group = "gateway.networking.k8s.io"
+          kind  = "TCPRoute"
+        }]
+      }
+    },
+    {
+      name     = "tls"
+      protocol = "TLS"
+      port     = 443
+      tls = {
+        mode = "Terminate"
+        certificateRefs = [{
+          group = ""
+          kind  = "Secret"
+          name  = "default-cert"
+        }]
+      }
+      allowedRoutes = {
+        namespaces = {
+          from = "All"
+        }
+        kinds = [{
+          group = "gateway.networking.k8s.io"
+          kind  = "TLSRoute"
+        }]
+      }
+    },
+  ]
+}
+
+variable "gateway_api_ext_alb_listener_configs" {
+  description = "Override LoadBalancerConfiguration listenerConfigurations for the external ALB. When null, defaults to HTTPS:443 with external cert and SSL policy."
+  type        = any
+  default     = null
+}
+
+variable "gateway_api_ext_nlb_listener_configs" {
+  description = "Override LoadBalancerConfiguration listenerConfigurations for the external NLB. When null, defaults to TLS:443 with external cert and SSL policy."
+  type        = any
+  default     = null
+}
+
+variable "gateway_api_int_alb_listener_configs" {
+  description = "Override LoadBalancerConfiguration listenerConfigurations for the internal ALB. When null, defaults to HTTPS:443 with internal cert and SSL policy."
+  type        = any
+  default     = null
+}
+
+variable "gateway_api_int_nlb_listener_configs" {
+  description = "Override LoadBalancerConfiguration listenerConfigurations for the internal NLB. When null, defaults to TLS:443 with internal cert and SSL policy."
+  type        = any
+  default     = null
+}
+
 variable "gateway_api_lb_name_prefix" {
   description = "Prefix for Gateway API load balancer names. Defaults to cluster_name. Override when cluster_name is too long to fit within the 32-char AWS LB name limit (prefix + suffix like '-gw-ext-alb' must be <= 32)."
   type        = string
