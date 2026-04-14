@@ -263,7 +263,7 @@ run "gateway_api_k8s_manifests_external_enabled" {
   command = plan
 
   variables {
-    kubernetes_provider_enabled   = true
+    kubernetes_provider_enabled  = true
     gateway_api_crds_enabled     = true
     gateway_api_external_enabled = true
     gateway_api_lb_name_prefix   = "test"
@@ -322,7 +322,7 @@ run "gateway_api_k8s_manifests_internal_enabled" {
   command = plan
 
   variables {
-    kubernetes_provider_enabled   = true
+    kubernetes_provider_enabled  = true
     gateway_api_crds_enabled     = true
     gateway_api_internal_enabled = true
     gateway_api_lb_name_prefix   = "test"

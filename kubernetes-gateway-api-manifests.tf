@@ -21,6 +21,11 @@ locals {
     format("%s/%s", crd.kind, crd.metadata.name) => crd
   }
 
+  # All LoadBalancerConfiguration CRD attributes with null defaults.
+  # Used by merge() to satisfy the kubernetes_manifest provider's requirement
+  # that all CRD attributes are present in the object (even optional ones).
+  # Values are null so they get stripped by the `if v != null` filter below,
+  # avoiding drift on clusters that don't set these attributes.
   _listener_config_defaults = {
     alpnPolicy            = null
     sslPolicy             = null
@@ -60,6 +65,10 @@ locals {
     defaultCertificate = local.effective_internal_cert_arn
   }]
 
+  # Resolve listener configs: use override if provided, otherwise per-LB defaults.
+  # merge() ensures all CRD attributes exist (required by kubernetes_manifest provider),
+  # then `if v != null` strips null keys so only caller-set fields appear in the manifest,
+  # preventing drift on clusters using defaults.
   gateway_api_ext_alb_listener_configs = [for cfg in coalesce(var.gateway_api_ext_alb_listener_configs, local._default_ext_alb_listener_configs) : { for k, v in merge(local._listener_config_defaults, cfg) : k => v if v != null }]
   gateway_api_ext_nlb_listener_configs = [for cfg in coalesce(var.gateway_api_ext_nlb_listener_configs, local._default_ext_nlb_listener_configs) : { for k, v in merge(local._listener_config_defaults, cfg) : k => v if v != null }]
   gateway_api_int_alb_listener_configs = [for cfg in coalesce(var.gateway_api_int_alb_listener_configs, local._default_int_alb_listener_configs) : { for k, v in merge(local._listener_config_defaults, cfg) : k => v if v != null }]
