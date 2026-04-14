@@ -21,38 +21,45 @@ locals {
     format("%s/%s", crd.kind, crd.metadata.name) => crd
   }
 
+  _listener_config_defaults = {
+    alpnPolicy            = "None"
+    sslPolicy             = ""
+    defaultCertificate    = ""
+    certificates          = []
+    listenerAttributes    = []
+    mutualAuthentication  = null
+    quicEnabled           = false
+    targetGroupStickiness = false
+  }
+
   _default_ext_alb_listener_configs = [{
     protocolPort       = "HTTPS:443"
-    alpnPolicy         = "None"
     sslPolicy          = local.gateway_api_ssl_policies[var.external_tls_listener_version]
     defaultCertificate = local.effective_external_cert_arn
   }]
 
   _default_ext_nlb_listener_configs = [{
     protocolPort       = "TLS:443"
-    alpnPolicy         = "None"
     sslPolicy          = local.gateway_api_ssl_policies[var.external_tls_listener_version]
     defaultCertificate = local.effective_external_cert_arn
   }]
 
   _default_int_alb_listener_configs = [{
     protocolPort       = "HTTPS:443"
-    alpnPolicy         = "None"
     sslPolicy          = local.gateway_api_ssl_policies[var.internal_tls_listener_version]
     defaultCertificate = local.effective_internal_cert_arn
   }]
 
   _default_int_nlb_listener_configs = [{
     protocolPort       = "TLS:443"
-    alpnPolicy         = "None"
     sslPolicy          = local.gateway_api_ssl_policies[var.internal_tls_listener_version]
     defaultCertificate = local.effective_internal_cert_arn
   }]
 
-  gateway_api_ext_alb_listener_configs = coalesce(var.gateway_api_ext_alb_listener_configs, local._default_ext_alb_listener_configs)
-  gateway_api_ext_nlb_listener_configs = coalesce(var.gateway_api_ext_nlb_listener_configs, local._default_ext_nlb_listener_configs)
-  gateway_api_int_alb_listener_configs = coalesce(var.gateway_api_int_alb_listener_configs, local._default_int_alb_listener_configs)
-  gateway_api_int_nlb_listener_configs = coalesce(var.gateway_api_int_nlb_listener_configs, local._default_int_nlb_listener_configs)
+  gateway_api_ext_alb_listener_configs = [for cfg in coalesce(var.gateway_api_ext_alb_listener_configs, local._default_ext_alb_listener_configs) : merge(local._listener_config_defaults, cfg)]
+  gateway_api_ext_nlb_listener_configs = [for cfg in coalesce(var.gateway_api_ext_nlb_listener_configs, local._default_ext_nlb_listener_configs) : merge(local._listener_config_defaults, cfg)]
+  gateway_api_int_alb_listener_configs = [for cfg in coalesce(var.gateway_api_int_alb_listener_configs, local._default_int_alb_listener_configs) : merge(local._listener_config_defaults, cfg)]
+  gateway_api_int_nlb_listener_configs = [for cfg in coalesce(var.gateway_api_int_nlb_listener_configs, local._default_int_nlb_listener_configs) : merge(local._listener_config_defaults, cfg)]
 }
 
 # CRDs: Gateway API (v1.5.1) + AWS LBC Gateway CRDs (v3.2.1)
@@ -117,8 +124,6 @@ resource "kubernetes_manifest" "gateway_class_nlb" {
 resource "kubernetes_manifest" "gw_ext_alb_config" {
   count = local.gateway_api_crds_ready && var.gateway_api_external_enabled ? 1 : 0
 
-  computed_fields = ["spec.listenerConfigurations"]
-
   field_manager {
     force_conflicts = true
   }
@@ -172,8 +177,6 @@ resource "kubernetes_manifest" "gw_ext_alb" {
 
 resource "kubernetes_manifest" "gw_ext_nlb_config" {
   count = local.gateway_api_crds_ready && var.gateway_api_external_enabled ? 1 : 0
-
-  computed_fields = ["spec.listenerConfigurations"]
 
   field_manager {
     force_conflicts = true
@@ -229,8 +232,6 @@ resource "kubernetes_manifest" "gw_ext_nlb" {
 resource "kubernetes_manifest" "gw_int_alb_config" {
   count = local.gateway_api_crds_ready && var.gateway_api_internal_enabled ? 1 : 0
 
-  computed_fields = ["spec.listenerConfigurations"]
-
   field_manager {
     force_conflicts = true
   }
@@ -284,8 +285,6 @@ resource "kubernetes_manifest" "gw_int_alb" {
 
 resource "kubernetes_manifest" "gw_int_nlb_config" {
   count = local.gateway_api_crds_ready && var.gateway_api_internal_enabled ? 1 : 0
-
-  computed_fields = ["spec.listenerConfigurations"]
 
   field_manager {
     force_conflicts = true
