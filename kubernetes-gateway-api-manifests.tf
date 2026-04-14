@@ -117,6 +117,8 @@ resource "kubernetes_manifest" "gateway_class_nlb" {
 resource "kubernetes_manifest" "gw_ext_alb_config" {
   count = local.gateway_api_crds_ready && var.gateway_api_external_enabled ? 1 : 0
 
+  computed_fields = ["spec.listenerConfigurations"]
+
   field_manager {
     force_conflicts = true
   }
@@ -170,6 +172,8 @@ resource "kubernetes_manifest" "gw_ext_alb" {
 
 resource "kubernetes_manifest" "gw_ext_nlb_config" {
   count = local.gateway_api_crds_ready && var.gateway_api_external_enabled ? 1 : 0
+
+  computed_fields = ["spec.listenerConfigurations"]
 
   field_manager {
     force_conflicts = true
@@ -225,6 +229,8 @@ resource "kubernetes_manifest" "gw_ext_nlb" {
 resource "kubernetes_manifest" "gw_int_alb_config" {
   count = local.gateway_api_crds_ready && var.gateway_api_internal_enabled ? 1 : 0
 
+  computed_fields = ["spec.listenerConfigurations"]
+
   field_manager {
     force_conflicts = true
   }
@@ -278,6 +284,8 @@ resource "kubernetes_manifest" "gw_int_alb" {
 
 resource "kubernetes_manifest" "gw_int_nlb_config" {
   count = local.gateway_api_crds_ready && var.gateway_api_internal_enabled ? 1 : 0
+
+  computed_fields = ["spec.listenerConfigurations"]
 
   field_manager {
     force_conflicts = true
