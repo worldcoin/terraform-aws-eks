@@ -22,14 +22,14 @@ locals {
   }
 
   _listener_config_defaults = {
-    alpnPolicy            = "None"
-    sslPolicy             = ""
-    defaultCertificate    = ""
-    certificates          = []
-    listenerAttributes    = []
+    alpnPolicy            = null
+    sslPolicy             = null
+    defaultCertificate    = null
+    certificates          = null
+    listenerAttributes    = null
     mutualAuthentication  = null
-    quicEnabled           = false
-    targetGroupStickiness = false
+    quicEnabled           = null
+    targetGroupStickiness = null
   }
 
   _default_ext_alb_listener_configs = [{
@@ -56,10 +56,10 @@ locals {
     defaultCertificate = local.effective_internal_cert_arn
   }]
 
-  gateway_api_ext_alb_listener_configs = var.gateway_api_ext_alb_listener_configs != null ? [for cfg in var.gateway_api_ext_alb_listener_configs : merge(local._listener_config_defaults, cfg)] : local._default_ext_alb_listener_configs
-  gateway_api_ext_nlb_listener_configs = var.gateway_api_ext_nlb_listener_configs != null ? [for cfg in var.gateway_api_ext_nlb_listener_configs : merge(local._listener_config_defaults, cfg)] : local._default_ext_nlb_listener_configs
-  gateway_api_int_alb_listener_configs = var.gateway_api_int_alb_listener_configs != null ? [for cfg in var.gateway_api_int_alb_listener_configs : merge(local._listener_config_defaults, cfg)] : local._default_int_alb_listener_configs
-  gateway_api_int_nlb_listener_configs = var.gateway_api_int_nlb_listener_configs != null ? [for cfg in var.gateway_api_int_nlb_listener_configs : merge(local._listener_config_defaults, cfg)] : local._default_int_nlb_listener_configs
+  gateway_api_ext_alb_listener_configs = [for cfg in coalesce(var.gateway_api_ext_alb_listener_configs, local._default_ext_alb_listener_configs) : merge(local._listener_config_defaults, cfg)]
+  gateway_api_ext_nlb_listener_configs = [for cfg in coalesce(var.gateway_api_ext_nlb_listener_configs, local._default_ext_nlb_listener_configs) : merge(local._listener_config_defaults, cfg)]
+  gateway_api_int_alb_listener_configs = [for cfg in coalesce(var.gateway_api_int_alb_listener_configs, local._default_int_alb_listener_configs) : merge(local._listener_config_defaults, cfg)]
+  gateway_api_int_nlb_listener_configs = [for cfg in coalesce(var.gateway_api_int_nlb_listener_configs, local._default_int_nlb_listener_configs) : merge(local._listener_config_defaults, cfg)]
 }
 
 # CRDs: Gateway API (v1.5.1) + AWS LBC Gateway CRDs (v3.2.1)
