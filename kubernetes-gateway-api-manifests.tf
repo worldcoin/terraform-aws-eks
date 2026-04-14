@@ -34,24 +34,28 @@ locals {
 
   _default_ext_alb_listener_configs = [{
     protocolPort       = "HTTPS:443"
+    alpnPolicy         = "None"
     sslPolicy          = local.gateway_api_ssl_policies[var.external_tls_listener_version]
     defaultCertificate = local.effective_external_cert_arn
   }]
 
   _default_ext_nlb_listener_configs = [{
     protocolPort       = "TLS:443"
+    alpnPolicy         = "None"
     sslPolicy          = local.gateway_api_ssl_policies[var.external_tls_listener_version]
     defaultCertificate = local.effective_external_cert_arn
   }]
 
   _default_int_alb_listener_configs = [{
     protocolPort       = "HTTPS:443"
+    alpnPolicy         = "None"
     sslPolicy          = local.gateway_api_ssl_policies[var.internal_tls_listener_version]
     defaultCertificate = local.effective_internal_cert_arn
   }]
 
   _default_int_nlb_listener_configs = [{
     protocolPort       = "TLS:443"
+    alpnPolicy         = "None"
     sslPolicy          = local.gateway_api_ssl_policies[var.internal_tls_listener_version]
     defaultCertificate = local.effective_internal_cert_arn
   }]
