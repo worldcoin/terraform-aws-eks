@@ -20,6 +20,39 @@ locals {
     for crd in concat(local._gateway_api_crd_docs, local._aws_lbc_crd_docs) :
     format("%s/%s", crd.kind, crd.metadata.name) => crd
   }
+
+  _default_ext_alb_listener_configs = [{
+    protocolPort       = "HTTPS:443"
+    alpnPolicy         = "None"
+    sslPolicy          = local.gateway_api_ssl_policies[var.external_tls_listener_version]
+    defaultCertificate = local.effective_external_cert_arn
+  }]
+
+  _default_ext_nlb_listener_configs = [{
+    protocolPort       = "TLS:443"
+    alpnPolicy         = "None"
+    sslPolicy          = local.gateway_api_ssl_policies[var.external_tls_listener_version]
+    defaultCertificate = local.effective_external_cert_arn
+  }]
+
+  _default_int_alb_listener_configs = [{
+    protocolPort       = "HTTPS:443"
+    alpnPolicy         = "None"
+    sslPolicy          = local.gateway_api_ssl_policies[var.internal_tls_listener_version]
+    defaultCertificate = local.effective_internal_cert_arn
+  }]
+
+  _default_int_nlb_listener_configs = [{
+    protocolPort       = "TLS:443"
+    alpnPolicy         = "None"
+    sslPolicy          = local.gateway_api_ssl_policies[var.internal_tls_listener_version]
+    defaultCertificate = local.effective_internal_cert_arn
+  }]
+
+  gateway_api_ext_alb_listener_configs = coalesce(var.gateway_api_ext_alb_listener_configs, local._default_ext_alb_listener_configs)
+  gateway_api_ext_nlb_listener_configs = coalesce(var.gateway_api_ext_nlb_listener_configs, local._default_ext_nlb_listener_configs)
+  gateway_api_int_alb_listener_configs = coalesce(var.gateway_api_int_alb_listener_configs, local._default_int_alb_listener_configs)
+  gateway_api_int_nlb_listener_configs = coalesce(var.gateway_api_int_nlb_listener_configs, local._default_int_nlb_listener_configs)
 }
 
 # CRDs: Gateway API (v1.5.1) + AWS LBC Gateway CRDs (v3.2.1)
@@ -101,12 +134,7 @@ resource "kubernetes_manifest" "gw_ext_alb_config" {
       scheme                          = "internet-facing"
       securityGroups                  = [for _, id in module.gateway_api_external_alb[local.gateway_api_external_alb_name].sg_ids : id if id != null]
       manageBackendSecurityGroupRules = false
-      listenerConfigurations = [{
-        protocolPort       = "HTTPS:443"
-        alpnPolicy         = "None"
-        sslPolicy          = local.gateway_api_ssl_policies[var.external_tls_listener_version]
-        defaultCertificate = local.effective_external_cert_arn
-      }]
+      listenerConfigurations          = local.gateway_api_ext_alb_listener_configs
     }
   }
 }
@@ -135,24 +163,7 @@ resource "kubernetes_manifest" "gw_ext_alb" {
           name  = local.gateway_api_external_alb_name
         }
       }
-      listeners = [{
-        name     = "https"
-        protocol = "HTTPS"
-        port     = 443
-        tls = {
-          mode = "Terminate"
-          certificateRefs = [{
-            group = ""
-            kind  = "Secret"
-            name  = "default-cert"
-          }]
-        }
-        allowedRoutes = {
-          namespaces = {
-            from = "All"
-          }
-        }
-      }]
+      listeners = var.gateway_api_ext_alb_listeners
     }
   }
 }
@@ -177,12 +188,7 @@ resource "kubernetes_manifest" "gw_ext_nlb_config" {
       scheme                          = "internet-facing"
       securityGroups                  = [module.gateway_api_external_nlb[local.gateway_api_external_nlb_name].sg_nlb_id]
       manageBackendSecurityGroupRules = false
-      listenerConfigurations = [{
-        protocolPort       = "TLS:443"
-        alpnPolicy         = "None"
-        sslPolicy          = local.gateway_api_ssl_policies[var.external_tls_listener_version]
-        defaultCertificate = local.effective_external_cert_arn
-      }]
+      listenerConfigurations          = local.gateway_api_ext_nlb_listener_configs
     }
   }
 }
@@ -211,44 +217,7 @@ resource "kubernetes_manifest" "gw_ext_nlb" {
           name  = local.gateway_api_external_nlb_name
         }
       }
-      listeners = [
-        {
-          name     = "tcp"
-          protocol = "TCP"
-          port     = 80
-          allowedRoutes = {
-            namespaces = {
-              from = "All"
-            }
-            kinds = [{
-              group = "gateway.networking.k8s.io"
-              kind  = "TCPRoute"
-            }]
-          }
-        },
-        {
-          name     = "tls"
-          protocol = "TLS"
-          port     = 443
-          tls = {
-            mode = "Terminate"
-            certificateRefs = [{
-              group = ""
-              kind  = "Secret"
-              name  = "default-cert"
-            }]
-          }
-          allowedRoutes = {
-            namespaces = {
-              from = "All"
-            }
-            kinds = [{
-              group = "gateway.networking.k8s.io"
-              kind  = "TLSRoute"
-            }]
-          }
-        },
-      ]
+      listeners = var.gateway_api_ext_nlb_listeners
     }
   }
 }
@@ -273,12 +242,7 @@ resource "kubernetes_manifest" "gw_int_alb_config" {
       scheme                          = "internal"
       securityGroups                  = [for _, id in module.gateway_api_internal_alb[local.gateway_api_internal_alb_name].sg_ids : id if id != null]
       manageBackendSecurityGroupRules = false
-      listenerConfigurations = [{
-        protocolPort       = "HTTPS:443"
-        alpnPolicy         = "None"
-        sslPolicy          = local.gateway_api_ssl_policies[var.internal_tls_listener_version]
-        defaultCertificate = local.effective_internal_cert_arn
-      }]
+      listenerConfigurations          = local.gateway_api_int_alb_listener_configs
     }
   }
 }
@@ -307,24 +271,7 @@ resource "kubernetes_manifest" "gw_int_alb" {
           name  = local.gateway_api_internal_alb_name
         }
       }
-      listeners = [{
-        name     = "https"
-        protocol = "HTTPS"
-        port     = 443
-        tls = {
-          mode = "Terminate"
-          certificateRefs = [{
-            group = ""
-            kind  = "Secret"
-            name  = "default-cert"
-          }]
-        }
-        allowedRoutes = {
-          namespaces = {
-            from = "All"
-          }
-        }
-      }]
+      listeners = var.gateway_api_int_alb_listeners
     }
   }
 }
@@ -349,12 +296,7 @@ resource "kubernetes_manifest" "gw_int_nlb_config" {
       scheme                          = "internal"
       securityGroups                  = [module.gateway_api_internal_nlb[local.gateway_api_internal_nlb_name].sg_nlb_id]
       manageBackendSecurityGroupRules = false
-      listenerConfigurations = [{
-        protocolPort       = "TLS:443"
-        alpnPolicy         = "None"
-        sslPolicy          = local.gateway_api_ssl_policies[var.internal_tls_listener_version]
-        defaultCertificate = local.effective_internal_cert_arn
-      }]
+      listenerConfigurations          = local.gateway_api_int_nlb_listener_configs
     }
   }
 }
@@ -383,44 +325,7 @@ resource "kubernetes_manifest" "gw_int_nlb" {
           name  = local.gateway_api_internal_nlb_name
         }
       }
-      listeners = [
-        {
-          name     = "tcp"
-          protocol = "TCP"
-          port     = 80
-          allowedRoutes = {
-            namespaces = {
-              from = "All"
-            }
-            kinds = [{
-              group = "gateway.networking.k8s.io"
-              kind  = "TCPRoute"
-            }]
-          }
-        },
-        {
-          name     = "tls"
-          protocol = "TLS"
-          port     = 443
-          tls = {
-            mode = "Terminate"
-            certificateRefs = [{
-              group = ""
-              kind  = "Secret"
-              name  = "default-cert"
-            }]
-          }
-          allowedRoutes = {
-            namespaces = {
-              from = "All"
-            }
-            kinds = [{
-              group = "gateway.networking.k8s.io"
-              kind  = "TLSRoute"
-            }]
-          }
-        },
-      ]
+      listeners = var.gateway_api_int_nlb_listeners
     }
   }
 }
