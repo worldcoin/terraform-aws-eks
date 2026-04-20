@@ -46,7 +46,7 @@ resource "aws_iam_role_policy_attachment" "node" {
     "AmazonEC2ContainerRegistryReadOnly",
     "AmazonEKS_CNI_Policy",
     "AmazonSSMManagedInstanceCore",
-    "service-role/AmazonEBSCSIDriverPolicy",
+    "AmazonEBSCSIDriverPolicyV2",
   ])
 
   policy_arn = "arn:aws:iam::aws:policy/${each.value}"
