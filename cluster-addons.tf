@@ -26,8 +26,8 @@ locals {
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html
   # aws eks describe-addon-versions --addon-name aws-ebs-csi-driver | jq '.addons[0].addonVersions[0]'
   ebs_csi_driver_version = {
-    "1.32" = "v1.48.0-eksbuild.2"
-    "1.33" = "v1.48.0-eksbuild.2"
+    "1.32" = "v1.58.0-eksbuild.1"
+    "1.33" = "v1.58.0-eksbuild.1"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/workloads-add-ons-available-eks.html#addons-csi-snapshot-controller
