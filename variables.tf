@@ -436,7 +436,7 @@ variable "additional_open_ports" {
 variable "drop_invalid_header_fields" {
   description = "Drop invalid header fields"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "wafv2_arn" {
