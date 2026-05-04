@@ -5,6 +5,8 @@ locals {
   vpc_cni_version = {
     "1.32" = "v1.20.1-eksbuild.3"
     "1.33" = "v1.20.1-eksbuild.3"
+    "1.34" = "v1.20.5-eksbuild.1"
+    "1.35" = "v1.21.1-eksbuild.1"
   }
 
   # CoreDNS version deployed with each Amazon EKS supported cluster version
@@ -13,6 +15,8 @@ locals {
   coredns_version = {
     "1.32" = "v1.11.4-eksbuild.22"
     "1.33" = "v1.11.4-eksbuild.22"
+    "1.34" = "v1.12.4-eksbuild.10"
+    "1.35" = "v1.13.2-eksbuild.4"
   }
 
   # Latest available kube-proxy container image version for each Amazon EKS cluster version
@@ -21,6 +25,8 @@ locals {
   kube_proxy_version = {
     "1.32" = "v1.32.6-eksbuild.8"
     "1.33" = "v1.32.6-eksbuild.8"
+    "1.34" = "v1.34.6-eksbuild.2"
+    "1.35" = "v1.35.3-eksbuild.2"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html
@@ -28,6 +34,8 @@ locals {
   ebs_csi_driver_version = {
     "1.32" = "v1.58.0-eksbuild.1"
     "1.33" = "v1.58.0-eksbuild.1"
+    "1.34" = "v1.59.0-eksbuild.1"
+    "1.35" = "v1.59.0-eksbuild.1"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/workloads-add-ons-available-eks.html#addons-csi-snapshot-controller
@@ -36,6 +44,8 @@ locals {
   snapshot_controller = {
     "1.32" = "v8.3.0-eksbuild.1"
     "1.33" = "v8.3.0-eksbuild.1"
+    "1.34" = "v8.5.0-eksbuild.4"
+    "1.35" = "v8.5.0-eksbuild.4"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-agent-setup.html
@@ -43,6 +53,8 @@ locals {
   eks_pod_identity_agent_version = {
     "1.32" = "v1.3.8-eksbuild.2"
     "1.33" = "v1.3.8-eksbuild.2"
+    "1.34" = "v1.3.10-eksbuild.3"
+    "1.35" = "v1.3.10-eksbuild.3"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/node-health.html
@@ -50,6 +62,8 @@ locals {
   eks_node_monitoring_agent_version = {
     "1.32" = "v1.4.0-eksbuild.2"
     "1.33" = "v1.4.0-eksbuild.2"
+    "1.34" = "v1.6.4-eksbuild.1"
+    "1.35" = "v1.6.4-eksbuild.1"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/s3-csi.html#s3-install-driver
@@ -57,6 +71,8 @@ locals {
   mountpoint_s3_csi_version = {
     "1.32" = "v2.0.0-eksbuild.1"
     "1.33" = "v2.0.0-eksbuild.1"
+    "1.34" = "v2.5.0-eksbuild.1"
+    "1.35" = "v2.5.0-eksbuild.1"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
@@ -64,6 +80,8 @@ locals {
   metrcis_server_version = {
     "1.32" = "v0.8.0-eksbuild.2"
     "1.33" = "v0.8.0-eksbuild.2"
+    "1.34" = "v0.8.1-eksbuild.6"
+    "1.35" = "v0.8.1-eksbuild.6"
   }
 }
 
