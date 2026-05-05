@@ -33,7 +33,11 @@ variable "region" {
 variable "cluster_version" {
   description = "The Kubernetes version to use for the cluster."
   type        = string
-  default     = "1.33"
+  default     = "1.35"
+  validation {
+    condition     = contains(["1.33", "1.34", "1.35"], var.cluster_version)
+    error_message = "Supported Kubernetes versions are: 1.33, 1.34, 1.35."
+  }
 }
 
 variable "vpc_config" {
