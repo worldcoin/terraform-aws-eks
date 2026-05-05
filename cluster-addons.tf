@@ -3,6 +3,7 @@ locals {
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
   # aws eks describe-addon-versions --addon-name vpc-cni --region us-east-1 --output json| jq '.addons[0].addonVersions[0]'
   vpc_cni_version = {
+    "1.32" = "v1.20.1-eksbuild.3"
     "1.33" = "v1.20.1-eksbuild.3"
     "1.34" = "v1.20.5-eksbuild.1"
     "1.35" = "v1.21.1-eksbuild.1"
@@ -12,6 +13,7 @@ locals {
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html
   # aws eks describe-addon-versions --addon-name coredns | jq '.addons[0].addonVersions[0]'
   coredns_version = {
+    "1.32" = "v1.11.4-eksbuild.22"
     "1.33" = "v1.11.4-eksbuild.22"
     "1.34" = "v1.12.4-eksbuild.10"
     "1.35" = "v1.13.2-eksbuild.4"
@@ -21,6 +23,7 @@ locals {
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-kube-proxy.html
   # aws eks describe-addon-versions --addon-name kube-proxy | jq '.addons[0].addonVersions[0]'
   kube_proxy_version = {
+    "1.32" = "v1.32.6-eksbuild.8"
     "1.33" = "v1.32.6-eksbuild.8"
     "1.34" = "v1.34.6-eksbuild.2"
     "1.35" = "v1.35.3-eksbuild.2"
@@ -29,6 +32,7 @@ locals {
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html
   # aws eks describe-addon-versions --addon-name aws-ebs-csi-driver | jq '.addons[0].addonVersions[0]'
   ebs_csi_driver_version = {
+    "1.32" = "v1.58.0-eksbuild.1"
     "1.33" = "v1.58.0-eksbuild.1"
     "1.34" = "v1.59.0-eksbuild.1"
     "1.35" = "v1.59.0-eksbuild.1"
@@ -38,6 +42,7 @@ locals {
   # https://docs.aws.amazon.com/eks/latest/userguide/csi-snapshot-controller.html
   # aws eks describe-addon-versions --region us-east-1 --addon-name snapshot-controller | jq '.addons[0].addonVersions[0]'
   snapshot_controller = {
+    "1.32" = "v8.3.0-eksbuild.1"
     "1.33" = "v8.3.0-eksbuild.1"
     "1.34" = "v8.5.0-eksbuild.4"
     "1.35" = "v8.5.0-eksbuild.4"
@@ -46,6 +51,7 @@ locals {
   # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-agent-setup.html
   # aws eks describe-addon-versions --addon-name eks-pod-identity-agent | jq '.addons[0].addonVersions[0]'
   eks_pod_identity_agent_version = {
+    "1.32" = "v1.3.8-eksbuild.2"
     "1.33" = "v1.3.8-eksbuild.2"
     "1.34" = "v1.3.10-eksbuild.3"
     "1.35" = "v1.3.10-eksbuild.3"
@@ -54,6 +60,7 @@ locals {
   # https://docs.aws.amazon.com/eks/latest/userguide/node-health.html
   # aws eks describe-addon-versions --addon-name eks-node-monitoring-agent | jq '.addons[0].addonVersions[0]'
   eks_node_monitoring_agent_version = {
+    "1.32" = "v1.4.0-eksbuild.2"
     "1.33" = "v1.4.0-eksbuild.2"
     "1.34" = "v1.6.4-eksbuild.1"
     "1.35" = "v1.6.4-eksbuild.1"
@@ -62,6 +69,7 @@ locals {
   # https://docs.aws.amazon.com/eks/latest/userguide/s3-csi.html#s3-install-driver
   # aws eks describe-addon-versions --addon-name aws-mountpoint-s3-csi-driver --region us-east-1 --output json| jq '.addons[0].addonVersions[0]'
   mountpoint_s3_csi_version = {
+    "1.32" = "v2.0.0-eksbuild.1"
     "1.33" = "v2.0.0-eksbuild.1"
     "1.34" = "v2.5.0-eksbuild.1"
     "1.35" = "v2.5.0-eksbuild.1"
@@ -70,6 +78,7 @@ locals {
   # https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
   # aws eks describe-addon-versions --addon-name metrics-server --region us-east-1 --output json| jq '.addons[0].addonVersions[0]'
   metrcis_server_version = {
+    "1.32" = "v0.8.0-eksbuild.2"
     "1.33" = "v0.8.0-eksbuild.2"
     "1.34" = "v0.8.1-eksbuild.6"
     "1.35" = "v0.8.1-eksbuild.6"
