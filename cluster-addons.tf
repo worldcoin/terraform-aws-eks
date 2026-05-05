@@ -5,7 +5,7 @@ locals {
   vpc_cni_version = {
     "1.32" = "v1.20.1-eksbuild.3"
     "1.33" = "v1.20.1-eksbuild.3"
-    "1.34" = "v1.20.5-eksbuild.1"
+    "1.34" = "v1.21.1-eksbuild.1"
     "1.35" = "v1.21.1-eksbuild.1"
   }
 
@@ -15,7 +15,7 @@ locals {
   coredns_version = {
     "1.32" = "v1.11.4-eksbuild.22"
     "1.33" = "v1.11.4-eksbuild.22"
-    "1.34" = "v1.12.4-eksbuild.10"
+    "1.34" = "v1.13.2-eksbuild.4"
     "1.35" = "v1.13.2-eksbuild.4"
   }
 
