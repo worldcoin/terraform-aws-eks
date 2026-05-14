@@ -1072,7 +1072,7 @@ variable "gateway_api_lb_name_prefix" {
   default     = null
 
   validation {
-    condition     = var.gateway_api_lb_name_prefix == null || (length(coalesce(var.gateway_api_lb_name_prefix, "")) <= 21 && can(regex("^[a-z0-9]([a-z0-9-]*[a-z0-9])?$", var.gateway_api_lb_name_prefix)))
+    condition     = var.gateway_api_lb_name_prefix == null || try(length(var.gateway_api_lb_name_prefix) <= 21 && can(regex("^[a-z0-9]([a-z0-9-]*[a-z0-9])?$", var.gateway_api_lb_name_prefix)), false)
     error_message = "gateway_api_lb_name_prefix must be <= 21 characters (to fit 32-char LB name limit with suffix) and contain only lowercase alphanumeric characters or hyphens."
   }
 }
