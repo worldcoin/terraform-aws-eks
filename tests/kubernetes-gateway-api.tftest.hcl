@@ -360,6 +360,21 @@ run "gateway_api_k8s_manifests_internal_enabled" {
 }
 
 # =============================================================================
+# Test: gateway_api_lb_name_prefix empty string fails validation (not eval error)
+# =============================================================================
+run "gateway_api_lb_name_prefix_empty_string_fails_validation" {
+  command = plan
+
+  variables {
+    gateway_api_lb_name_prefix = ""
+  }
+
+  expect_failures = [
+    var.gateway_api_lb_name_prefix,
+  ]
+}
+
+# =============================================================================
 # Test: SSL policy derived from TLS listener version
 # =============================================================================
 run "gateway_api_ssl_policy_mapping" {
