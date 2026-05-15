@@ -4,9 +4,9 @@ locals {
   gateway_api_internal_alb_sg_rules = var.gateway_api_internal_alb_sg_rules != null ? var.gateway_api_internal_alb_sg_rules : concat(
     [
       {
-        description = "Allow HTTPS from VPC"
+        description = "Allow HTTPS from all internal networks"
         port        = 443
-        cidr_blocks = [data.aws_vpc.cluster_vpc.cidr_block]
+        cidr_blocks = ["10.0.0.0/8"]
       },
     ],
     data.aws_vpc.cluster_vpc.ipv6_cidr_block != "" ? [
