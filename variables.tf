@@ -869,7 +869,7 @@ variable "gateway_api_external_alb_sg_rules" {
 }
 
 variable "gateway_api_internal_alb_sg_rules" {
-  description = "Override LB security group ingress rules for the internal Gateway API ALB. When null, allows HTTPS from VPC CIDR."
+  description = "Override LB security group ingress rules for the internal Gateway API ALB. When null, allows HTTPS from all internal networks (10.0.0.0/8)."
   type        = any
   default     = null
 
@@ -897,7 +897,7 @@ variable "gateway_api_external_nlb_sg_rules" {
 }
 
 variable "gateway_api_internal_nlb_sg_rules" {
-  description = "Override LB security group ingress rules for the internal Gateway API NLB. When null, allows ports 80 and 443 from VPC CIDR."
+  description = "Override LB security group ingress rules for the internal Gateway API NLB. When null, allows ports 80 and 443 from all internal networks (10.0.0.0/8)."
   type        = any
   default     = null
 
