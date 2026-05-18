@@ -1,7 +1,7 @@
 module "datadog_monitoring_for_user" {
   count = var.monitoring_user_workload_notification_channel != "" ? 1 : 0
 
-  source = "git@github.com:worldcoin/terraform-datadog-kubernetes?ref=v1.2.3"
+  source = "git::https://github.com/worldcoin/terraform-datadog-kubernetes?ref=v1.2.3"
 
   notification_channel = var.monitoring_user_workload_notification_channel
   service              = format("EKS %s", var.cluster_name)
