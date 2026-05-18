@@ -4,24 +4,24 @@ locals {
   gateway_api_internal_nlb_sg_rules = var.gateway_api_internal_nlb_sg_rules != null ? var.gateway_api_internal_nlb_sg_rules : concat(
     [
       {
-        description = "allow http from VPC"
+        description = "Allow HTTP from all internal networks"
         port        = 80
-        cidr_blocks = [data.aws_vpc.cluster_vpc.cidr_block]
+        cidr_blocks = ["10.0.0.0/8"]
       },
       {
-        description = "allow https from VPC"
+        description = "Allow HTTPS from all internal networks"
         port        = 443
-        cidr_blocks = [data.aws_vpc.cluster_vpc.cidr_block]
+        cidr_blocks = ["10.0.0.0/8"]
       },
     ],
     data.aws_vpc.cluster_vpc.ipv6_cidr_block != "" ? [
       {
-        description      = "allow http from VPC (IPv6)"
+        description      = "Allow HTTP from VPC (IPv6)"
         port             = 80
         ipv6_cidr_blocks = [data.aws_vpc.cluster_vpc.ipv6_cidr_block]
       },
       {
-        description      = "allow https from VPC (IPv6)"
+        description      = "Allow HTTPS from VPC (IPv6)"
         port             = 443
         ipv6_cidr_blocks = [data.aws_vpc.cluster_vpc.ipv6_cidr_block]
       },
