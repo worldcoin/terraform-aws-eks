@@ -53,6 +53,12 @@ variable "vpc_config" {
   }
 }
 
+variable "use_private_subnets" {
+  description = "Set to `true` to place EKS node groups in private subnets, `false` to use public subnets."
+  type        = bool
+  default     = true
+}
+
 variable "vpc_cni_version_override" {
   description = "The version of the VPC CNI plugin to use. If not specified, the default version for the cluster version will be used."
   type        = string
