@@ -623,14 +623,14 @@ To remove the cluster you have to:
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_alb"></a> [alb](#module\_alb) | git@github.com:worldcoin/terraform-aws-alb.git | v1.5.1 |
-| <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | git@github.com:worldcoin/terraform-datadog-kubernetes | v1.2.3 |
-| <a name="module_datadog_monitoring_for_user"></a> [datadog\_monitoring\_for\_user](#module\_datadog\_monitoring\_for\_user) | git@github.com:worldcoin/terraform-datadog-kubernetes | v1.2.3 |
-| <a name="module_gateway_api_external_alb"></a> [gateway\_api\_external\_alb](#module\_gateway\_api\_external\_alb) | git@github.com:worldcoin/terraform-aws-alb.git | v1.5.1 |
-| <a name="module_gateway_api_external_nlb"></a> [gateway\_api\_external\_nlb](#module\_gateway\_api\_external\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v1.4.0 |
-| <a name="module_gateway_api_internal_alb"></a> [gateway\_api\_internal\_alb](#module\_gateway\_api\_internal\_alb) | git@github.com:worldcoin/terraform-aws-alb.git | v1.5.1 |
-| <a name="module_gateway_api_internal_nlb"></a> [gateway\_api\_internal\_nlb](#module\_gateway\_api\_internal\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v1.4.0 |
-| <a name="module_nlb"></a> [nlb](#module\_nlb) | git@github.com:worldcoin/terraform-aws-nlb.git | v1.4.0 |
+| <a name="module_alb"></a> [alb](#module\_alb) | <git@github.com>:worldcoin/terraform-aws-alb.git | v1.5.1 |
+| <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | <git@github.com>:worldcoin/terraform-datadog-kubernetes | v1.2.3 |
+| <a name="module_datadog_monitoring_for_user"></a> [datadog\_monitoring\_for\_user](#module\_datadog\_monitoring\_for\_user) | <git@github.com>:worldcoin/terraform-datadog-kubernetes | v1.2.3 |
+| <a name="module_gateway_api_external_alb"></a> [gateway\_api\_external\_alb](#module\_gateway\_api\_external\_alb) | <git@github.com>:worldcoin/terraform-aws-alb.git | v1.5.1 |
+| <a name="module_gateway_api_external_nlb"></a> [gateway\_api\_external\_nlb](#module\_gateway\_api\_external\_nlb) | <git@github.com>:worldcoin/terraform-aws-nlb.git | v1.4.0 |
+| <a name="module_gateway_api_internal_alb"></a> [gateway\_api\_internal\_alb](#module\_gateway\_api\_internal\_alb) | <git@github.com>:worldcoin/terraform-aws-alb.git | v1.5.1 |
+| <a name="module_gateway_api_internal_nlb"></a> [gateway\_api\_internal\_nlb](#module\_gateway\_api\_internal\_nlb) | <git@github.com>:worldcoin/terraform-aws-nlb.git | v1.4.0 |
+| <a name="module_nlb"></a> [nlb](#module\_nlb) | <git@github.com>:worldcoin/terraform-aws-nlb.git | v1.4.0 |
 
 ## Resources
 
@@ -856,7 +856,7 @@ To remove the cluster you have to:
 | <a name="input_vpc_cni_enable_network_policy"></a> [vpc\_cni\_enable\_network\_policy](#input\_vpc\_cni\_enable\_network\_policy) | Enable Kubernetes NetworkPolicy enforcement via the VPC CNI node agent | `bool` | `false` | no |
 | <a name="input_vpc_cni_enable_pod_eni"></a> [vpc\_cni\_enable\_pod\_eni](#input\_vpc\_cni\_enable\_pod\_eni) | Enable pod ENI support | `bool` | `false` | no |
 | <a name="input_vpc_cni_enable_prefix_delegation"></a> [vpc\_cni\_enable\_prefix\_delegation](#input\_vpc\_cni\_enable\_prefix\_delegation) | Enable prefix delegation for IPv6, allocate IPs in /28 blocks (instead of all at once) | `bool` | `false` | no |
-| <a name="input_vpc_cni_external_snat"></a> [vpc\_cni\_external\_snat](#input\_vpc\_cni\_external\_snat) | Needed to enable cross-vpc pod-to-pod communication - see: https://github.com/aws/amazon-vpc-cni-k8s?tab=readme-ov-file#aws_vpc_k8s_cni_externalsnat | `string` | `false` | no |
+| <a name="input_vpc_cni_external_snat"></a> [vpc\_cni\_external\_snat](#input\_vpc\_cni\_external\_snat) | Needed to enable cross-vpc pod-to-pod communication - see: <https://github.com/aws/amazon-vpc-cni-k8s?tab=readme-ov-file#aws_vpc_k8s_cni_externalsnat> | `string` | `false` | no |
 | <a name="input_vpc_cni_pod_security_group_enforcing_mode"></a> [vpc\_cni\_pod\_security\_group\_enforcing\_mode](#input\_vpc\_cni\_pod\_security\_group\_enforcing\_mode) | Set pod security group enforcing mode | `string` | `"standard"` | no |
 | <a name="input_vpc_cni_version_override"></a> [vpc\_cni\_version\_override](#input\_vpc\_cni\_version\_override) | The version of the VPC CNI plugin to use. If not specified, the default version for the cluster version will be used. | `string` | `""` | no |
 | <a name="input_vpc_cni_warm_eni_target"></a> [vpc\_cni\_warm\_eni\_target](#input\_vpc\_cni\_warm\_eni\_target) | Number of ENIs to keep warm for each node to speed up pod scheduling | `string` | `"1"` | no |
