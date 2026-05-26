@@ -233,6 +233,17 @@ variable "alb_logs_bucket_id" {
   }
 }
 
+variable "vector_s3_bucket_arns" {
+  description = "S3 bucket ARNs Vector is allowed to write logs to. Empty disables Vector IAM role and pod identity association."
+  type        = list(string)
+  default     = ["arn:aws:s3:::wld-log-archive"]
+
+  validation {
+    condition     = alltrue([for arn in var.vector_s3_bucket_arns : can(regex("^arn:aws:s3:::[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$", arn))])
+    error_message = "Vector S3 bucket ARNs must be valid S3 bucket ARNs."
+  }
+}
+
 variable "traefik_nlb_service_ports" {
   description = "(Deprecated: use internal_nlb_service_ports) List of additional ports for traefik k8s service"
   type = list(object({
