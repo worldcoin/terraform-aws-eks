@@ -66,6 +66,7 @@ resource "aws_cloudwatch_event_rule" "spot_aws_ec2" {
       "EC2 Spot Instance Interruption Warning",
       "EC2 Instance Rebalance Recommendation",
       "EC2 Instance State-change Notification",
+      "EC2 Capacity Reservation Instance Interruption Warning",
     ]
   })
 }
