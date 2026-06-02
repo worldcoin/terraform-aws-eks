@@ -30,5 +30,10 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = ">= 5.8"
     }
+
+    time = {
+      source  = "hashicorp/time"
+      version = ">= 0.9"
+    }
   }
 }
