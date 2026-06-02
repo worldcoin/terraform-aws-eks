@@ -6,16 +6,12 @@
 # Each cluster gets its own Firehose delivery stream and CW Logs subscription
 # filter; Vector writes the merged stream to S3 as Parquet.
 
-locals {
-  vector_audit_enabled = var.vector_audit_enabled
-}
-
 # ---------------------------------------------------------------------------
 # Firehose IAM role
 # ---------------------------------------------------------------------------
 
 data "aws_iam_policy_document" "firehose_eks_audit_assume_role" {
-  count = local.vector_audit_enabled ? 1 : 0
+  count = var.vector_audit_enabled ? 1 : 0
 
   statement {
     actions = ["sts:AssumeRole"]
@@ -41,14 +37,14 @@ data "aws_iam_policy_document" "firehose_eks_audit_assume_role" {
 }
 
 resource "aws_iam_role" "firehose_eks_audit" {
-  count              = local.vector_audit_enabled ? 1 : 0
+  count              = var.vector_audit_enabled ? 1 : 0
   name               = trimsuffix(substr("firehose-eks-audit-${var.cluster_name}", 0, 64), "-")
   path               = "/system/"
   assume_role_policy = data.aws_iam_policy_document.firehose_eks_audit_assume_role[0].json
 }
 
 data "aws_iam_policy_document" "firehose_eks_audit" {
-  count = local.vector_audit_enabled ? 1 : 0
+  count = var.vector_audit_enabled ? 1 : 0
 
   statement {
     # S3 backup for failed deliveries only.
@@ -68,7 +64,7 @@ data "aws_iam_policy_document" "firehose_eks_audit" {
 }
 
 resource "aws_iam_role_policy" "firehose_eks_audit" {
-  count  = local.vector_audit_enabled ? 1 : 0
+  count  = var.vector_audit_enabled ? 1 : 0
   name   = trimsuffix(substr("firehose-eks-audit-${var.cluster_name}", 0, 64), "-")
   role   = aws_iam_role.firehose_eks_audit[0].name
   policy = data.aws_iam_policy_document.firehose_eks_audit[0].json
@@ -79,7 +75,7 @@ resource "aws_iam_role_policy" "firehose_eks_audit" {
 # ---------------------------------------------------------------------------
 
 resource "aws_kinesis_firehose_delivery_stream" "eks_audit" {
-  count       = local.vector_audit_enabled ? 1 : 0
+  count       = var.vector_audit_enabled ? 1 : 0
   name        = "${var.cluster_name}-eks-audit"
   destination = "http_endpoint"
 
@@ -120,7 +116,7 @@ resource "aws_kinesis_firehose_delivery_stream" "eks_audit" {
 # ---------------------------------------------------------------------------
 
 data "aws_iam_policy_document" "cw_logs_firehose_assume_role" {
-  count = local.vector_audit_enabled ? 1 : 0
+  count = var.vector_audit_enabled ? 1 : 0
 
   statement {
     actions = ["sts:AssumeRole"]
@@ -150,14 +146,14 @@ data "aws_iam_policy_document" "cw_logs_firehose_assume_role" {
 }
 
 resource "aws_iam_role" "cw_logs_to_firehose_eks_audit" {
-  count              = local.vector_audit_enabled ? 1 : 0
+  count              = var.vector_audit_enabled ? 1 : 0
   name               = trimsuffix(substr("cw-logs-firehose-eks-audit-${var.cluster_name}", 0, 64), "-")
   path               = "/system/"
   assume_role_policy = data.aws_iam_policy_document.cw_logs_firehose_assume_role[0].json
 }
 
 data "aws_iam_policy_document" "cw_logs_firehose_eks_audit" {
-  count = local.vector_audit_enabled ? 1 : 0
+  count = var.vector_audit_enabled ? 1 : 0
 
   statement {
     actions   = ["firehose:PutRecord"]
@@ -166,7 +162,7 @@ data "aws_iam_policy_document" "cw_logs_firehose_eks_audit" {
 }
 
 resource "aws_iam_role_policy" "cw_logs_to_firehose_eks_audit" {
-  count  = local.vector_audit_enabled ? 1 : 0
+  count  = var.vector_audit_enabled ? 1 : 0
   name   = trimsuffix(substr("cw-logs-firehose-eks-audit-${var.cluster_name}", 0, 64), "-")
   role   = aws_iam_role.cw_logs_to_firehose_eks_audit[0].name
   policy = data.aws_iam_policy_document.cw_logs_firehose_eks_audit[0].json
@@ -184,7 +180,7 @@ resource "aws_iam_role_policy" "cw_logs_to_firehose_eks_audit" {
 # ---------------------------------------------------------------------------
 
 resource "time_sleep" "wait_firehose_eks_audit_active" {
-  count           = local.vector_audit_enabled ? 1 : 0
+  count           = var.vector_audit_enabled ? 1 : 0
   create_duration = "30s"
   depends_on      = [aws_kinesis_firehose_delivery_stream.eks_audit]
 }
@@ -194,7 +190,7 @@ resource "time_sleep" "wait_firehose_eks_audit_active" {
 # ---------------------------------------------------------------------------
 
 resource "aws_cloudwatch_log_subscription_filter" "eks_audit" {
-  count           = local.vector_audit_enabled ? 1 : 0
+  count           = var.vector_audit_enabled ? 1 : 0
   name            = "eks-audit-to-firehose"
   log_group_name  = aws_cloudwatch_log_group.this.name
   destination_arn = aws_kinesis_firehose_delivery_stream.eks_audit[0].arn
