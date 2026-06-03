@@ -244,6 +244,57 @@ variable "vector_s3_bucket_arns" {
   }
 }
 
+variable "vector_audit_enabled" {
+  description = "Create per-cluster EKS audit-log pipeline (Firehose + CW Logs subscription filter → central Vector aggregator). Requires vector_audit_firehose_access_key."
+  type        = bool
+  default     = false
+}
+
+variable "vector_audit_org" {
+  description = "Organisation identifier written into the S3 key prefix (kubernetes-audit/org=<org>/...)."
+  type        = string
+  default     = "tfh"
+}
+
+variable "vector_audit_endpoint_url" {
+  description = "HTTPS URL of the central Vector aggregator's aws_kinesis_firehose source."
+  type        = string
+  default     = "https://vector.worldcoin.dev/"
+
+  validation {
+    condition     = can(regex("^https://", var.vector_audit_endpoint_url))
+    error_message = "vector_audit_endpoint_url must start with https://."
+  }
+}
+
+variable "vector_audit_firehose_access_key" {
+  description = "Shared access key sent by Firehose in X-Amz-Firehose-Access-Key; validated by Vector's aws_kinesis_firehose source."
+  type        = string
+  sensitive   = true
+  default     = null
+
+  validation {
+    condition     = var.vector_audit_firehose_access_key == null || var.vector_audit_firehose_access_key != ""
+    error_message = "vector_audit_firehose_access_key must not be an empty string; omit it (null) or provide a non-empty value."
+  }
+}
+
+variable "vector_audit_s3_backup_bucket" {
+  description = "S3 bucket name for Firehose FailedDataOnly backup (failed deliveries to Vector)."
+  type        = string
+  default     = "wld-log-archive"
+
+  validation {
+    condition = (
+      can(regex("^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$", var.vector_audit_s3_backup_bucket)) &&
+      !strcontains(var.vector_audit_s3_backup_bucket, "..") &&
+      !startswith(var.vector_audit_s3_backup_bucket, "xn--") &&
+      !endswith(var.vector_audit_s3_backup_bucket, "-s3alias")
+    )
+    error_message = "vector_audit_s3_backup_bucket must be a valid S3 bucket name."
+  }
+}
+
 variable "traefik_nlb_service_ports" {
   description = "(Deprecated: use internal_nlb_service_ports) List of additional ports for traefik k8s service"
   type = list(object({
