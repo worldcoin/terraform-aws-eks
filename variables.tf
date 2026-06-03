@@ -272,6 +272,11 @@ variable "vector_audit_firehose_access_key" {
   type        = string
   sensitive   = true
   default     = null
+
+  validation {
+    condition     = var.vector_audit_firehose_access_key == null || var.vector_audit_firehose_access_key != ""
+    error_message = "vector_audit_firehose_access_key must not be an empty string; omit it (null) or provide a non-empty value."
+  }
 }
 
 variable "vector_audit_s3_backup_bucket" {

@@ -10,24 +10,11 @@ mock_provider "kubernetes" {
 
 mock_provider "time" {}
 
-run "vector_audit_disabled_by_default" {
-  command = plan
-
-  assert {
-    condition     = length(aws_kinesis_firehose_delivery_stream.eks_audit) == 0
-    error_message = "Firehose delivery stream should NOT be created by default."
-  }
-
-  assert {
-    condition     = length(aws_cloudwatch_log_subscription_filter.eks_audit) == 0
-    error_message = "CW Logs subscription filter should NOT be created by default."
-  }
-}
-
 run "vector_audit_enabled_with_access_key" {
   command = plan
 
   variables {
+    vector_audit_enabled             = true
     vector_audit_firehose_access_key = "test-access-key-32-chars-long-xx"
   }
 
@@ -52,6 +39,24 @@ run "vector_audit_enabled_with_access_key" {
   }
 }
 
+run "vector_audit_disabled_by_default" {
+  command = plan
+
+  variables {
+    vector_audit_enabled = false
+  }
+
+  assert {
+    condition     = length(aws_kinesis_firehose_delivery_stream.eks_audit) == 0
+    error_message = "Firehose delivery stream should NOT be created by default."
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_log_subscription_filter.eks_audit) == 0
+    error_message = "CW Logs subscription filter should NOT be created by default."
+  }
+}
+
 run "vector_audit_empty_access_key_fails" {
   command = plan
 
@@ -60,7 +65,7 @@ run "vector_audit_empty_access_key_fails" {
   }
 
   expect_failures = [
-    aws_kinesis_firehose_delivery_stream.eks_audit,
+    var.vector_audit_firehose_access_key,
   ]
 }
 
@@ -87,6 +92,7 @@ run "vector_audit_custom_endpoint" {
   command = plan
 
   variables {
+    vector_audit_enabled             = true
     vector_audit_firehose_access_key = "test-access-key-32-chars-long-xx"
     vector_audit_endpoint_url        = "https://vector-custom.example.com/"
   }

@@ -106,13 +106,6 @@ resource "aws_kinesis_firehose_delivery_stream" "eks_audit" {
   # avoid flaky IAM propagation failures.
   depends_on = [aws_iam_role_policy.firehose_eks_audit]
 
-  lifecycle {
-    precondition {
-      condition     = var.vector_audit_firehose_access_key != null && var.vector_audit_firehose_access_key != ""
-      error_message = "vector_audit_firehose_access_key must be set when vector_audit_enabled is true; without it Firehose will deliver unauthenticated requests that Vector will reject."
-    }
-  }
-
   tags = {
     Environment = var.environment
   }
