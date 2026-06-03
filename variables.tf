@@ -247,7 +247,7 @@ variable "vector_s3_bucket_arns" {
 variable "vector_audit_enabled" {
   description = "Create per-cluster EKS audit-log pipeline (Firehose + CW Logs subscription filter → central Vector aggregator). Requires vector_audit_firehose_access_key."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "vector_audit_org" {

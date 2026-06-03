@@ -10,12 +10,18 @@ mock_provider "kubernetes" {
 
 mock_provider "time" {}
 
-run "vector_audit_enabled_by_default_without_key_fails" {
+run "vector_audit_disabled_by_default" {
   command = plan
 
-  expect_failures = [
-    aws_kinesis_firehose_delivery_stream.eks_audit,
-  ]
+  assert {
+    condition     = length(aws_kinesis_firehose_delivery_stream.eks_audit) == 0
+    error_message = "Firehose delivery stream should NOT be created by default."
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_log_subscription_filter.eks_audit) == 0
+    error_message = "CW Logs subscription filter should NOT be created by default."
+  }
 }
 
 run "vector_audit_enabled_with_access_key" {
