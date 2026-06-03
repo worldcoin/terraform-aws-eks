@@ -245,9 +245,15 @@ variable "vector_s3_bucket_arns" {
 }
 
 variable "vector_audit_enabled" {
-  description = "Create per-cluster EKS audit-log pipeline (Firehose + CW Logs subscription filter → central Vector aggregator)."
+  description = "Create per-cluster EKS audit-log pipeline (Firehose + CW Logs subscription filter → central Vector aggregator). Requires vector_audit_firehose_access_key."
   type        = bool
   default     = true
+}
+
+variable "vector_audit_org" {
+  description = "Organisation identifier written into the S3 key prefix (kubernetes-audit/org=<org>/...)."
+  type        = string
+  default     = "tfh"
 }
 
 variable "vector_audit_endpoint_url" {
@@ -262,10 +268,9 @@ variable "vector_audit_endpoint_url" {
 }
 
 variable "vector_audit_firehose_access_key" {
-  description = "Shared access key sent by Firehose in X-Amz-Firehose-Access-Key; validated by Vector's aws_kinesis_firehose source."
+  description = "Shared access key sent by Firehose in X-Amz-Firehose-Access-Key; validated by Vector's aws_kinesis_firehose source. Required when vector_audit_enabled is true."
   type        = string
   sensitive   = true
-  default     = null
 }
 
 variable "vector_audit_s3_backup_bucket" {

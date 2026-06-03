@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "firehose_eks_audit_assume_role" {
 
 resource "aws_iam_role" "firehose_eks_audit" {
   count              = var.vector_audit_enabled ? 1 : 0
-  name               = trimsuffix(substr("firehose-eks-audit-${var.cluster_name}", 0, 64), "-")
+  name               = trimsuffix(substr("fh-eks-audit-${var.cluster_name}", 0, 64), "-")
   path               = "/system/"
   assume_role_policy = data.aws_iam_policy_document.firehose_eks_audit_assume_role[0].json
 }
@@ -65,7 +65,7 @@ data "aws_iam_policy_document" "firehose_eks_audit" {
 
 resource "aws_iam_role_policy" "firehose_eks_audit" {
   count  = var.vector_audit_enabled ? 1 : 0
-  name   = trimsuffix(substr("firehose-eks-audit-${var.cluster_name}", 0, 64), "-")
+  name   = trimsuffix(substr("fh-eks-audit-${var.cluster_name}", 0, 64), "-")
   role   = aws_iam_role.firehose_eks_audit[0].name
   policy = data.aws_iam_policy_document.firehose_eks_audit[0].json
 }
@@ -91,7 +91,7 @@ resource "aws_kinesis_firehose_delivery_stream" "eks_audit" {
     s3_configuration {
       role_arn           = aws_iam_role.firehose_eks_audit[0].arn
       bucket_arn         = "arn:aws:s3:::${var.vector_audit_s3_backup_bucket}"
-      prefix             = "kubernetes-audit/org=tfh/env=${var.environment}/region=${var.region}/cluster=${var.cluster_name}/firehose-errors/year=%Y/month=%m/day=%d/hour=%H/"
+      prefix             = "kubernetes-audit/org=${var.vector_audit_org}/env=${var.environment}/region=${var.region}/cluster=${var.cluster_name}/firehose-errors/year=%Y/month=%m/day=%d/hour=%H/"
       buffering_size     = 64
       buffering_interval = 300
       compression_format = "GZIP"
@@ -105,6 +105,13 @@ resource "aws_kinesis_firehose_delivery_stream" "eks_audit" {
   # Ensure the S3 backup policy is in place before the stream is created to
   # avoid flaky IAM propagation failures.
   depends_on = [aws_iam_role_policy.firehose_eks_audit]
+
+  lifecycle {
+    precondition {
+      condition     = var.vector_audit_firehose_access_key != ""
+      error_message = "vector_audit_firehose_access_key must not be empty; without it Firehose will deliver unauthenticated requests that Vector will reject."
+    }
+  }
 
   tags = {
     Environment = var.environment
@@ -149,7 +156,7 @@ data "aws_iam_policy_document" "cw_logs_firehose_assume_role" {
 
 resource "aws_iam_role" "cw_logs_to_firehose_eks_audit" {
   count              = var.vector_audit_enabled ? 1 : 0
-  name               = trimsuffix(substr("cw-logs-firehose-eks-audit-${var.cluster_name}", 0, 64), "-")
+  name               = trimsuffix(substr("cw-fh-eks-audit-${var.cluster_name}", 0, 64), "-")
   path               = "/system/"
   assume_role_policy = data.aws_iam_policy_document.cw_logs_firehose_assume_role[0].json
 }
@@ -165,7 +172,7 @@ data "aws_iam_policy_document" "cw_logs_firehose_eks_audit" {
 
 resource "aws_iam_role_policy" "cw_logs_to_firehose_eks_audit" {
   count  = var.vector_audit_enabled ? 1 : 0
-  name   = trimsuffix(substr("cw-logs-firehose-eks-audit-${var.cluster_name}", 0, 64), "-")
+  name   = trimsuffix(substr("cw-fh-eks-audit-${var.cluster_name}", 0, 64), "-")
   role   = aws_iam_role.cw_logs_to_firehose_eks_audit[0].name
   policy = data.aws_iam_policy_document.cw_logs_firehose_eks_audit[0].json
 }
@@ -179,12 +186,19 @@ resource "aws_iam_role_policy" "cw_logs_to_firehose_eks_audit" {
 #   InvalidParameterException: Could not deliver test message to specified
 #   Firehose stream
 # A 30 s sleep covers the observed window with margin.
+# triggers re-creates the sleep (and therefore re-gates the filter) on any
+# Firehose update that could leave the stream in UPDATING state.
 # ---------------------------------------------------------------------------
 
 resource "time_sleep" "wait_firehose_eks_audit_active" {
   count           = var.vector_audit_enabled ? 1 : 0
   create_duration = "30s"
-  depends_on      = [aws_kinesis_firehose_delivery_stream.eks_audit]
+
+  triggers = {
+    firehose_arn    = aws_kinesis_firehose_delivery_stream.eks_audit[0].arn
+    endpoint_url    = var.vector_audit_endpoint_url
+    access_key_hash = sha256(var.vector_audit_firehose_access_key)
+  }
 }
 
 # ---------------------------------------------------------------------------

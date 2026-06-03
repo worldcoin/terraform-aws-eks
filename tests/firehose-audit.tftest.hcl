@@ -13,6 +13,10 @@ mock_provider "time" {}
 run "vector_audit_enabled_by_default" {
   command = plan
 
+  variables {
+    vector_audit_firehose_access_key = "test-access-key-32-chars-long-xx"
+  }
+
   assert {
     condition     = length(aws_kinesis_firehose_delivery_stream.eks_audit) == 1
     error_message = "Firehose delivery stream should be created by default."
@@ -34,11 +38,24 @@ run "vector_audit_enabled_by_default" {
   }
 }
 
+run "vector_audit_empty_access_key_fails" {
+  command = plan
+
+  variables {
+    vector_audit_firehose_access_key = ""
+  }
+
+  expect_failures = [
+    aws_kinesis_firehose_delivery_stream.eks_audit,
+  ]
+}
+
 run "vector_audit_disabled" {
   command = plan
 
   variables {
-    vector_audit_enabled = false
+    vector_audit_enabled             = false
+    vector_audit_firehose_access_key = "test-access-key-32-chars-long-xx"
   }
 
   assert {
@@ -56,7 +73,8 @@ run "vector_audit_custom_endpoint" {
   command = plan
 
   variables {
-    vector_audit_endpoint_url = "https://vector-custom.example.com/"
+    vector_audit_firehose_access_key = "test-access-key-32-chars-long-xx"
+    vector_audit_endpoint_url        = "https://vector-custom.example.com/"
   }
 
   assert {
