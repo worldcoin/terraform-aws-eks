@@ -10,7 +10,15 @@ mock_provider "kubernetes" {
 
 mock_provider "time" {}
 
-run "vector_audit_enabled_by_default" {
+run "vector_audit_enabled_by_default_without_key_fails" {
+  command = plan
+
+  expect_failures = [
+    aws_kinesis_firehose_delivery_stream.eks_audit,
+  ]
+}
+
+run "vector_audit_enabled_with_access_key" {
   command = plan
 
   variables {
@@ -19,22 +27,22 @@ run "vector_audit_enabled_by_default" {
 
   assert {
     condition     = length(aws_kinesis_firehose_delivery_stream.eks_audit) == 1
-    error_message = "Firehose delivery stream should be created by default."
+    error_message = "Firehose delivery stream should be created when access key is provided."
   }
 
   assert {
     condition     = length(aws_cloudwatch_log_subscription_filter.eks_audit) == 1
-    error_message = "CW Logs subscription filter should be created by default."
+    error_message = "CW Logs subscription filter should be created when access key is provided."
   }
 
   assert {
     condition     = length(aws_iam_role.firehose_eks_audit) == 1
-    error_message = "Firehose IAM role should be created by default."
+    error_message = "Firehose IAM role should be created when access key is provided."
   }
 
   assert {
     condition     = length(aws_iam_role.cw_logs_to_firehose_eks_audit) == 1
-    error_message = "CW Logs IAM role should be created by default."
+    error_message = "CW Logs IAM role should be created when access key is provided."
   }
 }
 

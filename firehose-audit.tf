@@ -108,8 +108,8 @@ resource "aws_kinesis_firehose_delivery_stream" "eks_audit" {
 
   lifecycle {
     precondition {
-      condition     = var.vector_audit_firehose_access_key != ""
-      error_message = "vector_audit_firehose_access_key must not be empty; without it Firehose will deliver unauthenticated requests that Vector will reject."
+      condition     = var.vector_audit_firehose_access_key != null && var.vector_audit_firehose_access_key != ""
+      error_message = "vector_audit_firehose_access_key must be set when vector_audit_enabled is true; without it Firehose will deliver unauthenticated requests that Vector will reject."
     }
   }
 
@@ -197,7 +197,7 @@ resource "time_sleep" "wait_firehose_eks_audit_active" {
   triggers = {
     firehose_arn    = aws_kinesis_firehose_delivery_stream.eks_audit[0].arn
     endpoint_url    = var.vector_audit_endpoint_url
-    access_key_hash = sha256(var.vector_audit_firehose_access_key)
+    access_key_hash = var.vector_audit_firehose_access_key != null ? sha256(var.vector_audit_firehose_access_key) : ""
   }
 }
 

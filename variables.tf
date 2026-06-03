@@ -268,9 +268,10 @@ variable "vector_audit_endpoint_url" {
 }
 
 variable "vector_audit_firehose_access_key" {
-  description = "Shared access key sent by Firehose in X-Amz-Firehose-Access-Key; validated by Vector's aws_kinesis_firehose source. Required when vector_audit_enabled is true."
+  description = "Shared access key sent by Firehose in X-Amz-Firehose-Access-Key; validated by Vector's aws_kinesis_firehose source."
   type        = string
   sensitive   = true
+  default     = null
 }
 
 variable "vector_audit_s3_backup_bucket" {
