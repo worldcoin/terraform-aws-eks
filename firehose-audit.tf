@@ -133,14 +133,16 @@ data "aws_iam_policy_document" "cw_logs_firehose_assume_role" {
       values   = [data.aws_caller_identity.account.account_id]
     }
 
-    # ArnLike (not ArnEquals) required: CW Logs sets aws:SourceArn with a ":*"
-    # suffix (or a log-stream ARN) during async DATA_MESSAGE delivery, causing
-    # ArnEquals to silently block all audit events while CONTROL_MESSAGE still
-    # passes (different IAM code path at filter-creation time).
+    # ArnLike (not ArnEquals) required: CW Logs sets aws:SourceArn to the bare
+    # log group ARN during PutSubscriptionFilter validation (CONTROL_MESSAGE)
+    # and to a log-stream ARN during async DATA_MESSAGE delivery.
+    # Pattern uses "cluster*" (no colon before wildcard) so it matches both:
+    #   .../cluster          ← CONTROL_MESSAGE test at filter-creation time
+    #   .../cluster:stream   ← DATA_MESSAGE delivery (log-stream ARN suffix)
     condition {
       test     = "ArnLike"
       variable = "aws:SourceArn"
-      values   = ["arn:aws:logs:${var.region}:${data.aws_caller_identity.account.account_id}:log-group:/aws/eks/${var.cluster_name}/cluster:*"]
+      values   = ["arn:aws:logs:${var.region}:${data.aws_caller_identity.account.account_id}:log-group:/aws/eks/${var.cluster_name}/cluster*"]
     }
   }
 }
