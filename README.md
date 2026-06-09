@@ -102,7 +102,7 @@ The module is currently supporting the following versions of Kubernetes:
 - 1.35,
 
 > [!NOTE]
-> Default version for EKS Cluster is 1.33.
+> Default version for EKS Cluster is 1.35.
 
 ## Examples
 
@@ -786,7 +786,7 @@ To remove the cluster you have to:
 | <a name="input_aws_load_balancer_iam_role_enabled"></a> [aws\_load\_balancer\_iam\_role\_enabled](#input\_aws\_load\_balancer\_iam\_role\_enabled) | Whether to enable the IAM role for the AWS Load Balancer | `bool` | `true` | no |
 | <a name="input_cluster_endpoint_public_access"></a> [cluster\_endpoint\_public\_access](#input\_cluster\_endpoint\_public\_access) | Indicates whether or not the Amazon EKS public API server endpoint is enabled | `bool` | `false` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name of the cluster. Has to be unique per region per account. | `string` | n/a | yes |
-| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The Kubernetes version to use for the cluster. | `string` | `"1.33"` | no |
+| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The Kubernetes version to use for the cluster. | `string` | `"1.35"` | no |
 | <a name="input_coredns_max_replicas"></a> [coredns\_max\_replicas](#input\_coredns\_max\_replicas) | Maximum number of replicas for CoreDNS | `number` | `10` | no |
 | <a name="input_coredns_min_replicas"></a> [coredns\_min\_replicas](#input\_coredns\_min\_replicas) | Minimum number of replicas for CoreDNS | `number` | `2` | no |
 | <a name="input_datadog_api_key"></a> [datadog\_api\_key](#input\_datadog\_api\_key) | Datadog API key. Stored in kube-system namespace as a secret. | `string` | n/a | yes |
