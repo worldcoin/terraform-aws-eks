@@ -38,6 +38,8 @@ module "datadog_monitoring" {
   cpu_limits_low_perc_enabled                = false
   cpu_requests_low_perc_enabled              = false
   memory_limits_low_perc_enabled             = var.memory_limits_low_perc_enabled
+  replicaset_incomplete_enabled              = var.replicaset_incomplete_enabled
+  replicaset_unavailable_enabled             = var.replicaset_unavailable_enabled
   deploy_desired_vs_status_warning           = var.deploy_desired_vs_status_warning
   deploy_desired_vs_status_critical          = var.deploy_desired_vs_status_critical
   deploy_desired_vs_status_evaluation_period = var.deploy_desired_vs_status_evaluation_period
