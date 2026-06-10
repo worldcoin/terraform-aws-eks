@@ -177,7 +177,7 @@ variable "replicaset_incomplete_enabled" {
 }
 
 variable "replicaset_unavailable_enabled" {
-  description = "Whether to enable the Replicaset Unavailable alert."
+  description = "Whether to enable the ReplicaSet Unavailable alert."
   type        = bool
   default     = true
   nullable    = false
