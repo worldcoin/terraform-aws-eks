@@ -22,8 +22,8 @@ module "datadog_monitoring_for_user" {
   pod_restarts_enabled                 = true
   pods_failed_enabled                  = true
   pods_pending_enabled                 = true
-  replicaset_incomplete_enabled        = true
-  replicaset_unavailable_enabled       = true
+  replicaset_incomplete_enabled        = var.replicaset_incomplete_enabled
+  replicaset_unavailable_enabled       = var.replicaset_unavailable_enabled
   sts_desired_vs_status_enabled        = true
   sts_multiple_restarts_enabled        = true
 

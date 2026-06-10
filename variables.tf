@@ -168,6 +168,20 @@ variable "monitor_system_workload_only" {
   default     = false
 }
 
+variable "replicaset_incomplete_enabled" {
+  description = "Whether to enable the Replicaset Incomplete alert."
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
+variable "replicaset_unavailable_enabled" {
+  description = "Whether to enable the Replicaset Unavailable alert."
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
 variable "monitoring_external_enabled" {
   description = "Whether to enable external monitoring (Datadog Synthetics)."
   type        = bool

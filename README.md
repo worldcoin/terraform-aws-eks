@@ -845,6 +845,8 @@ To remove the cluster you have to:
 | <a name="input_open_to_all"></a> [open\_to\_all](#input\_open\_to\_all) | Set to `true` if you want to open the cluster to all traffic from internet | `bool` | `false` | no |
 | <a name="input_public_access_cidrs"></a> [public\_access\_cidrs](#input\_public\_access\_cidrs) | List of CIDR blocks. Indicates which CIDR blocks can access the Amazon EKS public API server endpoint when enabled. | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS Region | `string` | n/a | yes |
+| <a name="input_replicaset_incomplete_enabled"></a> [replicaset\_incomplete\_enabled](#input\_replicaset\_incomplete\_enabled) | Whether to enable the Replicaset Incomplete alert. | `bool` | `true` | no |
+| <a name="input_replicaset_unavailable_enabled"></a> [replicaset\_unavailable\_enabled](#input\_replicaset\_unavailable\_enabled) | Whether to enable the Replicaset Unavailable alert. | `bool` | `true` | no |
 | <a name="input_s3_mountpoint_csi_driver_enabled"></a> [s3\_mountpoint\_csi\_driver\_enabled](#input\_s3\_mountpoint\_csi\_driver\_enabled) | Whether to enable the S3 mountpoint CSI driver | `bool` | `false` | no |
 | <a name="input_s3_mountpoint_csi_s3_bucket_arns"></a> [s3\_mountpoint\_csi\_s3\_bucket\_arns](#input\_s3\_mountpoint\_csi\_s3\_bucket\_arns) | List of S3 bucket ARNs to allow access from the S3 mountpoint CSI driver | `list(string)` | <pre>[<br>  "*"<br>]</pre> | no |
 | <a name="input_static_autoscaling_group"></a> [static\_autoscaling\_group](#input\_static\_autoscaling\_group) | Configuration for static autoscaling group | <pre>object({<br>    size = number<br>    arch = optional(string, null)<br>    type = string<br>  })</pre> | `null` | no |
