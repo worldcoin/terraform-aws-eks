@@ -169,10 +169,11 @@ variable "monitor_system_workload_only" {
 }
 
 variable "replicaset_incomplete_enabled" {
-  description = "Whether to enable the Replicaset Incomplete alert."
+  description = "Whether to enable the ReplicaSet Incomplete alert."
   type        = bool
   default     = true
   nullable    = false
+}
 }
 
 variable "replicaset_unavailable_enabled" {
