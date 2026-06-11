@@ -108,6 +108,7 @@ resource "aws_kinesis_firehose_delivery_stream" "eks_audit" {
 
   tags = {
     Environment = var.environment
+    Env         = var.environment
   }
 }
 

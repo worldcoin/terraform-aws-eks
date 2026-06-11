@@ -33,6 +33,7 @@ resource "aws_launch_template" "this" {
     tags = {
       Name              = "eks-node-${var.cluster_name}"
       KubernetesCluster = var.cluster_name
+      Env               = var.environment
     }
   }
 
