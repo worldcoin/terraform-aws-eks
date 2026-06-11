@@ -42,6 +42,7 @@ resource "aws_launch_template" "enclave_track" {
       Name              = "eks-node-enclaves-${each.key}-${var.cluster_name}"
       KubernetesCluster = var.cluster_name
       EnclaveTrack      = each.key
+      env               = var.environment
     }
   }
 

@@ -34,6 +34,7 @@ resource "aws_launch_template" "al2023" {
     tags = {
       Name              = local.al2023_name
       KubernetesCluster = var.cluster_name
+      env               = var.environment
     }
   }
 
@@ -78,6 +79,7 @@ resource "aws_eks_node_group" "al2023" {
   tags = {
     Name                                                   = local.al2023_name
     KubernetesCluster                                      = var.cluster_name
+    env                                                    = var.environment
     (format("kubernetes.io/cluster/%s", var.cluster_name)) = "owned"
   }
 }
