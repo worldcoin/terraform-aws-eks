@@ -37,11 +37,19 @@ locals {
     targetGroupStickiness = null
   }
 
+  _ext_alb_mtls_config = (
+    var.gateway_api_external_enabled && !var.open_to_all && var.mtls_enabled
+    ) ? {
+    mode       = "verify"
+    trustStore = module.gateway_api_external_alb[local.gateway_api_external_alb_name].trust_store_arn
+  } : null
+
   _default_ext_alb_listener_configs = [{
-    protocolPort       = "HTTPS:443"
-    alpnPolicy         = "None"
-    sslPolicy          = local.gateway_api_ssl_policies[var.external_tls_listener_version]
-    defaultCertificate = local.effective_external_cert_arn
+    protocolPort         = "HTTPS:443"
+    alpnPolicy           = "None"
+    sslPolicy            = local.gateway_api_ssl_policies[var.external_tls_listener_version]
+    defaultCertificate   = local.effective_external_cert_arn
+    mutualAuthentication = local._ext_alb_mtls_config
   }]
 
   _default_ext_nlb_listener_configs = [{
