@@ -37,7 +37,7 @@ variable "cluster_version" {
 }
 
 variable "node_ami_kubernetes_version" {
-  description = "Kubernetes version used to look up the AL2023 node AMI from SSM. Overrides cluster_version for AMI selection only - the EKS control plane still uses cluster_version. Defaults to null (use cluster_version). Set to a lower version to keep nodes on an older Kubernetes minor while the control plane is upgraded (within EKS skew policy, up to 3 minor versions behind)."
+  description = "Kubernetes version used to look up the AL2023 node AMI from SSM. Overrides cluster_version for AMI selection only; the EKS control plane still uses cluster_version. Defaults to null (use cluster_version)."
   type        = string
   default     = null
 }
