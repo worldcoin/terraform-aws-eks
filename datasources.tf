@@ -10,9 +10,11 @@ locals {
   effective_internal_cert_arn = var.internal_cert_arn != "" ? var.internal_cert_arn : (var.internal_nlb_acm_arn != "" ? var.internal_nlb_acm_arn : local.effective_external_cert_arn)
   effective_nlb_service_ports = length(var.internal_nlb_service_ports) > 0 ? var.internal_nlb_service_ports : var.traefik_nlb_service_ports
 
+  node_ami_k8s_version = coalesce(var.node_ami_kubernetes_version, var.cluster_version)
+
   al2023_standard_ami = {
-    amd64 = format("/aws/service/eks/optimized-ami/%s/amazon-linux-2023/x86_64/standard/recommended/image_id", var.cluster_version)
-    arm64 = format("/aws/service/eks/optimized-ami/%s/amazon-linux-2023/arm64/standard/recommended/image_id", var.cluster_version)
+    amd64 = format("/aws/service/eks/optimized-ami/%s/amazon-linux-2023/x86_64/standard/recommended/image_id", local.node_ami_k8s_version)
+    arm64 = format("/aws/service/eks/optimized-ami/%s/amazon-linux-2023/arm64/standard/recommended/image_id", local.node_ami_k8s_version)
   }
 }
 
