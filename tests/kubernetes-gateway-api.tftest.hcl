@@ -375,9 +375,6 @@ run "gateway_api_lb_name_prefix_empty_string_fails_validation" {
 }
 
 # =============================================================================
-# Test: SSL policy derived from TLS listener version
-# =============================================================================
-# =============================================================================
 # Test: mTLS enabled by default (mtls_enabled=true, open_to_all=false)
 # =============================================================================
 run "gateway_api_mtls_enabled_by_default" {
