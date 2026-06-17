@@ -375,6 +375,85 @@ run "gateway_api_lb_name_prefix_empty_string_fails_validation" {
 }
 
 # =============================================================================
+# Test: mTLS enabled by default (mtls_enabled=true, open_to_all=false)
+# =============================================================================
+run "gateway_api_mtls_enabled_by_default" {
+  command = plan
+
+  variables {
+    kubernetes_provider_enabled  = true
+    gateway_api_crds_enabled     = true
+    gateway_api_external_enabled = true
+    gateway_api_lb_name_prefix   = "test"
+  }
+
+  assert {
+    condition     = local._ext_alb_mtls_config != null
+    error_message = "mTLS config should be set when mtls_enabled=true and open_to_all=false"
+  }
+
+  assert {
+    condition     = local._ext_alb_mtls_config.mode == "verify"
+    error_message = "mTLS mode should be 'verify'"
+  }
+
+  assert {
+    condition     = contains(keys(local.gateway_api_ext_alb_listener_configs[0]), "mutualAuthentication")
+    error_message = "Default ext ALB listener config should include mutualAuthentication"
+  }
+}
+
+# =============================================================================
+# Test: mTLS disabled when open_to_all=true
+# =============================================================================
+run "gateway_api_mtls_disabled_when_open_to_all" {
+  command = plan
+
+  variables {
+    kubernetes_provider_enabled  = true
+    gateway_api_crds_enabled     = true
+    gateway_api_external_enabled = true
+    gateway_api_lb_name_prefix   = "test"
+    open_to_all                  = true
+  }
+
+  assert {
+    condition     = local._ext_alb_mtls_config == null
+    error_message = "mTLS config should be null when open_to_all=true"
+  }
+
+  assert {
+    condition     = !contains(keys(local.gateway_api_ext_alb_listener_configs[0]), "mutualAuthentication")
+    error_message = "Default ext ALB listener config should not include mutualAuthentication when open_to_all=true"
+  }
+}
+
+# =============================================================================
+# Test: mTLS disabled when mtls_enabled=false
+# =============================================================================
+run "gateway_api_mtls_disabled_when_var_false" {
+  command = plan
+
+  variables {
+    kubernetes_provider_enabled  = true
+    gateway_api_crds_enabled     = true
+    gateway_api_external_enabled = true
+    gateway_api_lb_name_prefix   = "test"
+    mtls_enabled                 = false
+  }
+
+  assert {
+    condition     = local._ext_alb_mtls_config == null
+    error_message = "mTLS config should be null when mtls_enabled=false"
+  }
+
+  assert {
+    condition     = !contains(keys(local.gateway_api_ext_alb_listener_configs[0]), "mutualAuthentication")
+    error_message = "Default ext ALB listener config should not include mutualAuthentication when mtls_enabled=false"
+  }
+}
+
+# =============================================================================
 # Test: SSL policy derived from TLS listener version
 # =============================================================================
 run "gateway_api_ssl_policy_mapping" {
