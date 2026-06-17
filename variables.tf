@@ -42,6 +42,12 @@ variable "node_ami_kubernetes_version" {
   default     = null
 }
 
+variable "node_ami_release_version" {
+  description = "AL2023 EKS-optimized AMI release version used in the SSM lookup (e.g. '1.33.11-20260615'). Defaults to 'recommended', which is the AWS-managed pointer that moves as new patches are published, causing nodes to rotate on every patch release. Set to a specific release version to fully pin the node AMI - no rotation on AWS patch releases."
+  type        = string
+  default     = "recommended"
+}
+
 variable "vpc_config" {
   description = "VPC configuration from aws/vps module"
   type = object({
