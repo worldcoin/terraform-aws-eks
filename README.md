@@ -557,7 +557,7 @@ Works like a charm without of any manual operation. Just plan/apply workspace wi
 
 To remove the cluster you have to:
 
-1. Delete ALL traefik SVCs and ingresses, and strip finalizers from Gateway API LBs (keep in mind there could be more/less traefiks than in this example):
+1. Delete ALL traefik SVCs and ingresses, and strip finalizers from Gateway API Gateways (keep in mind there could be more/less traefiks than in this example):
 
    ```bash
    kubectl -n traefik delete svc traefik-alb --wait=false
