@@ -557,7 +557,7 @@ Works like a charm without of any manual operation. Just plan/apply workspace wi
 
 To remove the cluster you have to:
 
-1. Delete ALL traefik SVCs and ingresses, example (keep in mind there could be more/less traefiks than in this example):
+1. Delete ALL traefik SVCs and ingresses, and strip finalizers from Gateway API LBs (keep in mind there could be more/less traefiks than in this example):
 
    ```bash
    kubectl -n traefik delete svc traefik-alb --wait=false
@@ -568,11 +568,19 @@ To remove the cluster you have to:
 
    kubectl -n traefik delete ingress traefik-alb --wait=false
    kubectl -n traefik patch ingress traefik-alb -p '{"metadata":{"finalizers":null}}' --type=merge
+
+   # Gateway API Gateways live in kube-system and carry finalizers that block CRD/LB deletion.
+   # Check which exist first: kubectl get gateway -A. Not all four may be present.
+   kubectl -n kube-system delete gateway gw-ext-alb gw-ext-nlb gw-int-alb gw-int-nlb --wait=false 2>/dev/null || true
+   kubectl -n kube-system patch gateway gw-ext-alb -p '{"metadata":{"finalizers":null}}' --type=merge 2>/dev/null || true
+   kubectl -n kube-system patch gateway gw-ext-nlb -p '{"metadata":{"finalizers":null}}' --type=merge 2>/dev/null || true
+   kubectl -n kube-system patch gateway gw-int-alb -p '{"metadata":{"finalizers":null}}' --type=merge 2>/dev/null || true
+   kubectl -n kube-system patch gateway gw-int-nlb -p '{"metadata":{"finalizers":null}}' --type=merge 2>/dev/null || true
    ```
 
 1. Set these flags, the module will remove every usage of the Kubernetes provider and allow
    you to remove the cluster module without any errors. Setting `enable_deletion_protection = false`
-   disables deletion protection on the Traefik NLB/ALB load balancers so they can be removed by Terraform.
+   disables deletion protection on the Traefik and Gateway API NLB/ALB load balancers so they can be removed by Terraform.
 
    ```yaml
    efs_csi_driver_enabled      = false
@@ -580,7 +588,7 @@ To remove the cluster you have to:
    enable_deletion_protection  = false
    ```
 
-1. If above PR `apply` fails (possible reason: race condition - aws_auth removed too soon), remove all `kubernetes_*` resources from state:
+1. If above PR `apply` fails (possible reasons: race condition - `aws_auth` removed too soon, or Gateway API CRDs/Gateways timing out due to remaining finalizers), remove the affected `kubernetes_*` resources from state and rerun `apply`:
 
    ```bash
    terraform state list |grep kubernetes_
@@ -592,7 +600,7 @@ To remove the cluster you have to:
 
 1. Remove module invocation to finally delete cluster itself.
 
-1. If above PR `apply` fails on deleting autoscalinggroups, terminate leftover instances and rerun `apply` (possible reason: race condition - karpenter didn't have enough time to clean instances)
+1. If above PR `apply` fails on deleting autoscaling groups or security groups, check for leftover EC2 instances (terminate them and rerun `apply`) or other security groups referencing the cluster SGs via ingress/egress rules (remove the referencing rules and rerun `apply`).
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
