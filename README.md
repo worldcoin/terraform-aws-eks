@@ -602,6 +602,8 @@ To remove the cluster you have to:
 
 1. If above PR `apply` fails on deleting autoscaling groups or security groups, check for leftover EC2 instances (terminate them and rerun `apply`) or other security groups referencing the cluster SGs via ingress/egress rules (remove the referencing rules and rerun `apply`).
 
+> **See also:** [`docs/EKS_CLUSTER_REMOVAL.md`](https://github.com/worldcoin/infrastructure/blob/main/docs/EKS_CLUSTER_REMOVAL.md) in `worldcoin/infrastructure` for a more detailed runbook including pre-steps, failure mode troubleshooting, and workspace-specific guidance.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
