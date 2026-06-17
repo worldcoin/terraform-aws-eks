@@ -557,7 +557,7 @@ Works like a charm without of any manual operation. Just plan/apply workspace wi
 
 To remove the cluster you have to:
 
-1. Delete ALL traefik SVCs and ingresses, example (keep in mind there could be more/less traefiks than in this example):
+1. Delete ALL traefik SVCs and ingresses, and strip finalizers from Gateway API Gateways (keep in mind there could be more/less traefiks than in this example):
 
    ```bash
    kubectl -n traefik delete svc traefik-alb --wait=false
@@ -568,11 +568,19 @@ To remove the cluster you have to:
 
    kubectl -n traefik delete ingress traefik-alb --wait=false
    kubectl -n traefik patch ingress traefik-alb -p '{"metadata":{"finalizers":null}}' --type=merge
+
+   # Gateway API Gateways live in kube-system and carry finalizers that block CRD/LB deletion.
+   # Check which exist first: kubectl get gateway -A. Not all four may be present.
+   kubectl -n kube-system delete gateway gw-ext-alb gw-ext-nlb gw-int-alb gw-int-nlb --wait=false 2>/dev/null || true
+   kubectl -n kube-system patch gateway gw-ext-alb -p '{"metadata":{"finalizers":null}}' --type=merge 2>/dev/null || true
+   kubectl -n kube-system patch gateway gw-ext-nlb -p '{"metadata":{"finalizers":null}}' --type=merge 2>/dev/null || true
+   kubectl -n kube-system patch gateway gw-int-alb -p '{"metadata":{"finalizers":null}}' --type=merge 2>/dev/null || true
+   kubectl -n kube-system patch gateway gw-int-nlb -p '{"metadata":{"finalizers":null}}' --type=merge 2>/dev/null || true
    ```
 
 1. Set these flags, the module will remove every usage of the Kubernetes provider and allow
    you to remove the cluster module without any errors. Setting `enable_deletion_protection = false`
-   disables deletion protection on the Traefik NLB/ALB load balancers so they can be removed by Terraform.
+   disables deletion protection on the Traefik and Gateway API NLB/ALB load balancers so they can be removed by Terraform.
 
    ```yaml
    efs_csi_driver_enabled      = false
@@ -580,7 +588,7 @@ To remove the cluster you have to:
    enable_deletion_protection  = false
    ```
 
-1. If above PR `apply` fails (possible reason: race condition - aws_auth removed too soon), remove all `kubernetes_*` resources from state:
+1. If above PR `apply` fails (possible reasons: race condition - `aws_auth` removed too soon, or Gateway API CRDs/Gateways timing out due to remaining finalizers), remove the affected `kubernetes_*` resources from state and rerun `apply`:
 
    ```bash
    terraform state list |grep kubernetes_
@@ -592,7 +600,9 @@ To remove the cluster you have to:
 
 1. Remove module invocation to finally delete cluster itself.
 
-1. If above PR `apply` fails on deleting autoscalinggroups, terminate leftover instances and rerun `apply` (possible reason: race condition - karpenter didn't have enough time to clean instances)
+1. If above PR `apply` fails on deleting autoscaling groups or security groups, check for leftover EC2 instances (terminate them and rerun `apply`) or other security groups referencing the cluster SGs via ingress/egress rules (remove the referencing rules and rerun `apply`).
+
+> **See also:** [`docs/EKS_CLUSTER_REMOVAL.md`](https://github.com/worldcoin/infrastructure/blob/main/docs/EKS_CLUSTER_REMOVAL.md) in `worldcoin/infrastructure` for a more detailed runbook including pre-steps, failure mode troubleshooting, and workspace-specific guidance.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -798,7 +808,7 @@ To remove the cluster you have to:
 | <a name="input_efs_csi_driver_enabled"></a> [efs\_csi\_driver\_enabled](#input\_efs\_csi\_driver\_enabled) | Whether to enable the EFS CSI driver (IAM Role & StorageClass). | `bool` | `false` | no |
 | <a name="input_eks_node_group"></a> [eks\_node\_group](#input\_eks\_node\_group) | Configuration for EKS node group | <pre>object({<br>    arch  = string<br>    types = list(string)<br>    disk  = optional(number, 100)<br>    dns   = optional(string, "172.20.0.10")<br>  })</pre> | `null` | no |
 | <a name="input_enable_aws_load_balancer_controller_explicit_deny"></a> [enable\_aws\_load\_balancer\_controller\_explicit\_deny](#input\_enable\_aws\_load\_balancer\_controller\_explicit\_deny) | Safety switch: set to false to disable creating the aws-load-balancer-controller explicit deny policy and attachment. | `bool` | `true` | no |
-| <a name="input_enable_deletion_protection"></a> [enable\_deletion\_protection](#input\_enable\_deletion\_protection) | Whether to enable deletion protection on the Traefik NLB/ALB load balancers. Set to false before destroying the cluster. | `bool` | `true` | no |
+| <a name="input_enable_deletion_protection"></a> [enable\_deletion\_protection](#input\_enable\_deletion\_protection) | Whether to enable deletion protection on the Traefik and Gateway API NLB/ALB load balancers. Set to false before destroying the cluster. | `bool` | `true` | no |
 | <a name="input_enclave_tracks"></a> [enclave\_tracks](#input\_enclave\_tracks) | Additional enclave tracks for multi-version deployments. Key is used as track identifier. | <pre>map(object({<br>    autoscaling_group = optional(object({<br>      size     = optional(number, 1)<br>      min_size = optional(number, 0)<br>      max_size = optional(number, 10)<br>    }), {})<br>    instance_type     = optional(string)<br>    cpu_allocation    = optional(string)<br>    memory_allocation = optional(string)<br>    arch              = optional(string, "amd64")<br>  }))</pre> | `{}` | no |
 | <a name="input_enclaves_cpu_allocation"></a> [enclaves\_cpu\_allocation](#input\_enclaves\_cpu\_allocation) | Number of CPUs to allocate for Nitro Enclaves per node | `string` | `"4"` | no |
 | <a name="input_enclaves_instance_type"></a> [enclaves\_instance\_type](#input\_enclaves\_instance\_type) | Instance type for Nitro Enclaves | `string` | `"m7a.2xlarge"` | no |

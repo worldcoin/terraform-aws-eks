@@ -857,7 +857,7 @@ variable "mtls_enabled" {
 }
 
 variable "enable_deletion_protection" {
-  description = "Whether to enable deletion protection on the Traefik NLB/ALB load balancers. Set to false before destroying the cluster."
+  description = "Whether to enable deletion protection on the Traefik and Gateway API NLB/ALB load balancers. Set to false before destroying the cluster."
   type        = bool
   default     = true
 }
