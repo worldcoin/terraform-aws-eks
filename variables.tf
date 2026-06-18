@@ -862,6 +862,52 @@ variable "enable_deletion_protection" {
   default     = true
 }
 
+# -- Cross-zone load balancing toggles ----------------------------------------
+# All default to true to preserve prior behavior. Disabling cross-zone on an
+# NLB eliminates cross-AZ data-transfer cost but requires each target group
+# to have >=1 healthy backend in every AZ the NLB serves (otherwise the
+# unbacked AZ drops traffic). See INFRA-6671.
+#
+# Note: for ALBs, AWS always enables cross-zone at the LB level — the ALB
+# variables here are wired through for API parity but AWS may ignore false.
+# Per-target-group cross-zone control for ALBs is a separate concern.
+
+variable "gateway_api_internal_nlb_cross_zone_enabled" {
+  description = "Enable cross-zone load balancing on the Gateway API internal NLB. Default true."
+  type        = bool
+  default     = true
+}
+
+variable "gateway_api_external_nlb_cross_zone_enabled" {
+  description = "Enable cross-zone load balancing on the Gateway API external NLB. Default true."
+  type        = bool
+  default     = true
+}
+
+variable "gateway_api_internal_alb_cross_zone_enabled" {
+  description = "Enable cross-zone load balancing on the Gateway API internal ALB. AWS always enables cross-zone at the LB level for ALBs; this variable is wired through for API parity. Default true."
+  type        = bool
+  default     = true
+}
+
+variable "gateway_api_external_alb_cross_zone_enabled" {
+  description = "Enable cross-zone load balancing on the Gateway API external ALB. AWS always enables cross-zone at the LB level for ALBs; this variable is wired through for API parity. Default true."
+  type        = bool
+  default     = true
+}
+
+variable "traefik_internal_nlb_cross_zone_enabled" {
+  description = "Enable cross-zone load balancing on the Traefik internal NLB. Default true."
+  type        = bool
+  default     = true
+}
+
+variable "traefik_external_alb_cross_zone_enabled" {
+  description = "Enable cross-zone load balancing on the Traefik external ALB. AWS always enables cross-zone at the LB level for ALBs; this variable is wired through for API parity. Default true."
+  type        = bool
+  default     = true
+}
+
 variable "external_cert_arn" {
   description = "ACM certificate ARN for external load balancers. Overrides traefik_cert_arn when set."
   type        = string

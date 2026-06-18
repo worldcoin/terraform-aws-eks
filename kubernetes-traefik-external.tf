@@ -93,7 +93,7 @@ resource "kubernetes_ingress_v1" "treafik_ingress" {
 }
 
 module "alb" {
-  source   = "git::https://github.com/worldcoin/terraform-aws-alb.git?ref=v1.6.1"
+  source   = "git::https://github.com/worldcoin/terraform-aws-alb.git?ref=v1.7.0"
   for_each = var.external_alb_enabled ? toset([local.external_alb_name]) : []
 
   # because of lenght limitation of LB name we need to remove prefix treafik from internal NLB
@@ -123,7 +123,8 @@ module "alb" {
   mtls_enabled   = var.open_to_all ? false : var.mtls_enabled
   mtls_s3_bucket = format("wld-mtls-ca-%s", var.region)
 
-  enable_deletion_protection = var.enable_deletion_protection
+  enable_deletion_protection       = var.enable_deletion_protection
+  enable_cross_zone_load_balancing = var.traefik_external_alb_cross_zone_enabled
 
   datadog = {
     monitoring_notification_channel = var.monitoring_notification_channel

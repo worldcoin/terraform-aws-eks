@@ -20,7 +20,7 @@ locals {
 }
 
 module "gateway_api_internal_alb" {
-  source   = "git::https://github.com/worldcoin/terraform-aws-alb.git?ref=v1.6.1"
+  source   = "git::https://github.com/worldcoin/terraform-aws-alb.git?ref=v1.7.0"
   for_each = var.gateway_api_internal_enabled ? toset([local.gateway_api_internal_alb_name]) : []
 
   name_suffix  = each.key
@@ -55,5 +55,6 @@ module "gateway_api_internal_alb" {
     monitoring_notification_channel = var.monitoring_notification_channel
   }
 
-  enable_deletion_protection = var.enable_deletion_protection
+  enable_deletion_protection       = var.enable_deletion_protection
+  enable_cross_zone_load_balancing = var.gateway_api_internal_alb_cross_zone_enabled
 }

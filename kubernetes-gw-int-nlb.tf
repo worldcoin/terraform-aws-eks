@@ -30,7 +30,7 @@ locals {
 }
 
 module "gateway_api_internal_nlb" {
-  source = "git::https://github.com/worldcoin/terraform-aws-nlb.git?ref=v1.5.0"
+  source = "git::https://github.com/worldcoin/terraform-aws-nlb.git?ref=v1.6.0"
 
   for_each = var.gateway_api_internal_enabled ? toset([local.gateway_api_internal_nlb_name]) : []
 
@@ -54,5 +54,6 @@ module "gateway_api_internal_nlb" {
 
   ingress_sg_rules = local.gateway_api_internal_nlb_sg_rules
 
-  enable_deletion_protection = var.enable_deletion_protection
+  enable_deletion_protection       = var.enable_deletion_protection
+  enable_cross_zone_load_balancing = var.gateway_api_internal_nlb_cross_zone_enabled
 }
