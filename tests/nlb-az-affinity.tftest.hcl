@@ -121,6 +121,51 @@ run "nlb_az_affinity_invalid_routing_policy_rejected" {
 }
 
 # =============================================================================
+# Test: explicit null on a sub-object is normalized to default
+# Pins TF's actual behavior: `optional(object({...}), {})` substitutes the
+# default for explicit null too, so attribute lookups stay safe.
+# =============================================================================
+run "nlb_az_affinity_subobject_null_normalized" {
+  command = plan
+
+  variables {
+    nlb_az_affinity = {
+      gateway_api_internal = null
+    }
+  }
+
+  assert {
+    condition     = var.nlb_az_affinity.gateway_api_internal.enable_cross_zone_load_balancing == true
+    error_message = "Sub-object null should be normalized to default; attribute lookup must remain safe"
+  }
+
+  assert {
+    condition     = var.nlb_az_affinity.gateway_api_internal.dns_record_client_routing_policy == "any_availability_zone"
+    error_message = "Sub-object null should normalize the routing-policy sub-field to its default too"
+  }
+}
+
+# =============================================================================
+# Test: explicit null on a sub-field is normalized to the optional() default
+# =============================================================================
+run "nlb_az_affinity_subfield_null_normalized" {
+  command = plan
+
+  variables {
+    nlb_az_affinity = {
+      gateway_api_external = {
+        enable_cross_zone_load_balancing = null
+      }
+    }
+  }
+
+  assert {
+    condition     = var.nlb_az_affinity.gateway_api_external.enable_cross_zone_load_balancing == true
+    error_message = "Sub-field null should be normalized to the optional() default"
+  }
+}
+
+# =============================================================================
 # Test: explicit null is normalized to the default {} (nullable = false)
 # Empirically TF doesn't surface a hard failure here — instead the default
 # kicks in and the attribute lookups stay safe. This test pins that behavior

@@ -889,6 +889,12 @@ variable "nlb_az_affinity" {
   })
   default  = {}
   nullable = false
+  # Note on null handling: thanks to `nullable = false` plus the `optional()`
+  # defaults on each sub-object/sub-field, Terraform normalizes both an
+  # explicit top-level `null` and explicit per-sub-object/per-sub-field nulls
+  # to the declared defaults. Call sites can dereference `var.nlb_az_affinity.X.Y`
+  # without null-safety guards. Behavior pinned by tests in
+  # tests/nlb-az-affinity.tftest.hcl.
   validation {
     condition = alltrue([
       for nlb in [
