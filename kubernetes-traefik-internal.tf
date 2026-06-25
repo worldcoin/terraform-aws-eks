@@ -70,7 +70,7 @@ resource "kubernetes_service_v1" "traefik_nlb" {
 }
 
 module "nlb" {
-  source = "git::https://github.com/worldcoin/terraform-aws-nlb.git?ref=v1.6.0"
+  source = "git::https://github.com/worldcoin/terraform-aws-nlb.git?ref=v1.5.0"
 
   for_each = var.internal_nlb_enabled ? toset([local.internal_nlb_name]) : []
 
@@ -90,7 +90,5 @@ module "nlb" {
 
   extra_listeners = var.extra_nlb_listeners
 
-  enable_deletion_protection       = var.enable_deletion_protection
-  enable_cross_zone_load_balancing = var.nlb_az_affinity.traefik_internal.enable_cross_zone_load_balancing
-  dns_record_client_routing_policy = var.nlb_az_affinity.traefik_internal.dns_record_client_routing_policy
+  enable_deletion_protection = var.enable_deletion_protection
 }

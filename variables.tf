@@ -862,18 +862,21 @@ variable "enable_deletion_protection" {
   default     = true
 }
 
-# -- NLB AZ-affinity (INFRA-6671) ---------------------------------------------
+# -- Gateway API NLB AZ-affinity (INFRA-6671) ---------------------------------
 # Per-NLB toggles for `enable_cross_zone_load_balancing` (data plane) and
 # `dns_record_client_routing_policy` (DNS plane). Defaults preserve prior
 # behavior. Combined, they push end-to-end AZ affinity (client → NLB node →
 # target all in same AZ), eliminating cross-AZ data-transfer cost.
+#
+# Scope: gateway-api internal/external NLBs only. The traefik internal NLB is
+# managed via Kubernetes Service annotations and is out of scope here.
 #
 # Caller responsibility: each NLB target group must have >=1 healthy backend
 # in every AZ the NLB serves before disabling cross-zone or pinning DNS to
 # `availability_zone_affinity`; otherwise the unbacked AZ drops traffic.
 
 variable "nlb_az_affinity" {
-  description = "Per-NLB AZ-affinity overrides. Each key targets one of the module's NLBs (gateway_api_internal, gateway_api_external, traefik_internal). Unset sub-fields preserve prior module behavior (enable_cross_zone_load_balancing = true, dns_record_client_routing_policy = \"any_availability_zone\")."
+  description = "Per-NLB AZ-affinity overrides for the gateway-api NLBs (gateway_api_internal, gateway_api_external). Unset sub-fields preserve prior module behavior (enable_cross_zone_load_balancing = true, dns_record_client_routing_policy = \"any_availability_zone\")."
   type = object({
     gateway_api_internal = optional(object({
       enable_cross_zone_load_balancing = optional(bool, true)
@@ -883,18 +886,14 @@ variable "nlb_az_affinity" {
       enable_cross_zone_load_balancing = optional(bool, true)
       dns_record_client_routing_policy = optional(string, "any_availability_zone")
     }), {})
-    traefik_internal = optional(object({
-      enable_cross_zone_load_balancing = optional(bool, true)
-      dns_record_client_routing_policy = optional(string, "any_availability_zone")
-    }), {})
   })
-  default = {}
+  default  = {}
+  nullable = false
   validation {
     condition = alltrue([
       for nlb in [
         var.nlb_az_affinity.gateway_api_internal,
         var.nlb_az_affinity.gateway_api_external,
-        var.nlb_az_affinity.traefik_internal,
       ] : contains(["any_availability_zone", "partial_availability_zone_affinity", "availability_zone_affinity"], nlb.dns_record_client_routing_policy)
     ])
     error_message = "dns_record_client_routing_policy must be one of: any_availability_zone, partial_availability_zone_affinity, availability_zone_affinity"

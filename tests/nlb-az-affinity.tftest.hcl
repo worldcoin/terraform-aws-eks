@@ -18,7 +18,7 @@ variables {
 }
 
 # =============================================================================
-# Test: defaults preserve prior behavior across all three NLBs
+# Test: defaults preserve prior behavior on both gateway-api NLBs
 # =============================================================================
 run "nlb_az_affinity_defaults" {
   command = plan
@@ -42,20 +42,10 @@ run "nlb_az_affinity_defaults" {
     condition     = var.nlb_az_affinity.gateway_api_external.dns_record_client_routing_policy == "any_availability_zone"
     error_message = "gateway_api_external.dns_record_client_routing_policy should default to any_availability_zone"
   }
-
-  assert {
-    condition     = var.nlb_az_affinity.traefik_internal.enable_cross_zone_load_balancing == true
-    error_message = "traefik_internal.enable_cross_zone_load_balancing should default to true"
-  }
-
-  assert {
-    condition     = var.nlb_az_affinity.traefik_internal.dns_record_client_routing_policy == "any_availability_zone"
-    error_message = "traefik_internal.dns_record_client_routing_policy should default to any_availability_zone"
-  }
 }
 
 # =============================================================================
-# Test: partial override leaves other NLBs at default
+# Test: partial override leaves the other NLB at default
 # =============================================================================
 run "nlb_az_affinity_partial_override" {
   command = plan
@@ -83,11 +73,6 @@ run "nlb_az_affinity_partial_override" {
     condition     = var.nlb_az_affinity.gateway_api_external.enable_cross_zone_load_balancing == true
     error_message = "gateway_api_external should still be at default when only gateway_api_internal is overridden"
   }
-
-  assert {
-    condition     = var.nlb_az_affinity.traefik_internal.enable_cross_zone_load_balancing == true
-    error_message = "traefik_internal should still be at default when only gateway_api_internal is overridden"
-  }
 }
 
 # =============================================================================
@@ -98,7 +83,7 @@ run "nlb_az_affinity_partial_subfield" {
 
   variables {
     nlb_az_affinity = {
-      traefik_internal = {
+      gateway_api_external = {
         enable_cross_zone_load_balancing = false
         # dns_record_client_routing_policy intentionally omitted
       }
@@ -106,13 +91,13 @@ run "nlb_az_affinity_partial_subfield" {
   }
 
   assert {
-    condition     = var.nlb_az_affinity.traefik_internal.enable_cross_zone_load_balancing == false
-    error_message = "traefik_internal.enable_cross_zone_load_balancing should be false when overridden"
+    condition     = var.nlb_az_affinity.gateway_api_external.enable_cross_zone_load_balancing == false
+    error_message = "gateway_api_external.enable_cross_zone_load_balancing should be false when overridden"
   }
 
   assert {
-    condition     = var.nlb_az_affinity.traefik_internal.dns_record_client_routing_policy == "any_availability_zone"
-    error_message = "Unspecified routing policy on traefik_internal should fall back to any_availability_zone"
+    condition     = var.nlb_az_affinity.gateway_api_external.dns_record_client_routing_policy == "any_availability_zone"
+    error_message = "Unspecified routing policy on gateway_api_external should fall back to any_availability_zone"
   }
 }
 
