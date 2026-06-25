@@ -862,6 +862,52 @@ variable "enable_deletion_protection" {
   default     = true
 }
 
+# -- Gateway API NLB AZ-affinity (INFRA-6671) ---------------------------------
+# Per-NLB toggles for `enable_cross_zone_load_balancing` (data plane) and
+# `dns_record_client_routing_policy` (DNS plane). Defaults preserve prior
+# behavior. Combined, they push end-to-end AZ affinity (client → NLB node →
+# target all in same AZ), eliminating cross-AZ data-transfer cost.
+#
+# Scope: gateway-api internal/external NLBs only. The traefik internal NLB is
+# managed via Kubernetes Service annotations and is out of scope here.
+#
+# Caller responsibility: each NLB target group must have >=1 healthy backend
+# in every AZ the NLB serves before disabling cross-zone or pinning DNS to
+# `availability_zone_affinity`; otherwise the unbacked AZ drops traffic.
+
+variable "nlb_az_affinity" {
+  description = "Per-NLB AZ-affinity overrides for the gateway-api NLBs (gateway_api_internal, gateway_api_external). Unset sub-fields preserve prior module behavior (enable_cross_zone_load_balancing = true, dns_record_client_routing_policy = \"any_availability_zone\")."
+  type = object({
+    gateway_api_internal = optional(object({
+      enable_cross_zone_load_balancing = optional(bool, true)
+      dns_record_client_routing_policy = optional(string, "any_availability_zone")
+    }), {})
+    gateway_api_external = optional(object({
+      enable_cross_zone_load_balancing = optional(bool, true)
+      dns_record_client_routing_policy = optional(string, "any_availability_zone")
+    }), {})
+  })
+  default  = {}
+  nullable = false
+  # Note on null handling: the `default = {}` (top-level) plus the
+  # `optional(<type>, <default>)` declarations on each sub-object/sub-field
+  # together cause Terraform to substitute the declared defaults for any
+  # explicit `null` at the corresponding level. `nullable = false` enforces
+  # that the observed value of var.nlb_az_affinity is never null but does
+  # NOT itself perform the coercion — the defaults do. Net effect: call
+  # sites can dereference `var.nlb_az_affinity.X.Y` without null-safety
+  # guards. Behavior pinned by tests in tests/nlb-az-affinity.tftest.hcl.
+  validation {
+    condition = alltrue([
+      for nlb in [
+        var.nlb_az_affinity.gateway_api_internal,
+        var.nlb_az_affinity.gateway_api_external,
+      ] : contains(["any_availability_zone", "partial_availability_zone_affinity", "availability_zone_affinity"], nlb.dns_record_client_routing_policy)
+    ])
+    error_message = "dns_record_client_routing_policy must be one of: any_availability_zone, partial_availability_zone_affinity, availability_zone_affinity"
+  }
+}
+
 variable "external_cert_arn" {
   description = "ACM certificate ARN for external load balancers. Overrides traefik_cert_arn when set."
   type        = string
