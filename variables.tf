@@ -873,7 +873,7 @@ variable "enable_deletion_protection" {
 # `availability_zone_affinity`; otherwise the unbacked AZ drops traffic.
 
 variable "nlb_az_affinity" {
-  description = "Per-NLB AZ-affinity overrides. Each key targets one of the module's NLBs (gateway_api_internal, gateway_api_external, traefik_internal). Unset sub-fields fall back to AWS defaults (`enable_cross_zone_load_balancing = true`, `dns_record_client_routing_policy = any_availability_zone`)."
+  description = "Per-NLB AZ-affinity overrides. Each key targets one of the module's NLBs (gateway_api_internal, gateway_api_external, traefik_internal). Unset sub-fields preserve prior module behavior (enable_cross_zone_load_balancing = true, dns_record_client_routing_policy = \"any_availability_zone\")."
   type = object({
     gateway_api_internal = optional(object({
       enable_cross_zone_load_balancing = optional(bool, true)
