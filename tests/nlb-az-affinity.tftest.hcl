@@ -107,7 +107,7 @@ run "nlb_az_affinity_partial_subfield" {
 
   assert {
     condition     = var.nlb_az_affinity.traefik_internal.enable_cross_zone_load_balancing == false
-    error_message = "cross-zone override on traefik_internal did not propagate"
+    error_message = "traefik_internal.enable_cross_zone_load_balancing should be false when overridden"
   }
 
   assert {
