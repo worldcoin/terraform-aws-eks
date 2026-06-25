@@ -76,7 +76,7 @@ run "nlb_az_affinity_partial_override" {
 
   assert {
     condition     = var.nlb_az_affinity.gateway_api_internal.dns_record_client_routing_policy == "availability_zone_affinity"
-    error_message = "Routing policy override on gateway_api_internal did not propagate"
+    error_message = "gateway_api_internal.dns_record_client_routing_policy should be availability_zone_affinity when overridden"
   }
 
   assert {
