@@ -91,5 +91,6 @@ module "nlb" {
   extra_listeners = var.extra_nlb_listeners
 
   enable_deletion_protection       = var.enable_deletion_protection
-  enable_cross_zone_load_balancing = var.traefik_internal_nlb_cross_zone_enabled
+  enable_cross_zone_load_balancing = var.nlb_az_affinity.traefik_internal.enable_cross_zone_load_balancing
+  dns_record_client_routing_policy = var.nlb_az_affinity.traefik_internal.dns_record_client_routing_policy
 }

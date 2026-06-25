@@ -55,5 +55,6 @@ module "gateway_api_internal_nlb" {
   ingress_sg_rules = local.gateway_api_internal_nlb_sg_rules
 
   enable_deletion_protection       = var.enable_deletion_protection
-  enable_cross_zone_load_balancing = var.gateway_api_internal_nlb_cross_zone_enabled
+  enable_cross_zone_load_balancing = var.nlb_az_affinity.gateway_api_internal.enable_cross_zone_load_balancing
+  dns_record_client_routing_policy = var.nlb_az_affinity.gateway_api_internal.dns_record_client_routing_policy
 }

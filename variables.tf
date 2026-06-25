@@ -862,50 +862,43 @@ variable "enable_deletion_protection" {
   default     = true
 }
 
-# -- Cross-zone load balancing toggles ----------------------------------------
-# All default to true to preserve prior behavior. Disabling cross-zone on an
-# NLB eliminates cross-AZ data-transfer cost but requires each target group
-# to have >=1 healthy backend in every AZ the NLB serves (otherwise the
-# unbacked AZ drops traffic). See INFRA-6671.
+# -- NLB AZ-affinity (INFRA-6671) ---------------------------------------------
+# Per-NLB toggles for `enable_cross_zone_load_balancing` (data plane) and
+# `dns_record_client_routing_policy` (DNS plane). Defaults preserve prior
+# behavior. Combined, they push end-to-end AZ affinity (client → NLB node →
+# target all in same AZ), eliminating cross-AZ data-transfer cost.
 #
-# Note: for ALBs, AWS always enables cross-zone at the LB level — the ALB
-# variables here are wired through for API parity but AWS may ignore false.
-# Per-target-group cross-zone control for ALBs is a separate concern.
+# Caller responsibility: each NLB target group must have >=1 healthy backend
+# in every AZ the NLB serves before disabling cross-zone or pinning DNS to
+# `availability_zone_affinity`; otherwise the unbacked AZ drops traffic.
 
-variable "gateway_api_internal_nlb_cross_zone_enabled" {
-  description = "Enable cross-zone load balancing on the Gateway API internal NLB. Default true."
-  type        = bool
-  default     = true
-}
-
-variable "gateway_api_external_nlb_cross_zone_enabled" {
-  description = "Enable cross-zone load balancing on the Gateway API external NLB. Default true."
-  type        = bool
-  default     = true
-}
-
-variable "gateway_api_internal_alb_cross_zone_enabled" {
-  description = "Enable cross-zone load balancing on the Gateway API internal ALB. AWS always enables cross-zone at the LB level for ALBs; this variable is wired through for API parity. Default true."
-  type        = bool
-  default     = true
-}
-
-variable "gateway_api_external_alb_cross_zone_enabled" {
-  description = "Enable cross-zone load balancing on the Gateway API external ALB. AWS always enables cross-zone at the LB level for ALBs; this variable is wired through for API parity. Default true."
-  type        = bool
-  default     = true
-}
-
-variable "traefik_internal_nlb_cross_zone_enabled" {
-  description = "Enable cross-zone load balancing on the Traefik internal NLB. Default true."
-  type        = bool
-  default     = true
-}
-
-variable "traefik_external_alb_cross_zone_enabled" {
-  description = "Enable cross-zone load balancing on the Traefik external ALB. AWS always enables cross-zone at the LB level for ALBs; this variable is wired through for API parity. Default true."
-  type        = bool
-  default     = true
+variable "nlb_az_affinity" {
+  description = "Per-NLB AZ-affinity overrides. Each key targets one of the module's NLBs (gateway_api_internal, gateway_api_external, traefik_internal). Unset sub-fields fall back to AWS defaults (`enable_cross_zone_load_balancing = true`, `dns_record_client_routing_policy = any_availability_zone`)."
+  type = object({
+    gateway_api_internal = optional(object({
+      enable_cross_zone_load_balancing = optional(bool, true)
+      dns_record_client_routing_policy = optional(string, "any_availability_zone")
+    }), {})
+    gateway_api_external = optional(object({
+      enable_cross_zone_load_balancing = optional(bool, true)
+      dns_record_client_routing_policy = optional(string, "any_availability_zone")
+    }), {})
+    traefik_internal = optional(object({
+      enable_cross_zone_load_balancing = optional(bool, true)
+      dns_record_client_routing_policy = optional(string, "any_availability_zone")
+    }), {})
+  })
+  default = {}
+  validation {
+    condition = alltrue([
+      for nlb in [
+        var.nlb_az_affinity.gateway_api_internal,
+        var.nlb_az_affinity.gateway_api_external,
+        var.nlb_az_affinity.traefik_internal,
+      ] : contains(["any_availability_zone", "partial_availability_zone_affinity", "availability_zone_affinity"], nlb.dns_record_client_routing_policy)
+    ])
+    error_message = "dns_record_client_routing_policy must be one of: any_availability_zone, partial_availability_zone_affinity, availability_zone_affinity"
+  }
 }
 
 variable "external_cert_arn" {
