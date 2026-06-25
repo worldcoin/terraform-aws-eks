@@ -119,3 +119,27 @@ run "nlb_az_affinity_invalid_routing_policy_rejected" {
     var.nlb_az_affinity,
   ]
 }
+
+# =============================================================================
+# Test: explicit null is normalized to the default {} (nullable = false)
+# Empirically TF doesn't surface a hard failure here — instead the default
+# kicks in and the attribute lookups stay safe. This test pins that behavior
+# so any future change that breaks the null-safety contract is caught.
+# =============================================================================
+run "nlb_az_affinity_null_normalized_to_default" {
+  command = plan
+
+  variables {
+    nlb_az_affinity = null
+  }
+
+  assert {
+    condition     = var.nlb_az_affinity.gateway_api_internal.enable_cross_zone_load_balancing == true
+    error_message = "Passing null should normalize to the default object; attribute lookups must remain safe"
+  }
+
+  assert {
+    condition     = var.nlb_az_affinity.gateway_api_external.dns_record_client_routing_policy == "any_availability_zone"
+    error_message = "Passing null should normalize to the default object on gateway_api_external too"
+  }
+}
