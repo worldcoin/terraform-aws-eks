@@ -1177,9 +1177,10 @@ variable "gateway_api_ext_alb_listener_configs" {
 }
 
 variable "gateway_api_ext_alb_extra_certificates" {
-  description = "Additional ACM certificate ARNs to attach as SNI certificates on the external ALB HTTPS listener, alongside the default certificate. Lets callers add SNI certs without restating listener defaults. Ignored when gateway_api_ext_alb_listener_configs is set (full override wins)."
+  description = "Additional ACM certificate ARNs to attach as SNI certificates on the external ALB HTTPS listener, alongside the default certificate. Lets callers add SNI certs without restating listener defaults. Ignored when gateway_api_ext_alb_listener_configs is set (that override wins)."
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
 variable "gateway_api_ext_nlb_listener_configs" {
@@ -1195,9 +1196,10 @@ variable "gateway_api_int_alb_listener_configs" {
 }
 
 variable "gateway_api_int_alb_extra_certificates" {
-  description = "Additional ACM certificate ARNs to attach as SNI certificates on the internal ALB HTTPS listener, alongside the default certificate. Lets callers add SNI certs without restating listener defaults. Ignored when gateway_api_int_alb_listener_configs is set (full override wins)."
+  description = "Additional ACM certificate ARNs to attach as SNI certificates on the internal ALB HTTPS listener, alongside the default certificate. Lets callers add SNI certs without restating listener defaults. Ignored when gateway_api_int_alb_listener_configs is set (that override wins)."
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
 variable "gateway_api_int_nlb_listener_configs" {
