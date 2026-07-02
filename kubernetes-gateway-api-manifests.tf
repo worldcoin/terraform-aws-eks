@@ -49,6 +49,7 @@ locals {
     alpnPolicy           = "None"
     sslPolicy            = local.gateway_api_ssl_policies[var.external_tls_listener_version]
     defaultCertificate   = local.effective_external_cert_arn
+    certificates         = length(var.gateway_api_ext_alb_extra_certificates) > 0 ? var.gateway_api_ext_alb_extra_certificates : null
     mutualAuthentication = local._ext_alb_mtls_config
   }]
 
@@ -64,6 +65,7 @@ locals {
     alpnPolicy         = "None"
     sslPolicy          = local.gateway_api_ssl_policies[var.internal_tls_listener_version]
     defaultCertificate = local.effective_internal_cert_arn
+    certificates       = length(var.gateway_api_int_alb_extra_certificates) > 0 ? var.gateway_api_int_alb_extra_certificates : null
   }]
 
   _default_int_nlb_listener_configs = [{
@@ -74,13 +76,14 @@ locals {
   }]
 
   # Resolve listener configs: use override if provided, otherwise per-LB defaults.
-  # merge() ensures all CRD attributes exist (required by kubernetes_manifest provider),
-  # then `if v != null` strips null keys so only caller-set fields appear in the manifest,
-  # preventing drift on clusters using defaults.
-  gateway_api_ext_alb_listener_configs = [for cfg in coalesce(var.gateway_api_ext_alb_listener_configs, local._default_ext_alb_listener_configs) : { for k, v in merge(local._listener_config_defaults, cfg) : k => v if v != null }]
-  gateway_api_ext_nlb_listener_configs = [for cfg in coalesce(var.gateway_api_ext_nlb_listener_configs, local._default_ext_nlb_listener_configs) : { for k, v in merge(local._listener_config_defaults, cfg) : k => v if v != null }]
-  gateway_api_int_alb_listener_configs = [for cfg in coalesce(var.gateway_api_int_alb_listener_configs, local._default_int_alb_listener_configs) : { for k, v in merge(local._listener_config_defaults, cfg) : k => v if v != null }]
-  gateway_api_int_nlb_listener_configs = [for cfg in coalesce(var.gateway_api_int_nlb_listener_configs, local._default_int_nlb_listener_configs) : { for k, v in merge(local._listener_config_defaults, cfg) : k => v if v != null }]
+  # Each element is pre-merged with _listener_config_defaults so both ternary branches
+  # share one object type (coalesce/ternary require it), which lets callers pass partial
+  # overrides. The final `if v != null` strips null keys so only set fields reach the
+  # manifest, preventing drift on clusters using defaults.
+  gateway_api_ext_alb_listener_configs = [for cfg in(var.gateway_api_ext_alb_listener_configs != null ? [for c in var.gateway_api_ext_alb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_ext_alb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
+  gateway_api_ext_nlb_listener_configs = [for cfg in(var.gateway_api_ext_nlb_listener_configs != null ? [for c in var.gateway_api_ext_nlb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_ext_nlb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
+  gateway_api_int_alb_listener_configs = [for cfg in(var.gateway_api_int_alb_listener_configs != null ? [for c in var.gateway_api_int_alb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_int_alb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
+  gateway_api_int_nlb_listener_configs = [for cfg in(var.gateway_api_int_nlb_listener_configs != null ? [for c in var.gateway_api_int_nlb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_int_nlb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
 }
 
 # CRDs: Gateway API (v1.5.1) + AWS LBC Gateway CRDs (v3.2.1)

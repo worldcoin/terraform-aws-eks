@@ -225,6 +225,142 @@ run "gateway_api_internal_only_no_cert_fails" {
 }
 
 # =============================================================================
+# Test: gateway_api_int_alb_extra_certificates defaults to empty (no certificates key)
+# =============================================================================
+run "gateway_api_int_alb_extra_certs_default_empty" {
+  command = plan
+
+  variables {
+    gateway_api_crds_enabled     = true
+    gateway_api_internal_enabled = true
+    external_alb_enabled         = false
+    internal_nlb_enabled         = false
+    internal_cert_arn            = "arn:aws:acm:us-east-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
+  }
+
+  assert {
+    condition     = !contains(keys(local.gateway_api_int_alb_listener_configs[0]), "certificates")
+    error_message = "certificates key should be absent when gateway_api_int_alb_extra_certificates is empty"
+  }
+}
+
+# =============================================================================
+# Test: gateway_api_int_alb_extra_certificates appends SNI certs to the default listener
+# =============================================================================
+run "gateway_api_int_alb_extra_certs_appended" {
+  command = plan
+
+  variables {
+    gateway_api_crds_enabled     = true
+    gateway_api_internal_enabled = true
+    external_alb_enabled         = false
+    internal_nlb_enabled         = false
+    internal_cert_arn            = "arn:aws:acm:us-east-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
+    gateway_api_int_alb_extra_certificates = [
+      "arn:aws:acm:us-east-1:123412341234:certificate/99887766-1312-abcd-qwer-1a2s3d4f5g6h"
+    ]
+  }
+
+  assert {
+    condition     = length(local.gateway_api_int_alb_listener_configs[0].certificates) == 1 && contains(local.gateway_api_int_alb_listener_configs[0].certificates, "arn:aws:acm:us-east-1:123412341234:certificate/99887766-1312-abcd-qwer-1a2s3d4f5g6h")
+    error_message = "extra certificates should appear as SNI certificates on the internal ALB listener"
+  }
+
+  assert {
+    condition     = local.gateway_api_int_alb_listener_configs[0].defaultCertificate == "arn:aws:acm:us-east-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
+    error_message = "defaultCertificate should still resolve from the internal cert"
+  }
+}
+
+# =============================================================================
+# Test: full listener override ignores gateway_api_int_alb_extra_certificates
+# =============================================================================
+run "gateway_api_int_alb_extra_certs_ignored_on_override" {
+  command = plan
+
+  variables {
+    gateway_api_crds_enabled     = true
+    gateway_api_internal_enabled = true
+    external_alb_enabled         = false
+    internal_nlb_enabled         = false
+    internal_cert_arn            = "arn:aws:acm:us-east-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
+    gateway_api_int_alb_extra_certificates = [
+      "arn:aws:acm:us-east-1:123412341234:certificate/99887766-1312-abcd-qwer-1a2s3d4f5g6h"
+    ]
+    gateway_api_int_alb_listener_configs = [{
+      protocolPort       = "HTTPS:443"
+      defaultCertificate = "arn:aws:acm:us-east-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
+    }]
+  }
+
+  assert {
+    condition     = !contains(keys(local.gateway_api_int_alb_listener_configs[0]), "certificates")
+    error_message = "extra certificates must be ignored when a full listener override is provided"
+  }
+}
+
+# =============================================================================
+# Test: gateway_api_ext_alb_extra_certificates defaults to empty (no certificates key)
+# =============================================================================
+run "gateway_api_ext_alb_extra_certs_default_empty" {
+  command = plan
+
+  variables {
+    gateway_api_crds_enabled     = true
+    gateway_api_external_enabled = true
+  }
+
+  assert {
+    condition     = !contains(keys(local.gateway_api_ext_alb_listener_configs[0]), "certificates")
+    error_message = "certificates key should be absent when gateway_api_ext_alb_extra_certificates is empty"
+  }
+}
+
+# =============================================================================
+# Test: gateway_api_ext_alb_extra_certificates appends SNI certs to the default listener
+# =============================================================================
+run "gateway_api_ext_alb_extra_certs_appended" {
+  command = plan
+
+  variables {
+    gateway_api_crds_enabled     = true
+    gateway_api_external_enabled = true
+    gateway_api_ext_alb_extra_certificates = [
+      "arn:aws:acm:us-east-1:123412341234:certificate/99887766-1312-abcd-qwer-1a2s3d4f5g6h"
+    ]
+  }
+
+  assert {
+    condition     = length(local.gateway_api_ext_alb_listener_configs[0].certificates) == 1 && contains(local.gateway_api_ext_alb_listener_configs[0].certificates, "arn:aws:acm:us-east-1:123412341234:certificate/99887766-1312-abcd-qwer-1a2s3d4f5g6h")
+    error_message = "extra certificates should appear as SNI certificates on the external ALB listener"
+  }
+}
+
+# =============================================================================
+# Test: full external listener override ignores gateway_api_ext_alb_extra_certificates
+# =============================================================================
+run "gateway_api_ext_alb_extra_certs_ignored_on_override" {
+  command = plan
+
+  variables {
+    gateway_api_crds_enabled     = true
+    gateway_api_external_enabled = true
+    gateway_api_ext_alb_extra_certificates = [
+      "arn:aws:acm:us-east-1:123412341234:certificate/99887766-1312-abcd-qwer-1a2s3d4f5g6h"
+    ]
+    gateway_api_ext_alb_listener_configs = [{
+      protocolPort       = "HTTPS:443"
+      defaultCertificate = "arn:aws:acm:us-east-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
+    }]
+  }
+
+  assert {
+    condition     = !contains(keys(local.gateway_api_ext_alb_listener_configs[0]), "certificates")
+    error_message = "extra certificates must be ignored when a full listener override is provided"
+  }
+}
+
+# =============================================================================
 # Test: K8s manifests disabled by default (gateway_api_*_enabled = false)
 # =============================================================================
 run "gateway_api_k8s_manifests_disabled_by_default" {
