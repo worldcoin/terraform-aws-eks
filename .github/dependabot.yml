@@ -11,3 +11,18 @@ updates:
       "github-actions":
         patterns:
           - '*'
+
+  # Maintain Terraform module + provider versions.
+  # Replaces the terraform-update-modules-public-pull workflow. The
+  # worldcoin/terraform-aws-* module sources are public git repos, so no
+  # registry/token is required to bump their ?ref= tags.
+  - package-ecosystem: "terraform"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "[terraform] "
+    groups:
+      terraform:
+        patterns:
+          - '*'
