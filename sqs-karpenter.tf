@@ -37,7 +37,7 @@ resource "aws_sqs_queue_policy" "spot_notifications_sqs" {
 
 # Rules
 resource "aws_cloudwatch_event_rule" "spot_aws_health" {
-  name        = "spot-aws-health"
+  name        = "spot-aws-health-${var.cluster_name}"
   description = "Capture each scheduled change event from AWS Health"
 
   event_pattern = jsonencode({
@@ -55,7 +55,7 @@ resource "aws_cloudwatch_event_target" "spot_aws_health" {
 }
 
 resource "aws_cloudwatch_event_rule" "spot_aws_ec2" {
-  name        = "spot-aws-ec2"
+  name        = "spot-aws-ec2-${var.cluster_name}"
   description = "Capture aws.ec2 spot instance events"
 
   event_pattern = jsonencode({
