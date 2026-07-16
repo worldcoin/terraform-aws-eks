@@ -41,6 +41,27 @@ Release is created as draft, so you have to edit it manually and change it to fi
 
 ## Breaking changes
 
+### Karpenter spot interruption EventBridge rules are now per-cluster
+
+The spot interruption EventBridge rules (`aws_cloudwatch_event_rule.spot_aws_health`
+and `aws_cloudwatch_event_rule.spot_aws_ec2`) are now named per-cluster:
+`spot-aws-health-${cluster_name}` and `spot-aws-ec2-${cluster_name}`. Previously
+they used the fixed regional names `spot-aws-health` / `spot-aws-ec2`, which two
+clusters in the same AWS account and region shared and fought over from separate
+Terraform states.
+
+**Migration for existing clusters:** the Terraform resource addresses are unchanged
+(only the `name` attribute changed), so no state surgery is required — a normal
+`terraform apply` replaces each rule and its target in place. EventBridge rule
+replacement is a destroy-then-create; expect a brief (few-second) window during the
+apply where spot interruption events for that cluster are not delivered to its SQS
+queue. Run the apply during a maintenance window if that matters for the cluster.
+
+After migration, each cluster owns its own rules, so creating or destroying one
+cluster no longer affects spot interruption handling for another cluster in the same
+account/region. The previous manual `terraform state rm` workaround during cluster
+removal is no longer needed and has been removed from the removal steps below.
+
 ### Version 10.0.0 - Kubernetes Resource Type Migration
 
 Version 10.0.0 introduces a breaking change due to upgrading deprecated `kubernetes_*` resources to their `kubernetes_*_v1` counterparts. This affects the following resources:
@@ -595,8 +616,6 @@ To remove the cluster you have to:
 
    terraform state rm ...
    ```
-
-1. if there are other clusters in the same region, remove `aws_cloudwatch_event_rule.spot_aws_health aws_cloudwatch_event_rule.spot_aws_ec2` from the state manually.
 
 1. Remove module invocation to finally delete cluster itself.
 
