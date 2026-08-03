@@ -177,6 +177,17 @@ data "aws_iam_policy_document" "karpenter" {
     ]
     resources = [aws_sqs_queue.this.arn]
   }
+  statement {
+    sid       = "AllowScopedEC2SpotServiceLinkedRoleCreation"
+    effect    = "Allow"
+    actions   = ["iam:CreateServiceLinkedRole"]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.account.id}:role/aws-service-role/spot.amazonaws.com/AWSServiceRoleForEC2Spot"]
+    condition {
+      test     = "StringEquals"
+      variable = "iam:AWSServiceName"
+      values   = ["spot.amazonaws.com"]
+    }
+  }
 }
 
 resource "aws_iam_role" "karpenter" {
