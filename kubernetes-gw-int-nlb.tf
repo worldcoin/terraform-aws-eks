@@ -1,32 +1,50 @@
 locals {
   gateway_api_internal_nlb_name = "gw-int-nlb"
 
-  gateway_api_internal_nlb_sg_rules = var.gateway_api_internal_nlb_sg_rules != null ? var.gateway_api_internal_nlb_sg_rules : concat(
+  # Every element shares the same key set (nulls for the unused ones) so this is a uniform
+  # list(object(...)) type, matching var.gateway_api_internal_nlb_sg_rules's declared type —
+  # concat() below would otherwise hit "Inconsistent conditional result types" the moment an
+  # override doesn't structurally clone this default (see INFRA-6980).
+  gateway_api_internal_nlb_default_sg_rules = concat(
     [
       {
-        description = "Allow HTTP from all internal networks"
-        port        = 80
-        cidr_blocks = ["10.0.0.0/8"]
+        description      = "Allow HTTP from all internal networks"
+        protocol         = "tcp"
+        port             = 80
+        cidr_blocks      = ["10.0.0.0/8"]
+        ipv6_cidr_blocks = null
+        security_groups  = null
       },
       {
-        description = "Allow HTTPS from all internal networks"
-        port        = 443
-        cidr_blocks = ["10.0.0.0/8"]
+        description      = "Allow HTTPS from all internal networks"
+        protocol         = "tcp"
+        port             = 443
+        cidr_blocks      = ["10.0.0.0/8"]
+        ipv6_cidr_blocks = null
+        security_groups  = null
       },
     ],
     data.aws_vpc.cluster_vpc.ipv6_cidr_block != "" ? [
       {
         description      = "Allow HTTP from VPC (IPv6)"
+        protocol         = "tcp"
         port             = 80
+        cidr_blocks      = null
         ipv6_cidr_blocks = [data.aws_vpc.cluster_vpc.ipv6_cidr_block]
+        security_groups  = null
       },
       {
         description      = "Allow HTTPS from VPC (IPv6)"
+        protocol         = "tcp"
         port             = 443
+        cidr_blocks      = null
         ipv6_cidr_blocks = [data.aws_vpc.cluster_vpc.ipv6_cidr_block]
+        security_groups  = null
       },
     ] : []
   )
+
+  gateway_api_internal_nlb_sg_rules = concat(local.gateway_api_internal_nlb_default_sg_rules, var.gateway_api_internal_nlb_sg_rules)
 }
 
 module "gateway_api_internal_nlb" {

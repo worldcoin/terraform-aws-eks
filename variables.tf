@@ -983,58 +983,84 @@ variable "gateway_api_internal_enabled" {
 }
 
 variable "gateway_api_external_alb_sg_rules" {
-  description = "Override LB security group ingress rules for the external Gateway API ALB. When null, the ALB module defaults apply (Cloudflare IPs or open_to_all)."
-  type        = any
-  default     = null
+  description = "Additional LB security group ingress rules for the external Gateway API ALB, appended to the module's own defaults (Cloudflare IPs or open_to_all) — this does not replace them."
+  type = list(object({
+    description     = optional(string, "")
+    protocol        = optional(string, "tcp")
+    port            = number
+    cidr_blocks     = optional(list(string))
+    security_groups = optional(list(string))
+  }))
+  default = []
 
   validation {
-    condition = var.gateway_api_external_alb_sg_rules == null || alltrue([
-      for r in coalesce(var.gateway_api_external_alb_sg_rules, []) :
-      can(r.port) && (can(r.cidr_blocks) || can(r.security_groups))
+    condition = alltrue([
+      for r in var.gateway_api_external_alb_sg_rules :
+      r.cidr_blocks != null || r.security_groups != null
     ])
-    error_message = "Each rule must have a 'port' and at least one of 'cidr_blocks' or 'security_groups'."
+    error_message = "Each rule must specify at least one of 'cidr_blocks' or 'security_groups'."
   }
 }
 
 variable "gateway_api_internal_alb_sg_rules" {
-  description = "Override LB security group ingress rules for the internal Gateway API ALB. When null, allows HTTPS from all internal networks (10.0.0.0/8)."
-  type        = any
-  default     = null
+  description = "Additional LB security group ingress rules for the internal Gateway API ALB, appended to the module's own defaults (HTTPS from all internal networks) — this does not replace them."
+  type = list(object({
+    description     = optional(string, "")
+    protocol        = optional(string, "tcp")
+    port            = number
+    cidr_blocks     = optional(list(string))
+    security_groups = optional(list(string))
+  }))
+  default = []
 
   validation {
-    condition = var.gateway_api_internal_alb_sg_rules == null || alltrue([
-      for r in coalesce(var.gateway_api_internal_alb_sg_rules, []) :
-      can(r.port) && (can(r.cidr_blocks) || can(r.security_groups))
+    condition = alltrue([
+      for r in var.gateway_api_internal_alb_sg_rules :
+      r.cidr_blocks != null || r.security_groups != null
     ])
-    error_message = "Each rule must have a 'port' and at least one of 'cidr_blocks' or 'security_groups'."
+    error_message = "Each rule must specify at least one of 'cidr_blocks' or 'security_groups'."
   }
 }
 
 variable "gateway_api_external_nlb_sg_rules" {
-  description = "Override LB security group ingress rules for the external Gateway API NLB. When null, allows ports 80 and 443 from Cloudflare IPs."
-  type        = any
-  default     = null
+  description = "Additional LB security group ingress rules for the external Gateway API NLB, appended to the module's own defaults (ports 80/443 from Cloudflare IPs) — this does not replace them."
+  type = list(object({
+    description      = optional(string, "")
+    protocol         = optional(string, "tcp")
+    port             = number
+    cidr_blocks      = optional(list(string))
+    ipv6_cidr_blocks = optional(list(string))
+    security_groups  = optional(list(string))
+  }))
+  default = []
 
   validation {
-    condition = var.gateway_api_external_nlb_sg_rules == null || alltrue([
-      for r in coalesce(var.gateway_api_external_nlb_sg_rules, []) :
-      can(r.port) && (can(r.cidr_blocks) || can(r.ipv6_cidr_blocks) || can(r.security_groups))
+    condition = alltrue([
+      for r in var.gateway_api_external_nlb_sg_rules :
+      r.cidr_blocks != null || r.ipv6_cidr_blocks != null || r.security_groups != null
     ])
-    error_message = "Each rule must have a 'port' and at least one of 'cidr_blocks', 'ipv6_cidr_blocks', or 'security_groups'."
+    error_message = "Each rule must specify at least one of 'cidr_blocks', 'ipv6_cidr_blocks', or 'security_groups'."
   }
 }
 
 variable "gateway_api_internal_nlb_sg_rules" {
-  description = "Override LB security group ingress rules for the internal Gateway API NLB. When null, allows ports 80 and 443 from all internal networks (10.0.0.0/8)."
-  type        = any
-  default     = null
+  description = "Additional LB security group ingress rules for the internal Gateway API NLB, appended to the module's own defaults (ports 80/443 from all internal networks) — this does not replace them."
+  type = list(object({
+    description      = optional(string, "")
+    protocol         = optional(string, "tcp")
+    port             = number
+    cidr_blocks      = optional(list(string))
+    ipv6_cidr_blocks = optional(list(string))
+    security_groups  = optional(list(string))
+  }))
+  default = []
 
   validation {
-    condition = var.gateway_api_internal_nlb_sg_rules == null || alltrue([
-      for r in coalesce(var.gateway_api_internal_nlb_sg_rules, []) :
-      can(r.port) && (can(r.cidr_blocks) || can(r.ipv6_cidr_blocks) || can(r.security_groups))
+    condition = alltrue([
+      for r in var.gateway_api_internal_nlb_sg_rules :
+      r.cidr_blocks != null || r.ipv6_cidr_blocks != null || r.security_groups != null
     ])
-    error_message = "Each rule must have a 'port' and at least one of 'cidr_blocks', 'ipv6_cidr_blocks', or 'security_groups'."
+    error_message = "Each rule must specify at least one of 'cidr_blocks', 'ipv6_cidr_blocks', or 'security_groups'."
   }
 }
 

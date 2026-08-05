@@ -4,7 +4,8 @@ locals {
   # Default is [] — the ALB module manages frontend SG ingress internally
   # using open_to_all (Cloudflare IPs or 0.0.0.0/0). backend_ingress_rules
   # only adds extra rules to the backend SG which has no ingress by default.
-  gateway_api_external_alb_sg_rules = var.gateway_api_external_alb_sg_rules != null ? var.gateway_api_external_alb_sg_rules : []
+  # var.gateway_api_external_alb_sg_rules defaults to [] too, so this is a no-op concat when unset.
+  gateway_api_external_alb_sg_rules = concat([], var.gateway_api_external_alb_sg_rules)
 }
 
 module "gateway_api_external_alb" {

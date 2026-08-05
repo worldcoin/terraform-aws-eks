@@ -1,22 +1,34 @@
 locals {
   gateway_api_internal_alb_name = "gw-int-alb"
 
-  gateway_api_internal_alb_sg_rules = var.gateway_api_internal_alb_sg_rules != null ? var.gateway_api_internal_alb_sg_rules : concat(
+  # NOTE: terraform-aws-alb's backend_ingress_rules has no ipv6_cidr_blocks attribute (checked
+  # v1.6.1, the version pinned below) — the IPv6 rule below has never actually reached the ALB
+  # module with a functioning ipv6 key. Preserved as-is (pre-existing, out of scope for
+  # INFRA-6980); only normalized here so this local's own two branches type-check.
+  gateway_api_internal_alb_default_sg_rules = concat(
     [
       {
-        description = "Allow HTTPS from all internal networks"
-        port        = 443
-        cidr_blocks = ["10.0.0.0/8"]
+        description      = "Allow HTTPS from all internal networks"
+        protocol         = "tcp"
+        port             = 443
+        cidr_blocks      = ["10.0.0.0/8"]
+        ipv6_cidr_blocks = null
+        security_groups  = null
       },
     ],
     data.aws_vpc.cluster_vpc.ipv6_cidr_block != "" ? [
       {
         description      = "Allow HTTPS from VPC (IPv6)"
+        protocol         = "tcp"
         port             = 443
+        cidr_blocks      = null
         ipv6_cidr_blocks = [data.aws_vpc.cluster_vpc.ipv6_cidr_block]
+        security_groups  = null
       },
     ] : []
   )
+
+  gateway_api_internal_alb_sg_rules = concat(local.gateway_api_internal_alb_default_sg_rules, var.gateway_api_internal_alb_sg_rules)
 }
 
 module "gateway_api_internal_alb" {
