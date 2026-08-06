@@ -689,3 +689,25 @@ run "gateway_api_sg_rules_default_unchanged_when_unset" {
     error_message = "With no override, only the 4 Cloudflare defaults should be present"
   }
 }
+
+# =============================================================================
+# Test: explicit null override behaves the same as unset (nullable = false)
+#
+# Per Copilot review feedback on #149 - without nullable = false, a caller
+# passing null explicitly (rather than omitting the argument) would bypass the
+# default and break both the validation's `for` expression and concat().
+# =============================================================================
+run "gateway_api_sg_rules_explicit_null_same_as_unset" {
+  command = plan
+
+  variables {
+    gateway_api_crds_enabled          = true
+    gateway_api_external_enabled      = true
+    gateway_api_external_nlb_sg_rules = null
+  }
+
+  assert {
+    condition     = length(local.gateway_api_external_nlb_sg_rules) == 4
+    error_message = "Explicit null override should be normalized to [] and behave like unset"
+  }
+}

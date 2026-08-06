@@ -983,7 +983,7 @@ variable "gateway_api_internal_enabled" {
 }
 
 variable "gateway_api_external_alb_sg_rules" {
-  description = "Additional LB security group ingress rules for the external Gateway API ALB, appended to the module's own defaults (Cloudflare IPs or open_to_all) — this does not replace them."
+  description = "Additional ingress rules for the external Gateway API ALB's backend security group (terraform-aws-alb's backend_ingress_rules — the frontend SG is managed separately via Cloudflare IPs/open_to_all), appended to the module's own defaults — this does not replace them."
   type = list(object({
     description     = optional(string, "")
     protocol        = optional(string, "tcp")
@@ -991,7 +991,8 @@ variable "gateway_api_external_alb_sg_rules" {
     cidr_blocks     = optional(list(string))
     security_groups = optional(list(string))
   }))
-  default = []
+  default  = []
+  nullable = false
 
   validation {
     condition = alltrue([
@@ -1003,7 +1004,7 @@ variable "gateway_api_external_alb_sg_rules" {
 }
 
 variable "gateway_api_internal_alb_sg_rules" {
-  description = "Additional LB security group ingress rules for the internal Gateway API ALB, appended to the module's own defaults (HTTPS from all internal networks) — this does not replace them."
+  description = "Additional ingress rules for the internal Gateway API ALB's backend security group (terraform-aws-alb's backend_ingress_rules), appended to the module's own defaults (HTTPS from all internal networks) — this does not replace them."
   type = list(object({
     description     = optional(string, "")
     protocol        = optional(string, "tcp")
@@ -1011,7 +1012,8 @@ variable "gateway_api_internal_alb_sg_rules" {
     cidr_blocks     = optional(list(string))
     security_groups = optional(list(string))
   }))
-  default = []
+  default  = []
+  nullable = false
 
   validation {
     condition = alltrue([
@@ -1032,7 +1034,8 @@ variable "gateway_api_external_nlb_sg_rules" {
     ipv6_cidr_blocks = optional(list(string))
     security_groups  = optional(list(string))
   }))
-  default = []
+  default  = []
+  nullable = false
 
   validation {
     condition = alltrue([
@@ -1053,7 +1056,8 @@ variable "gateway_api_internal_nlb_sg_rules" {
     ipv6_cidr_blocks = optional(list(string))
     security_groups  = optional(list(string))
   }))
-  default = []
+  default  = []
+  nullable = false
 
   validation {
     condition = alltrue([
