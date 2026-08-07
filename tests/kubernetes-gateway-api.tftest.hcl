@@ -605,3 +605,109 @@ run "gateway_api_ssl_policy_mapping" {
     error_message = "TLS 1.2 should map to ELBSecurityPolicy-TLS-1-2-2017-01"
   }
 }
+
+# =============================================================================
+# Test: SG rule overrides are additive, not full replacement (INFRA-6980)
+#
+# Before this fix, providing any *_sg_rules override whose shape didn't exactly
+# clone the module's own default caused "Inconsistent conditional result types"
+# at plan time (var.X != null ? var.X : local.default, with differing tuple
+# lengths/shapes). These tests both prove a real plan succeeds with a
+# minimal, differently-shaped override, and that the defaults are preserved
+# alongside it (additive semantics) rather than replaced.
+# =============================================================================
+run "gateway_api_external_nlb_sg_rules_additive" {
+  command = plan
+
+  variables {
+    gateway_api_crds_enabled     = true
+    gateway_api_external_enabled = true
+    gateway_api_external_nlb_sg_rules = [
+      {
+        description = "allow tx-proxy direct access (Alchemy + testing)"
+        port        = 443
+        cidr_blocks = ["107.22.167.250/32", "44.223.208.168/32"]
+      }
+    ]
+  }
+
+  assert {
+    condition     = length(local.gateway_api_external_nlb_sg_rules) == 5
+    error_message = "Override should be appended to the 4 Cloudflare defaults, not replace them"
+  }
+
+  assert {
+    condition     = contains([for r in local.gateway_api_external_nlb_sg_rules : r.description], "allow http from Cloudflare")
+    error_message = "Cloudflare default rules must still be present after an override is supplied"
+  }
+
+  assert {
+    condition     = contains([for r in local.gateway_api_external_nlb_sg_rules : r.description], "allow tx-proxy direct access (Alchemy + testing)")
+    error_message = "Override rule must be present"
+  }
+}
+
+run "gateway_api_internal_alb_sg_rules_additive" {
+  command = plan
+
+  variables {
+    gateway_api_crds_enabled     = true
+    gateway_api_internal_enabled = true
+    external_alb_enabled         = false
+    internal_nlb_enabled         = false
+    internal_cert_arn            = "arn:aws:acm:us-east-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
+    gateway_api_internal_alb_sg_rules = [
+      {
+        description     = "allow from peered VPC"
+        port            = 8443
+        security_groups = ["sg-0123456789abcdef0"]
+      }
+    ]
+  }
+
+  assert {
+    condition     = length(local.gateway_api_internal_alb_sg_rules) == 2
+    error_message = "Override should be appended to the 1 default internal-network rule, not replace it"
+  }
+
+  assert {
+    condition     = contains([for r in local.gateway_api_internal_alb_sg_rules : r.description], "Allow HTTPS from all internal networks")
+    error_message = "Default internal-network rule must still be present after an override is supplied"
+  }
+}
+
+run "gateway_api_sg_rules_default_unchanged_when_unset" {
+  command = plan
+
+  variables {
+    gateway_api_crds_enabled     = true
+    gateway_api_external_enabled = true
+  }
+
+  assert {
+    condition     = length(local.gateway_api_external_nlb_sg_rules) == 4
+    error_message = "With no override, only the 4 Cloudflare defaults should be present"
+  }
+}
+
+# =============================================================================
+# Test: explicit null override behaves the same as unset (nullable = false)
+#
+# Per Copilot review feedback on #149 - without nullable = false, a caller
+# passing null explicitly (rather than omitting the argument) would bypass the
+# default and break both the validation's `for` expression and concat().
+# =============================================================================
+run "gateway_api_sg_rules_explicit_null_same_as_unset" {
+  command = plan
+
+  variables {
+    gateway_api_crds_enabled          = true
+    gateway_api_external_enabled      = true
+    gateway_api_external_nlb_sg_rules = null
+  }
+
+  assert {
+    condition     = length(local.gateway_api_external_nlb_sg_rules) == 4
+    error_message = "Explicit null override should be normalized to [] and behave like unset"
+  }
+}
