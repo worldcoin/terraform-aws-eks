@@ -41,6 +41,49 @@ Release is created as draft, so you have to edit it manually and change it to fi
 
 ## Breaking changes
 
+### IMDSv2 hop limit now defaults to 1
+
+`http_put_response_hop_limit` now defaults to `1` (previously `2`). All three
+launch templates this module owns — the ASG (`aws_launch_template.this`), the
+AL2023 managed node group (`aws_launch_template.al2023`) and the enclave tracks
+(`aws_launch_template.enclave_track`) — already required IMDSv2 tokens; the
+hop limit was the remaining gap.
+
+A hop limit of `2` lets the IMDS response survive the extra veth hop into a Pod
+network namespace, so any regular Pod could read `169.254.169.254`, take the
+node's IAM credentials and bypass its own IRSA / Pod Identity role. Hop limit
+`1` confines IMDS to the host network namespace. The historical reason for `2`
+was `aws-load-balancer-controller` discovering its region and VPC through IMDS.
+
+**Read this before bumping the module ref.** Consumers pin a version, so nothing
+changes until a cluster bumps its `ref`. At that point every node in that
+cluster is replaced with metadata access closed. Before you bump:
+
+1. **`aws-load-balancer-controller` must get `region` and `vpcId` explicitly**
+   (Helm values or the `--aws-region` / `--aws-vpc-id` args). It is not a
+   `hostNetwork` workload, so without them it loses discovery at startup and
+   stops reconciling load balancers. This module only manages its IRSA role —
+   the Helm release lives in the cluster-apps repo.
+2. **Karpenter nodes are not covered by this variable.** They are provisioned
+   from `EC2NodeClass` resources outside this module, which carry their own
+   `metadataOptions.httpPutResponseHopLimit`. Leaving those at `2` gives you a
+   split fleet: managed nodes closed, Karpenter nodes open.
+3. **Audit for workloads that read IMDS.** Anything using the node role instead
+   of IRSA breaks. Pods with `hostNetwork: true` share the node's network
+   namespace and keep IMDS access regardless of the hop limit — they are a
+   residual exposure to inventory, not something this change closes.
+
+To keep the old behaviour for a documented exception, set the variable
+explicitly and say why:
+
+```hcl
+# <workload> needs node-level metadata access, see <ticket>
+http_put_response_hop_limit = 2
+```
+
+The variable is now `nullable = false`, so passing `null` falls back to the
+secure default instead of the provider default.
+
 ### Karpenter spot interruption EventBridge rules are now per-cluster
 
 The spot interruption EventBridge rules (`aws_cloudwatch_event_rule.spot_aws_health`
@@ -889,7 +932,7 @@ To remove the cluster you have to:
 | <a name="input_gateway_api_lb_name_prefix"></a> [gateway\_api\_lb\_name\_prefix](#input\_gateway\_api\_lb\_name\_prefix) | Prefix for Gateway API load balancer names. Defaults to cluster\_name. Override when cluster\_name is too long to fit within the 32-char AWS LB name limit (prefix + suffix like '-gw-ext-alb' must be <= 32). | `string` | `null` | no |
 | <a name="input_gha_cidr_eu_central_1"></a> [gha\_cidr\_eu\_central\_1](#input\_gha\_cidr\_eu\_central\_1) | GitHub Actions CIDR block for eu-central-1 | `string` | `"10.52.0.0/20"` | no |
 | <a name="input_gha_cidr_us_east_1"></a> [gha\_cidr\_us\_east\_1](#input\_gha\_cidr\_us\_east\_1) | GitHub Actions CIDR block for us-east-1 | `string` | `"10.0.96.0/20"` | no |
-| <a name="input_http_put_response_hop_limit"></a> [http\_put\_response\_hop\_limit](#input\_http\_put\_response\_hop\_limit) | The maximum number of hops allowed for HTTP PUT requests. Must be between 1 and 64. | `number` | `2` | no |
+| <a name="input_http_put_response_hop_limit"></a> [http\_put\_response\_hop\_limit](#input\_http\_put\_response\_hop\_limit) | IMDSv2 hop limit for worker nodes. Defaults to 1 so only the host network namespace can reach IMDS; a Pod is one hop further and cannot assume the node IAM role. Raise it only for a documented workload that genuinely needs node metadata. Must be between 1 and 64. | `number` | `1` | no |
 | <a name="input_internal_cert_arn"></a> [internal\_cert\_arn](#input\_internal\_cert\_arn) | ACM certificate ARN for internal load balancers (falls back to external\_cert\_arn). If empty, internal\_nlb\_acm\_arn is used for backwards compatibility. | `string` | `""` | no |
 | <a name="input_internal_nlb_acm_arn"></a> [internal\_nlb\_acm\_arn](#input\_internal\_nlb\_acm\_arn) | (Deprecated: use internal\_cert\_arn) The ARN of the certificate to use for internal NLB. | `string` | `""` | no |
 | <a name="input_internal_nlb_enabled"></a> [internal\_nlb\_enabled](#input\_internal\_nlb\_enabled) | Internal Network load balancers to create. If true, the NLB will be created. | `bool` | `true` | no |
