@@ -18,7 +18,7 @@ variables {
 
 # Asserts every node provisioning path this module owns ships IMDSv2 with a hop
 # limit of 1, so a regular Pod cannot reach IMDS and assume the node IAM role
-# (INFRA-7052). Hop limit 2 let the IMDS response survive the extra veth hop
+# (INFRA-7052). Hop limit 2 lets the IMDS response survive the extra veth hop
 # into a Pod network namespace.
 run "imds_defaults_are_locked_down_on_every_node_path" {
   command = plan

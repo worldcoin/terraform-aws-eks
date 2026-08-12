@@ -73,7 +73,7 @@ cluster is replaced with metadata access closed. Before you bump:
    namespace and keep IMDS access regardless of the hop limit — they are a
    residual exposure to inventory, not something this change closes.
 
-To keep the old behaviour for a documented exception, set the variable
+To keep the old behavior for a documented exception, set the variable
 explicitly and say why:
 
 ```hcl
