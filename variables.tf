@@ -87,6 +87,12 @@ variable "kube_ops_enabled" {
   default     = true
 }
 
+variable "ecr_credentials_sync_enabled" {
+  description = "Whether to create a role and Pod Identity association for the argocd/ecr-credentials-sync CronJob so it can call ecr:GetAuthorizationToken without IMDS"
+  type        = bool
+  default     = true
+}
+
 variable "extra_role_mapping" {
   description = "Extra role mappings to add to the aws-auth configmap."
   type = list(object({
@@ -574,10 +580,9 @@ variable "external_check_locations" {
 }
 
 variable "http_put_response_hop_limit" {
-  description = "IMDSv2 hop limit for worker nodes. Defaults to 1 so only the host network namespace can reach IMDS; a Pod is one hop further and cannot assume the node IAM role. Raise it only for a documented workload that genuinely needs node metadata. Must be between 1 and 64."
+  description = "The maximum number of hops allowed for HTTP PUT requests. Must be between 1 and 64."
   type        = number
-  default     = 1
-  nullable    = false
+  default     = 2
   validation {
     condition     = var.http_put_response_hop_limit >= 1 && var.http_put_response_hop_limit <= 64
     error_message = "Invalid hop limit. Must be between 1 and 64"
