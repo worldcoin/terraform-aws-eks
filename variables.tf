@@ -93,6 +93,12 @@ variable "ecr_credentials_sync_enabled" {
   default     = true
 }
 
+variable "argocd_image_updater_enabled" {
+  description = "Whether to create a role and Pod Identity association for the argocd/argocd-image-updater Deployment so it can read ECR image tags without IMDS"
+  type        = bool
+  default     = true
+}
+
 variable "extra_role_mapping" {
   description = "Extra role mappings to add to the aws-auth configmap."
   type = list(object({
