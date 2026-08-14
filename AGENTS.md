@@ -69,6 +69,14 @@ root folder represents STANDALONE module, and is expected to clear tests, work a
 - Always recommend using existing secret modules (e.g., terraform-aws-modules/secretmanager, 1Password integrations) already used in this repo.
 - This module is not to be used unconfigured/standalone. 
 
+## Workload AWS credentials — prefer Pod Identity
+
+- For baseline workloads this module owns, grant AWS access through **EKS Pod Identity**, not IRSA. Existing examples: `kube-ops`, `vector`, `ebs`, `keda`, `cni-metrics-helper`, `ecr-credentials-sync`, `argocd-image-updater`.
+- Pattern: raw `aws_iam_role` + `aws_iam_role_policy_attachment` + `aws_eks_pod_identity_association`; trust `pods.eks.amazonaws.com` scoped by the `eks-cluster-arn`, `kubernetes-namespace` and `kubernetes-service-account` session tags; cluster-scoped role name `<workload>-${var.cluster_name}` so several clusters in one account do not collide; gate on a `<workload>_enabled` variable defaulting to `true`. Copy `iam-ecr-credentials-sync.tf` as the template.
+- Why: no ServiceAccount annotation is needed, so IAM stays entirely in Terraform and no cluster-apps change is required; one trust policy shape works on every cluster; the session tags put cluster, namespace and service account into CloudTrail.
+- **Auditing caveat.** A Pod Identity association is invisible from inside the cluster — unlike IRSA there is no `eks.amazonaws.com/role-arn` annotation to grep for. Never conclude "no annotation, therefore no AWS identity". Check `aws eks list-pod-identity-associations --cluster-name <cluster>`, or look for `AWS_CONTAINER_CREDENTIALS_FULL_URI` in a running Pod.
+- Pod Identity is EKS-only and depends on the `eks-pod-identity-agent` addon being present. For a chart that must also run off EKS, IRSA or explicit credentials remain the only options.
+
 ## STRICTLY AVOID:
 - Propose large-scale provider upgrades (e.g., "bump AWS from 4.x to 6.x") unless the user asks.
 - Suggest moving resources between modules or renaming resources unless the user asks specifically.
