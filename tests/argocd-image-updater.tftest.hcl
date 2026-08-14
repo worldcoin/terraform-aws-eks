@@ -55,6 +55,11 @@ run "argocd_image_updater_iam_disabled" {
   }
 
   assert {
+    condition     = length(aws_iam_role_policy_attachment.argocd_image_updater) == 0
+    error_message = "argocd-image-updater policy attachment should not be created when disabled."
+  }
+
+  assert {
     condition     = length(aws_eks_pod_identity_association.argocd_image_updater) == 0
     error_message = "argocd-image-updater pod identity association should not be created when disabled."
   }
