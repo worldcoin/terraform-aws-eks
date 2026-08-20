@@ -586,9 +586,9 @@ variable "external_check_locations" {
 }
 
 variable "http_put_response_hop_limit" {
-  description = "The maximum number of hops allowed for HTTP PUT requests. Must be between 1 and 64."
+  description = "IP TTL applied to IMDSv2 token responses, set as metadata_options.http_put_response_hop_limit on every node launch template. Must be between 1 and 64. At 1 the response stays in the host network namespace, so a Pod one hop away cannot reach 169.254.169.254 and assume the node IAM role. Pods with hostNetwork: true share that namespace and are unaffected."
   type        = number
-  default     = 2
+  default     = 1
   validation {
     condition     = var.http_put_response_hop_limit >= 1 && var.http_put_response_hop_limit <= 64
     error_message = "Invalid hop limit. Must be between 1 and 64"
