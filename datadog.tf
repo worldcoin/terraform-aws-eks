@@ -14,7 +14,10 @@ locals {
 module "datadog_monitoring" {
   count = var.monitoring_enabled ? 1 : 0
 
-  source = "git::https://github.com/worldcoin/terraform-datadog-kubernetes?ref=v1.3.0"
+  # TEST ONLY (INFRA-7132) — pinned to the fix branch to validate on stage
+  # before terraform-datadog-kubernetes cuts a real tag. Revert to a tagged
+  # ref before this merges.
+  source = "git::https://github.com/worldcoin/terraform-datadog-kubernetes?ref=INFRA-7132"
 
   notification_channel = var.monitoring_notification_channel
   service              = format("EKS %s", var.cluster_name)
