@@ -1261,3 +1261,18 @@ variable "gateway_api_lb_name_prefix" {
   }
 }
 
+variable "ebs_csi_metadata_sources" {
+  description = "Comma-separated metadata sources for the aws-ebs-csi-driver node plugin, rendered as node.metadataSources. Defaults to kubernetes because every cluster runs at IMDS hop limit 1, where the driver's own default order (imds then kubernetes) always fails the imds attempt first and costs a 5s timeout plus one error log per node start (INFRA-7097). Set to null to send no configuration and let the driver use its own default, which is only meaningful on a cluster at hop limit 2 or higher. Valid tokens: imds, kubernetes, metadata-labeler."
+  type        = string
+  default     = "kubernetes"
+
+  # Deliberately stricter than the driver: it splits the value as CSV without
+  # trimming, so "imds, kubernetes" reaches it as the token " kubernetes" and the
+  # node plugin refuses to start. Rejecting the space here keeps that a plan-time
+  # error rather than a crash-looping DaemonSet.
+  validation {
+    condition     = var.ebs_csi_metadata_sources == null || try(alltrue([for source in split(",", var.ebs_csi_metadata_sources) : contains(["imds", "kubernetes", "metadata-labeler"], source)]), false)
+    error_message = "ebs_csi_metadata_sources must be a comma-separated list of imds, kubernetes or metadata-labeler, with no spaces."
+  }
+}
+

@@ -83,6 +83,17 @@ locals {
     "1.34" = "v0.8.1-eksbuild.6"
     "1.35" = "v0.8.1-eksbuild.6"
   }
+
+  # Stays null unless a caller opts in, so clusters that do not set the input see
+  # no addon update at all. An empty object here would be a real value and would
+  # show up as a diff on every existing cluster. Kept as a local because
+  # configuration_values is Optional+Computed on the resource, which makes it
+  # unknown at plan time and therefore unassertable in terraform test.
+  ebs_csi_configuration_values = var.ebs_csi_metadata_sources == null ? null : jsonencode({
+    node : {
+      metadataSources : var.ebs_csi_metadata_sources
+    }
+  })
 }
 
 resource "aws_eks_addon" "vpc_cni" {
@@ -161,6 +172,8 @@ resource "aws_eks_addon" "ebs_csi" {
   addon_version               = local.ebs_csi_driver_version[var.cluster_version]
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
+
+  configuration_values = local.ebs_csi_configuration_values
 }
 
 resource "aws_eks_addon" "snapshot_controller" {
