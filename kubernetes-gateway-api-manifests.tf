@@ -76,14 +76,15 @@ locals {
   }]
 
   # Resolve listener configs: use override if provided, otherwise per-LB defaults.
-  # Each element is pre-merged with _listener_config_defaults so both ternary branches
-  # share one object type (coalesce/ternary require it), which lets callers pass partial
-  # overrides. The final `if v != null` strips null keys so only set fields reach the
-  # manifest, preventing drift on clusters using defaults.
-  gateway_api_ext_alb_listener_configs = [for cfg in(var.gateway_api_ext_alb_listener_configs != null ? [for c in var.gateway_api_ext_alb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_ext_alb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
-  gateway_api_ext_nlb_listener_configs = [for cfg in(var.gateway_api_ext_nlb_listener_configs != null ? [for c in var.gateway_api_ext_nlb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_ext_nlb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
-  gateway_api_int_alb_listener_configs = [for cfg in(var.gateway_api_int_alb_listener_configs != null ? [for c in var.gateway_api_int_alb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_int_alb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
-  gateway_api_int_nlb_listener_configs = [for cfg in(var.gateway_api_int_nlb_listener_configs != null ? [for c in var.gateway_api_int_nlb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_int_nlb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
+  # Each element is pre-merged with _listener_config_defaults so all 9 fields are always
+  # present (even as null) - this gives Terraform a consistent Object type instead of
+  # DynamicPseudoType, which the kubernetes_manifest provider requires to match the
+  # LoadBalancerConfiguration CRD schema. field_manager.force_conflicts on the resource
+  # keeps terraform authoritative if the server strips nulls or another operator writes.
+  gateway_api_ext_alb_listener_configs = var.gateway_api_ext_alb_listener_configs != null ? [for c in var.gateway_api_ext_alb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_ext_alb_listener_configs : merge(local._listener_config_defaults, c)]
+  gateway_api_ext_nlb_listener_configs = var.gateway_api_ext_nlb_listener_configs != null ? [for c in var.gateway_api_ext_nlb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_ext_nlb_listener_configs : merge(local._listener_config_defaults, c)]
+  gateway_api_int_alb_listener_configs = var.gateway_api_int_alb_listener_configs != null ? [for c in var.gateway_api_int_alb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_int_alb_listener_configs : merge(local._listener_config_defaults, c)]
+  gateway_api_int_nlb_listener_configs = var.gateway_api_int_nlb_listener_configs != null ? [for c in var.gateway_api_int_nlb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_int_nlb_listener_configs : merge(local._listener_config_defaults, c)]
 }
 
 # CRDs: Gateway API (v1.5.1) + AWS LBC Gateway CRDs (v3.2.1)
@@ -148,8 +149,6 @@ resource "kubernetes_manifest" "gateway_class_nlb" {
 resource "kubernetes_manifest" "gw_ext_alb_config" {
   count = local.gateway_api_crds_ready && var.gateway_api_external_enabled ? 1 : 0
 
-  computed_fields = ["spec.listenerConfigurations"]
-
   field_manager {
     force_conflicts = true
   }
@@ -203,8 +202,6 @@ resource "kubernetes_manifest" "gw_ext_alb" {
 
 resource "kubernetes_manifest" "gw_ext_nlb_config" {
   count = local.gateway_api_crds_ready && var.gateway_api_external_enabled ? 1 : 0
-
-  computed_fields = ["spec.listenerConfigurations"]
 
   field_manager {
     force_conflicts = true
@@ -260,8 +257,6 @@ resource "kubernetes_manifest" "gw_ext_nlb" {
 resource "kubernetes_manifest" "gw_int_alb_config" {
   count = local.gateway_api_crds_ready && var.gateway_api_internal_enabled ? 1 : 0
 
-  computed_fields = ["spec.listenerConfigurations"]
-
   field_manager {
     force_conflicts = true
   }
@@ -315,8 +310,6 @@ resource "kubernetes_manifest" "gw_int_alb" {
 
 resource "kubernetes_manifest" "gw_int_nlb_config" {
   count = local.gateway_api_crds_ready && var.gateway_api_internal_enabled ? 1 : 0
-
-  computed_fields = ["spec.listenerConfigurations"]
 
   field_manager {
     force_conflicts = true
