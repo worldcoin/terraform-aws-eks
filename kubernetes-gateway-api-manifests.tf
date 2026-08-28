@@ -76,15 +76,17 @@ locals {
   }]
 
   # Resolve listener configs: use override if provided, otherwise per-LB defaults.
-  # Each element is pre-merged with _listener_config_defaults so all 9 fields are always
-  # present (even as null) - this gives Terraform a consistent Object type instead of
-  # DynamicPseudoType, which the kubernetes_manifest provider requires to match the
-  # LoadBalancerConfiguration CRD schema. field_manager.force_conflicts on the resource
-  # keeps terraform authoritative if the server strips nulls or another operator writes.
-  gateway_api_ext_alb_listener_configs = var.gateway_api_ext_alb_listener_configs != null ? [for c in var.gateway_api_ext_alb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_ext_alb_listener_configs : merge(local._listener_config_defaults, c)]
-  gateway_api_ext_nlb_listener_configs = var.gateway_api_ext_nlb_listener_configs != null ? [for c in var.gateway_api_ext_nlb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_ext_nlb_listener_configs : merge(local._listener_config_defaults, c)]
-  gateway_api_int_alb_listener_configs = var.gateway_api_int_alb_listener_configs != null ? [for c in var.gateway_api_int_alb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_int_alb_listener_configs : merge(local._listener_config_defaults, c)]
-  gateway_api_int_nlb_listener_configs = var.gateway_api_int_nlb_listener_configs != null ? [for c in var.gateway_api_int_nlb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_int_nlb_listener_configs : merge(local._listener_config_defaults, c)]
+  # Each element is pre-merged with _listener_config_defaults so both ternary branches
+  # share one object type (coalesce/ternary require it), which lets callers pass partial
+  # overrides. The final `if v != null` strips null keys so only set fields reach the
+  # manifest, preventing drift on clusters using defaults. Nested types like
+  # mutualAuthentication reject explicit null on the K8s API side (required subfields),
+  # so stripping is mandatory - the schema mismatch this creates on the terraform side
+  # is handled by `lifecycle.ignore_changes` on the resource.
+  gateway_api_ext_alb_listener_configs = [for cfg in(var.gateway_api_ext_alb_listener_configs != null ? [for c in var.gateway_api_ext_alb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_ext_alb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
+  gateway_api_ext_nlb_listener_configs = [for cfg in(var.gateway_api_ext_nlb_listener_configs != null ? [for c in var.gateway_api_ext_nlb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_ext_nlb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
+  gateway_api_int_alb_listener_configs = [for cfg in(var.gateway_api_int_alb_listener_configs != null ? [for c in var.gateway_api_int_alb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_int_alb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
+  gateway_api_int_nlb_listener_configs = [for cfg in(var.gateway_api_int_nlb_listener_configs != null ? [for c in var.gateway_api_int_nlb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_int_nlb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
 }
 
 # CRDs: Gateway API (v1.5.1) + AWS LBC Gateway CRDs (v3.2.1)
@@ -153,6 +155,14 @@ resource "kubernetes_manifest" "gw_ext_alb_config" {
     force_conflicts = true
   }
 
+  # spec.listenerConfigurations is built via `if v != null` strip (see locals) which
+  # produces a DynamicPseudoType map that the provider can't match against the CRD's
+  # concrete Object schema. Ignoring changes on this field skips that comparison at
+  # plan/refresh time; force_conflicts above keeps terraform authoritative on write.
+  # Trade-off: changes to listener config vars require `-replace` on this resource.
+  lifecycle {
+    ignore_changes = [manifest.spec.listenerConfigurations]
+  }
 
   manifest = {
     apiVersion = "gateway.k8s.aws/v1beta1"
@@ -207,6 +217,10 @@ resource "kubernetes_manifest" "gw_ext_nlb_config" {
     force_conflicts = true
   }
 
+  # See gw_ext_alb_config for the rationale on ignore_changes.
+  lifecycle {
+    ignore_changes = [manifest.spec.listenerConfigurations]
+  }
 
   manifest = {
     apiVersion = "gateway.k8s.aws/v1beta1"
@@ -261,6 +275,10 @@ resource "kubernetes_manifest" "gw_int_alb_config" {
     force_conflicts = true
   }
 
+  # See gw_ext_alb_config for the rationale on ignore_changes.
+  lifecycle {
+    ignore_changes = [manifest.spec.listenerConfigurations]
+  }
 
   manifest = {
     apiVersion = "gateway.k8s.aws/v1beta1"
@@ -315,6 +333,10 @@ resource "kubernetes_manifest" "gw_int_nlb_config" {
     force_conflicts = true
   }
 
+  # See gw_ext_alb_config for the rationale on ignore_changes.
+  lifecycle {
+    ignore_changes = [manifest.spec.listenerConfigurations]
+  }
 
   manifest = {
     apiVersion = "gateway.k8s.aws/v1beta1"
