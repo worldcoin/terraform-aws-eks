@@ -14,18 +14,35 @@ variables {
   kubernetes_provider_enabled = false
 }
 
-# The addon carried no configuration_values before INFRA-7097. Rendering an empty
-# object instead of null would be a real value and would surface as an addon
-# update on every cluster that merely bumps the module, so the default path must
-# leave the attribute unset. Asserted on the local rather than the resource
-# attribute: configuration_values is Optional+Computed, so a null there reads as
-# unknown at plan time and no condition can be evaluated against it.
-run "ebs_csi_configuration_values_absent_by_default" {
+# Every cluster runs at IMDS hop limit 1, where the imds attempt can never succeed
+# and the driver falls through to the Kubernetes API anyway. Defaulting to
+# kubernetes removes the 5s timeout and the error log without changing the metadata
+# the driver ends up using, so no caller should have to opt in.
+run "ebs_csi_metadata_sources_defaults_to_kubernetes" {
   command = plan
 
   assert {
+    condition     = jsondecode(aws_eks_addon.ebs_csi.configuration_values)["node"]["metadataSources"] == "kubernetes"
+    error_message = "The ebs-csi addon must default to the kubernetes metadata source"
+  }
+}
+
+# The escape hatch for a cluster at hop limit 2 or higher, where the imds source
+# does carry real ENI and block-device counts. Sending null must leave the
+# attribute unset rather than an empty object, which would be a real value and
+# would surface as an addon update. Asserted on the local rather than the resource
+# attribute: configuration_values is Optional+Computed, so a null there reads as
+# unknown at plan time and no condition can be evaluated against it.
+run "ebs_csi_explicit_null_sends_no_configuration" {
+  command = plan
+
+  variables {
+    ebs_csi_metadata_sources = null
+  }
+
+  assert {
     condition     = local.ebs_csi_configuration_values == null
-    error_message = "The ebs-csi addon must carry no configuration_values unless a caller opts in"
+    error_message = "An explicit null must leave the addon carrying no configuration_values at all"
   }
 }
 
