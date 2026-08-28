@@ -21,28 +21,28 @@ locals {
     format("%s/%s", crd.kind, crd.metadata.name) => crd
   }
 
-  # All LoadBalancerConfiguration CRD attributes with null defaults.
-  # Used by merge() to satisfy the kubernetes_manifest provider's requirement
-  # that all CRD attributes are present in the object (even optional ones).
-  # Values are null so they get stripped by the `if v != null` filter below,
-  # avoiding drift on clusters that don't set these attributes.
-  _listener_config_defaults = {
-    alpnPolicy            = null
-    sslPolicy             = null
-    defaultCertificate    = null
-    certificates          = null
-    listenerAttributes    = null
-    mutualAuthentication  = null
-    quicEnabled           = null
-    targetGroupStickiness = null
+  # mTLS-off sentinel. Every listener config emits a mutualAuthentication object of
+  # this exact 4-field shape so the outer list-of-objects type unifies to a concrete
+  # Object[...] schema (else Terraform infers DynamicPseudoType and the
+  # kubernetes_manifest provider errors on schema match with the CRD).
+  # AWS LBC treats mode=off as "no mTLS". K8s structural-schema pruning strips the
+  # null-valued sub-fields before the CRD's CEL rules (which reject trustStore /
+  # ignoreClientCertificateExpiry / advertiseTrustStoreCaNames when mode != verify).
+  _mtls_off = {
+    mode                          = "off"
+    trustStore                    = null
+    advertiseTrustStoreCaNames    = null
+    ignoreClientCertificateExpiry = null
   }
 
   _ext_alb_mtls_config = (
     var.gateway_api_external_enabled && !var.open_to_all && var.mtls_enabled
     ) ? {
-    mode       = "verify"
-    trustStore = module.gateway_api_external_alb[local.gateway_api_external_alb_name].trust_store_arn
-  } : null
+    mode                          = "verify"
+    trustStore                    = module.gateway_api_external_alb[local.gateway_api_external_alb_name].trust_store_arn
+    advertiseTrustStoreCaNames    = null
+    ignoreClientCertificateExpiry = null
+  } : local._mtls_off
 
   _default_ext_alb_listener_configs = [{
     protocolPort         = "HTTPS:443"
@@ -75,18 +75,87 @@ locals {
     defaultCertificate = local.effective_internal_cert_arn
   }]
 
-  # Resolve listener configs: use override if provided, otherwise per-LB defaults.
-  # Each element is pre-merged with _listener_config_defaults so both ternary branches
-  # share one object type (coalesce/ternary require it), which lets callers pass partial
-  # overrides. The final `if v != null` strips null keys so only set fields reach the
-  # manifest, preventing drift on clusters using defaults. Nested types like
-  # mutualAuthentication reject explicit null on the K8s API side (required subfields),
-  # so stripping is mandatory - the schema mismatch this creates on the terraform side
-  # is handled by `lifecycle.ignore_changes` on the resource.
-  gateway_api_ext_alb_listener_configs = [for cfg in(var.gateway_api_ext_alb_listener_configs != null ? [for c in var.gateway_api_ext_alb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_ext_alb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
-  gateway_api_ext_nlb_listener_configs = [for cfg in(var.gateway_api_ext_nlb_listener_configs != null ? [for c in var.gateway_api_ext_nlb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_ext_nlb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
-  gateway_api_int_alb_listener_configs = [for cfg in(var.gateway_api_int_alb_listener_configs != null ? [for c in var.gateway_api_int_alb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_int_alb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
-  gateway_api_int_nlb_listener_configs = [for cfg in(var.gateway_api_int_nlb_listener_configs != null ? [for c in var.gateway_api_int_nlb_listener_configs : merge(local._listener_config_defaults, c)] : [for c in local._default_int_nlb_listener_configs : merge(local._listener_config_defaults, c)]) : { for k, v in cfg : k => v if v != null }]
+  # Resolve listener configs: use var override if provided, otherwise per-LB defaults.
+  # Each element is constructed via explicit object literal with all 9 top-level keys
+  # + nested mutualAuthentication normalized to the same 4-field Object shape. This
+  # gives the outer list a concrete Object[...] type that matches the CRD schema on
+  # the kubernetes_manifest provider side. K8s prunes null-valued optional fields
+  # before CRD validation, so no false-positive CEL rule violations.
+  gateway_api_ext_alb_listener_configs = [
+    for c in(var.gateway_api_ext_alb_listener_configs != null ? var.gateway_api_ext_alb_listener_configs : local._default_ext_alb_listener_configs) : {
+      protocolPort          = try(c.protocolPort, null)
+      alpnPolicy            = try(c.alpnPolicy, null)
+      sslPolicy             = try(c.sslPolicy, null)
+      defaultCertificate    = try(c.defaultCertificate, null)
+      certificates          = try(c.certificates, null)
+      listenerAttributes    = try(c.listenerAttributes, null)
+      quicEnabled           = try(c.quicEnabled, null)
+      targetGroupStickiness = try(c.targetGroupStickiness, null)
+      mutualAuthentication = try(c.mutualAuthentication, null) != null ? {
+        mode                          = c.mutualAuthentication.mode
+        trustStore                    = try(c.mutualAuthentication.trustStore, null)
+        advertiseTrustStoreCaNames    = try(c.mutualAuthentication.advertiseTrustStoreCaNames, null)
+        ignoreClientCertificateExpiry = try(c.mutualAuthentication.ignoreClientCertificateExpiry, null)
+      } : local._mtls_off
+    }
+  ]
+
+  gateway_api_ext_nlb_listener_configs = [
+    for c in(var.gateway_api_ext_nlb_listener_configs != null ? var.gateway_api_ext_nlb_listener_configs : local._default_ext_nlb_listener_configs) : {
+      protocolPort          = try(c.protocolPort, null)
+      alpnPolicy            = try(c.alpnPolicy, null)
+      sslPolicy             = try(c.sslPolicy, null)
+      defaultCertificate    = try(c.defaultCertificate, null)
+      certificates          = try(c.certificates, null)
+      listenerAttributes    = try(c.listenerAttributes, null)
+      quicEnabled           = try(c.quicEnabled, null)
+      targetGroupStickiness = try(c.targetGroupStickiness, null)
+      mutualAuthentication = try(c.mutualAuthentication, null) != null ? {
+        mode                          = c.mutualAuthentication.mode
+        trustStore                    = try(c.mutualAuthentication.trustStore, null)
+        advertiseTrustStoreCaNames    = try(c.mutualAuthentication.advertiseTrustStoreCaNames, null)
+        ignoreClientCertificateExpiry = try(c.mutualAuthentication.ignoreClientCertificateExpiry, null)
+      } : local._mtls_off
+    }
+  ]
+
+  gateway_api_int_alb_listener_configs = [
+    for c in(var.gateway_api_int_alb_listener_configs != null ? var.gateway_api_int_alb_listener_configs : local._default_int_alb_listener_configs) : {
+      protocolPort          = try(c.protocolPort, null)
+      alpnPolicy            = try(c.alpnPolicy, null)
+      sslPolicy             = try(c.sslPolicy, null)
+      defaultCertificate    = try(c.defaultCertificate, null)
+      certificates          = try(c.certificates, null)
+      listenerAttributes    = try(c.listenerAttributes, null)
+      quicEnabled           = try(c.quicEnabled, null)
+      targetGroupStickiness = try(c.targetGroupStickiness, null)
+      mutualAuthentication = try(c.mutualAuthentication, null) != null ? {
+        mode                          = c.mutualAuthentication.mode
+        trustStore                    = try(c.mutualAuthentication.trustStore, null)
+        advertiseTrustStoreCaNames    = try(c.mutualAuthentication.advertiseTrustStoreCaNames, null)
+        ignoreClientCertificateExpiry = try(c.mutualAuthentication.ignoreClientCertificateExpiry, null)
+      } : local._mtls_off
+    }
+  ]
+
+  gateway_api_int_nlb_listener_configs = [
+    for c in(var.gateway_api_int_nlb_listener_configs != null ? var.gateway_api_int_nlb_listener_configs : local._default_int_nlb_listener_configs) : {
+      protocolPort          = try(c.protocolPort, null)
+      alpnPolicy            = try(c.alpnPolicy, null)
+      sslPolicy             = try(c.sslPolicy, null)
+      defaultCertificate    = try(c.defaultCertificate, null)
+      certificates          = try(c.certificates, null)
+      listenerAttributes    = try(c.listenerAttributes, null)
+      quicEnabled           = try(c.quicEnabled, null)
+      targetGroupStickiness = try(c.targetGroupStickiness, null)
+      mutualAuthentication = try(c.mutualAuthentication, null) != null ? {
+        mode                          = c.mutualAuthentication.mode
+        trustStore                    = try(c.mutualAuthentication.trustStore, null)
+        advertiseTrustStoreCaNames    = try(c.mutualAuthentication.advertiseTrustStoreCaNames, null)
+        ignoreClientCertificateExpiry = try(c.mutualAuthentication.ignoreClientCertificateExpiry, null)
+      } : local._mtls_off
+    }
+  ]
 }
 
 # CRDs: Gateway API (v1.5.1) + AWS LBC Gateway CRDs (v3.2.1)
@@ -155,15 +224,6 @@ resource "kubernetes_manifest" "gw_ext_alb_config" {
     force_conflicts = true
   }
 
-  # spec.listenerConfigurations is built via `if v != null` strip (see locals) which
-  # produces a DynamicPseudoType map that the provider can't match against the CRD's
-  # concrete Object schema. Ignoring changes on this field skips that comparison at
-  # plan/refresh time; force_conflicts above keeps terraform authoritative on write.
-  # Trade-off: changes to listener config vars require `-replace` on this resource.
-  lifecycle {
-    ignore_changes = [manifest.spec.listenerConfigurations]
-  }
-
   manifest = {
     apiVersion = "gateway.k8s.aws/v1beta1"
     kind       = "LoadBalancerConfiguration"
@@ -215,11 +275,6 @@ resource "kubernetes_manifest" "gw_ext_nlb_config" {
 
   field_manager {
     force_conflicts = true
-  }
-
-  # See gw_ext_alb_config for the rationale on ignore_changes.
-  lifecycle {
-    ignore_changes = [manifest.spec.listenerConfigurations]
   }
 
   manifest = {
@@ -275,11 +330,6 @@ resource "kubernetes_manifest" "gw_int_alb_config" {
     force_conflicts = true
   }
 
-  # See gw_ext_alb_config for the rationale on ignore_changes.
-  lifecycle {
-    ignore_changes = [manifest.spec.listenerConfigurations]
-  }
-
   manifest = {
     apiVersion = "gateway.k8s.aws/v1beta1"
     kind       = "LoadBalancerConfiguration"
@@ -331,11 +381,6 @@ resource "kubernetes_manifest" "gw_int_nlb_config" {
 
   field_manager {
     force_conflicts = true
-  }
-
-  # See gw_ext_alb_config for the rationale on ignore_changes.
-  lifecycle {
-    ignore_changes = [manifest.spec.listenerConfigurations]
   }
 
   manifest = {
