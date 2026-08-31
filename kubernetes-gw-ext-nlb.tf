@@ -44,7 +44,7 @@ locals {
 }
 
 module "gateway_api_external_nlb" {
-  source = "git::https://github.com/worldcoin/terraform-aws-nlb.git?ref=v1.6.0"
+  source = "git::https://github.com/worldcoin/terraform-aws-nlb.git?ref=v1.6.1"
 
   for_each = var.gateway_api_external_enabled ? toset([local.gateway_api_external_nlb_name]) : []
 
