@@ -711,3 +711,32 @@ run "gateway_api_sg_rules_explicit_null_same_as_unset" {
     error_message = "Explicit null override should be normalized to [] and behave like unset"
   }
 }
+
+# =============================================================================
+# Test: external ALB frontend CIDR allowlist replaces Cloudflare and disables mTLS
+# =============================================================================
+run "gateway_api_external_alb_frontend_cidrs" {
+  command = plan
+
+  variables {
+    gateway_api_crds_enabled                = true
+    gateway_api_external_enabled            = true
+    gateway_api_external_alb_frontend_cidrs = ["203.0.113.7/32", "198.51.100.0/24"]
+  }
+
+  assert {
+    condition = anytrue([
+      for rule in module.gateway_api_external_alb["gw-ext-alb"].frontend_security_group_ingress :
+      rule.from_port == 443 && try(sort(rule.cidr_blocks) == sort(["203.0.113.7/32", "198.51.100.0/24"]), false)
+    ])
+    error_message = "The allowlist should be the only IPv4 sources on the frontend 443 rule"
+  }
+
+  assert {
+    condition = !anytrue([
+      for rule in module.gateway_api_external_alb["gw-ext-alb"].frontend_security_group_ingress :
+      try(length(rule.ipv6_cidr_blocks) > 0, false)
+    ])
+    error_message = "No IPv6 sources may be opened when the allowlist is set"
+  }
+}

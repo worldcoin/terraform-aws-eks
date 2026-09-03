@@ -1015,6 +1015,18 @@ variable "gateway_api_external_alb_sg_rules" {
   }
 }
 
+variable "gateway_api_external_alb_frontend_cidrs" {
+  description = "Explicit IPv4 CIDR allowlist for the external Gateway API ALB's frontend (internet) security group. When non-empty, replaces the default sources (Cloudflare IPs, or 0.0.0.0/0 with open_to_all) and opens no IPv6 sources; mTLS is disabled since allowlisted callers connect directly rather than through Cloudflare origin pull."
+  type        = list(string)
+  default     = []
+  nullable    = false
+
+  validation {
+    condition     = alltrue([for cidr in var.gateway_api_external_alb_frontend_cidrs : can(cidrnetmask(cidr))])
+    error_message = "All frontend CIDRs must be valid IPv4 CIDR blocks."
+  }
+}
+
 variable "gateway_api_internal_alb_sg_rules" {
   description = "Additional ingress rules for the internal Gateway API ALB's backend security group (terraform-aws-alb's backend_ingress_rules), appended to the module's own defaults (HTTPS from all internal networks) — this does not replace them."
   type = list(object({

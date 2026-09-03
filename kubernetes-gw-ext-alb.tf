@@ -8,7 +8,7 @@ locals {
 }
 
 module "gateway_api_external_alb" {
-  source   = "git::https://github.com/worldcoin/terraform-aws-alb.git?ref=v1.6.2"
+  source   = "git::https://github.com/worldcoin/terraform-aws-alb.git?ref=v1.7.0"
   for_each = var.gateway_api_external_enabled ? toset([local.gateway_api_external_alb_name]) : []
 
   name_suffix  = each.key
@@ -30,6 +30,8 @@ module "gateway_api_external_alb" {
   public_subnets = var.vpc_config.public_subnets
   open_to_all    = var.open_to_all
 
+  frontend_ingress_cidrs = var.gateway_api_external_alb_frontend_cidrs
+
   s3_logs_bucket_id = var.alb_logs_bucket_id
   idle_timeout      = var.alb_idle_timeout
 
@@ -37,7 +39,8 @@ module "gateway_api_external_alb" {
   drop_invalid_header_fields = var.drop_invalid_header_fields
   backend_ingress_rules      = local.gateway_api_external_alb_sg_rules
 
-  mtls_enabled   = var.open_to_all ? false : var.mtls_enabled
+  # A frontend CIDR allowlist means direct callers, not Cloudflare origin pull, so mTLS is off.
+  mtls_enabled   = (var.open_to_all || length(var.gateway_api_external_alb_frontend_cidrs) > 0) ? false : var.mtls_enabled
   mtls_s3_bucket = format("wld-mtls-ca-%s", var.region)
 
   datadog = {
