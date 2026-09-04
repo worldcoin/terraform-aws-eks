@@ -141,7 +141,7 @@ resource "aws_autoscaling_group" "enclave_track" {
 
   tag {
     key                 = "k8s.io/cluster-autoscaler/node-template/resources/hugepages-1Gi"
-    value               = "1Gi"
+    value               = "${coalesce(each.value.track_value.memory_allocation, var.enclaves_memory_allocation)}Mi"
     propagate_at_launch = false
   }
 
