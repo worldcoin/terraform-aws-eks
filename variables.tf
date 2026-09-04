@@ -739,6 +739,11 @@ variable "enclaves_memory_allocation" {
   description = "Memory in MiB to allocate for Nitro Enclaves per node"
   type        = string
   default     = "4096"
+
+  validation {
+    condition     = can(tonumber(var.enclaves_memory_allocation)) && tonumber(var.enclaves_memory_allocation) % 1024 == 0
+    error_message = "Enclave memory allocation must be a multiple of 1024 MiB."
+  }
 }
 
 variable "enclave_tracks" {
@@ -762,6 +767,14 @@ variable "enclave_tracks" {
       can(regex("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$", k)) && length(k) <= 30
     ])
     error_message = "Track keys must be valid Kubernetes labels (lowercase alphanumeric, hyphens, max 30 chars)"
+  }
+
+  validation {
+    condition = alltrue([
+      for _, v in var.enclave_tracks :
+      v.memory_allocation == null || (can(tonumber(v.memory_allocation)) && tonumber(v.memory_allocation) % 1024 == 0)
+    ])
+    error_message = "Each enclave track memory allocation must be a multiple of 1024 MiB."
   }
 }
 
@@ -1275,4 +1288,3 @@ variable "ebs_csi_metadata_sources" {
     error_message = "ebs_csi_metadata_sources must be a comma-separated list of imds, kubernetes or metadata-labeler, with no spaces."
   }
 }
-
