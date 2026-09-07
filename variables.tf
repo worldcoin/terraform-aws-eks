@@ -739,6 +739,11 @@ variable "enclaves_memory_allocation" {
   description = "Memory in MiB to allocate for Nitro Enclaves per node"
   type        = string
   default     = "4096"
+
+  validation {
+    condition     = can(tonumber(var.enclaves_memory_allocation)) && tonumber(var.enclaves_memory_allocation) % 1024 == 0
+    error_message = "Enclave memory allocation must be a multiple of 1024 MiB."
+  }
 }
 
 variable "enclave_tracks" {
@@ -749,8 +754,11 @@ variable "enclave_tracks" {
       min_size = optional(number, 0)
       max_size = optional(number, 10)
     }), {})
-    instance_type     = optional(string)
-    cpu_allocation    = optional(string)
+    instance_type  = optional(string)
+    cpu_allocation = optional(string)
+    # Cluster Autoscaler's advertised hugepage capacity in MiB. Null preserves
+    # the legacy behavior of deriving it from memory_allocation.
+    hugepages         = optional(string)
     memory_allocation = optional(string)
     arch              = optional(string, "amd64")
   }))
@@ -762,6 +770,22 @@ variable "enclave_tracks" {
       can(regex("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$", k)) && length(k) <= 30
     ])
     error_message = "Track keys must be valid Kubernetes labels (lowercase alphanumeric, hyphens, max 30 chars)"
+  }
+
+  validation {
+    condition = alltrue([
+      for _, v in var.enclave_tracks :
+      v.memory_allocation == null || (can(tonumber(v.memory_allocation)) && tonumber(v.memory_allocation) % 1024 == 0)
+    ])
+    error_message = "Each enclave track memory allocation must be a multiple of 1024 MiB."
+  }
+
+  validation {
+    condition = alltrue([
+      for _, v in var.enclave_tracks :
+      v.hugepages == null || (can(tonumber(v.hugepages)) && tonumber(v.hugepages) > 0 && tonumber(v.hugepages) % 1024 == 0)
+    ])
+    error_message = "Each enclave track hugepages value must be a positive multiple of 1024 MiB."
   }
 }
 
@@ -1275,4 +1299,3 @@ variable "ebs_csi_metadata_sources" {
     error_message = "ebs_csi_metadata_sources must be a comma-separated list of imds, kubernetes or metadata-labeler, with no spaces."
   }
 }
-
