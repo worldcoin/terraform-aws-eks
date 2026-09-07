@@ -58,6 +58,29 @@ run "renders_one_gib_track_allocation_as_legacy_tag_value" {
   }
 }
 
+run "uses_configured_hugepages_for_the_cluster_autoscaler_tag" {
+  command = plan
+
+  variables {
+    enclave_tracks = {
+      next = {
+        memory_allocation = "2048"
+        hugepages         = "1024"
+      }
+    }
+  }
+
+  assert {
+    condition = alltrue([
+      for _, asg in aws_autoscaling_group.enclave_track : anytrue([
+        for tag in asg.tag :
+        tag.key == "k8s.io/cluster-autoscaler/node-template/resources/hugepages-1Gi" && tag.value == "1Gi"
+      ])
+    ])
+    error_message = "Configured hugepages must override memory allocation in the Cluster Autoscaler tag."
+  }
+}
+
 run "rejects_non_gib_aligned_default_allocation" {
   command = plan
 
@@ -75,6 +98,20 @@ run "rejects_non_gib_aligned_track_allocation" {
     enclave_tracks = {
       next = {
         memory_allocation = "1536"
+      }
+    }
+  }
+
+  expect_failures = [var.enclave_tracks]
+}
+
+run "rejects_invalid_track_hugepages" {
+  command = plan
+
+  variables {
+    enclave_tracks = {
+      next = {
+        hugepages = "1536"
       }
     }
   }

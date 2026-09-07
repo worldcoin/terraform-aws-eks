@@ -754,8 +754,11 @@ variable "enclave_tracks" {
       min_size = optional(number, 0)
       max_size = optional(number, 10)
     }), {})
-    instance_type     = optional(string)
-    cpu_allocation    = optional(string)
+    instance_type  = optional(string)
+    cpu_allocation = optional(string)
+    # Cluster Autoscaler's advertised hugepage capacity in MiB. Null preserves
+    # the legacy behavior of deriving it from memory_allocation.
+    hugepages         = optional(string)
     memory_allocation = optional(string)
     arch              = optional(string, "amd64")
   }))
@@ -775,6 +778,14 @@ variable "enclave_tracks" {
       v.memory_allocation == null || (can(tonumber(v.memory_allocation)) && tonumber(v.memory_allocation) % 1024 == 0)
     ])
     error_message = "Each enclave track memory allocation must be a multiple of 1024 MiB."
+  }
+
+  validation {
+    condition = alltrue([
+      for _, v in var.enclave_tracks :
+      v.hugepages == null || (can(tonumber(v.hugepages)) && tonumber(v.hugepages) > 0 && tonumber(v.hugepages) % 1024 == 0)
+    ])
+    error_message = "Each enclave track hugepages value must be a positive multiple of 1024 MiB."
   }
 }
 
