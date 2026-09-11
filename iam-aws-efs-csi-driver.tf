@@ -47,6 +47,24 @@ data "aws_iam_policy_document" "aws_efs_csi_driver" {
       values   = ["true"]
     }
   }
+
+  statement {
+    effect    = "Allow"
+    resources = ["*"]
+    actions   = ["elasticfilesystem:TagResource"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "elasticfilesystem:CreateAction"
+      values   = ["CreateAccessPoint"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/efs.csi.aws.com/cluster"
+      values   = ["true"]
+    }
+  }
 }
 
 resource "aws_iam_role" "aws_efs_csi_driver" {
