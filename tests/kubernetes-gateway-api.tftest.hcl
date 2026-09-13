@@ -711,3 +711,22 @@ run "gateway_api_sg_rules_explicit_null_same_as_unset" {
     error_message = "Explicit null override should be normalized to [] and behave like unset"
   }
 }
+
+run "gateway_api_internal_sg_rules_include_vpc_ipv6_cidr_associations" {
+  command = plan
+
+  assert {
+    condition     = toset(local.cluster_vpc_ipv6_cidr_blocks) == toset(["2600:1f14:abcd:1000::/56", "2600:1f14:abcd:2000::/56"])
+    error_message = "VPC IPv6 CIDR associations should be used instead of the deprecated VPC attribute"
+  }
+
+  assert {
+    condition     = one([for rule in local.gateway_api_internal_alb_default_sg_rules : rule if rule.description == "Allow HTTPS from VPC (IPv6)"]).ipv6_cidr_blocks == local.cluster_vpc_ipv6_cidr_blocks
+    error_message = "Internal ALB IPv6 rule should include every VPC IPv6 CIDR association"
+  }
+
+  assert {
+    condition     = length([for rule in local.gateway_api_internal_nlb_default_sg_rules : rule if rule.description == "Allow HTTP from VPC (IPv6)" || rule.description == "Allow HTTPS from VPC (IPv6)"]) == 2 && alltrue([for rule in local.gateway_api_internal_nlb_default_sg_rules : rule.description == "Allow HTTP from VPC (IPv6)" || rule.description == "Allow HTTPS from VPC (IPv6)" ? rule.ipv6_cidr_blocks == local.cluster_vpc_ipv6_cidr_blocks : true])
+    error_message = "Internal NLB IPv6 rules should include every VPC IPv6 CIDR association"
+  }
+}

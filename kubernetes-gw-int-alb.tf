@@ -16,13 +16,13 @@ locals {
         security_groups  = null
       },
     ],
-    data.aws_vpc.cluster_vpc.ipv6_cidr_block != "" ? [
+    length(local.cluster_vpc_ipv6_cidr_blocks) > 0 ? [
       {
         description      = "Allow HTTPS from VPC (IPv6)"
         protocol         = "tcp"
         port             = 443
         cidr_blocks      = null
-        ipv6_cidr_blocks = [data.aws_vpc.cluster_vpc.ipv6_cidr_block]
+        ipv6_cidr_blocks = local.cluster_vpc_ipv6_cidr_blocks
         security_groups  = null
       },
     ] : []
