@@ -666,8 +666,8 @@ run "gateway_api_internal_alb_sg_rules_additive" {
   }
 
   assert {
-    condition     = length(local.gateway_api_internal_alb_sg_rules) == 2
-    error_message = "Override should be appended to the 1 default internal-network rule, not replace it"
+    condition     = length(local.gateway_api_internal_alb_sg_rules) == 3
+    error_message = "Override should be appended to the default IPv4 and IPv6 internal-network rules, not replace them"
   }
 
   assert {
@@ -709,5 +709,68 @@ run "gateway_api_sg_rules_explicit_null_same_as_unset" {
   assert {
     condition     = length(local.gateway_api_external_nlb_sg_rules) == 4
     error_message = "Explicit null override should be normalized to [] and behave like unset"
+  }
+}
+
+run "gateway_api_internal_sg_rules_include_vpc_ipv6_cidr_associations" {
+  command = plan
+
+  assert {
+    condition     = local.cluster_vpc_ipv6_cidr_blocks == tolist(["2600:1f14:abcd:1000::/56", "2600:1f14:abcd:2000::/56"])
+    error_message = "Only active VPC IPv6 CIDR associations should be used in deterministic order"
+  }
+
+  assert {
+    condition     = one([for rule in local.gateway_api_internal_alb_default_sg_rules : rule if rule.description == "Allow HTTPS from VPC (IPv6)"]).ipv6_cidr_blocks == local.cluster_vpc_ipv6_cidr_blocks
+    error_message = "Internal ALB IPv6 rule should include every VPC IPv6 CIDR association"
+  }
+
+  assert {
+    condition     = length([for rule in local.gateway_api_internal_nlb_default_sg_rules : rule if rule.description == "Allow HTTP from VPC (IPv6)" || rule.description == "Allow HTTPS from VPC (IPv6)"]) == 2 && alltrue([for rule in local.gateway_api_internal_nlb_default_sg_rules : rule.description == "Allow HTTP from VPC (IPv6)" || rule.description == "Allow HTTPS from VPC (IPv6)" ? rule.ipv6_cidr_blocks == local.cluster_vpc_ipv6_cidr_blocks : true])
+    error_message = "Internal NLB IPv6 rules should include every VPC IPv6 CIDR association"
+  }
+}
+
+run "gateway_api_internal_sg_rules_omit_ipv6_without_associations" {
+  command = plan
+
+  override_data {
+    target = data.aws_vpc.cluster_vpc
+    values = {
+      id                           = "vpc-1234567890abcdef3"
+      cidr_block                   = "10.0.0.0/16"
+      ipv6_cidr_block_associations = []
+    }
+  }
+
+  assert {
+    condition     = length(local.cluster_vpc_ipv6_cidr_blocks) == 0 && length([for rule in local.gateway_api_internal_alb_default_sg_rules : rule if rule.ipv6_cidr_blocks != null]) == 0 && length([for rule in local.gateway_api_internal_nlb_default_sg_rules : rule if rule.ipv6_cidr_blocks != null]) == 0
+    error_message = "Internal load balancer defaults should omit IPv6 rules when the VPC has no active IPv6 CIDR associations"
+  }
+}
+
+run "gateway_api_alb_sg_rules_accept_ipv6_only_overrides" {
+  command = plan
+
+  variables {
+    gateway_api_crds_enabled     = true
+    gateway_api_external_enabled = true
+    gateway_api_internal_enabled = true
+    internal_cert_arn            = "arn:aws:acm:us-east-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
+    gateway_api_external_alb_sg_rules = [{
+      description      = "Allow external IPv6 client"
+      port             = 443
+      ipv6_cidr_blocks = ["2001:db8:1234::/48"]
+    }]
+    gateway_api_internal_alb_sg_rules = [{
+      description      = "Allow internal IPv6 client"
+      port             = 443
+      ipv6_cidr_blocks = ["2001:db8:5678::/48"]
+    }]
+  }
+
+  assert {
+    condition     = one([for rule in local.gateway_api_external_alb_sg_rules : rule if rule.description == "Allow external IPv6 client"]).ipv6_cidr_blocks == tolist(["2001:db8:1234::/48"]) && one([for rule in local.gateway_api_internal_alb_sg_rules : rule if rule.description == "Allow internal IPv6 client"]).ipv6_cidr_blocks == tolist(["2001:db8:5678::/48"])
+    error_message = "Gateway API ALB security group overrides should accept IPv6-only CIDR sources"
   }
 }
