@@ -666,8 +666,8 @@ run "gateway_api_internal_alb_sg_rules_additive" {
   }
 
   assert {
-    condition     = length(local.gateway_api_internal_alb_sg_rules) == 2
-    error_message = "Override should be appended to the 1 default internal-network rule, not replace it"
+    condition     = length(local.gateway_api_internal_alb_sg_rules) == 3
+    error_message = "Override should be appended to the default IPv4 and IPv6 internal-network rules, not replace them"
   }
 
   assert {
@@ -716,8 +716,8 @@ run "gateway_api_internal_sg_rules_include_vpc_ipv6_cidr_associations" {
   command = plan
 
   assert {
-    condition     = toset(local.cluster_vpc_ipv6_cidr_blocks) == toset(["2600:1f14:abcd:1000::/56", "2600:1f14:abcd:2000::/56"])
-    error_message = "VPC IPv6 CIDR associations should be used instead of the deprecated VPC attribute"
+    condition     = local.cluster_vpc_ipv6_cidr_blocks == ["2600:1f14:abcd:1000::/56", "2600:1f14:abcd:2000::/56"]
+    error_message = "Only active VPC IPv6 CIDR associations should be used in deterministic order"
   }
 
   assert {

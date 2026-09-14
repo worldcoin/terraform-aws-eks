@@ -6,7 +6,7 @@ data "aws_vpc" "cluster_vpc" {
 data "cloudflare_ip_ranges" "cloudflare" {}
 
 locals {
-  cluster_vpc_ipv6_cidr_blocks = [for association in data.aws_vpc.cluster_vpc.ipv6_cidr_block_associations : association.ipv6_cidr_block]
+  cluster_vpc_ipv6_cidr_blocks = sort([for association in data.aws_vpc.cluster_vpc.ipv6_cidr_block_associations : association.ipv6_cidr_block if association.state == "associated"])
 
   effective_external_cert_arn = var.external_cert_arn != null ? var.external_cert_arn : var.traefik_cert_arn
   effective_internal_cert_arn = var.internal_cert_arn != "" ? var.internal_cert_arn : (var.internal_nlb_acm_arn != "" ? var.internal_nlb_acm_arn : local.effective_external_cert_arn)

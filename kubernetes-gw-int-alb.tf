@@ -1,10 +1,6 @@
 locals {
   gateway_api_internal_alb_name = "gw-int-alb"
 
-  # NOTE: terraform-aws-alb's backend_ingress_rules has no ipv6_cidr_blocks attribute (checked
-  # v1.6.1, the version pinned below) — the IPv6 rule below has never actually reached the ALB
-  # module with a functioning ipv6 key. Preserved as-is (pre-existing, out of scope for
-  # INFRA-6980); only normalized here so this local's own two branches type-check.
   gateway_api_internal_alb_default_sg_rules = concat(
     [
       {

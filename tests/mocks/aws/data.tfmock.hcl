@@ -60,6 +60,15 @@ mock_data "aws_vpc" {
         network_border_group   = "us-west-2"
         state                  = "associated"
       },
+      {
+        association_id         = "vpc-cidr-assoc-0123456789abcdef"
+        ip_source              = "amazon"
+        ipv6_address_attribute = "public"
+        ipv6_cidr_block        = "2600:1f14:abcd:3000::/56"
+        ipv6_pool              = "Amazon"
+        network_border_group   = "us-west-2"
+        state                  = "disassociated"
+      },
     ]
   }
 }

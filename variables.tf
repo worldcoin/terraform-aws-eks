@@ -1021,11 +1021,12 @@ variable "gateway_api_internal_enabled" {
 variable "gateway_api_external_alb_sg_rules" {
   description = "Additional ingress rules for the external Gateway API ALB's backend security group (terraform-aws-alb's backend_ingress_rules — the frontend SG is managed separately via Cloudflare IPs/open_to_all), appended to the module's own defaults — this does not replace them."
   type = list(object({
-    description     = optional(string, "")
-    protocol        = optional(string, "tcp")
-    port            = number
-    cidr_blocks     = optional(list(string))
-    security_groups = optional(list(string))
+    description      = optional(string, "")
+    protocol         = optional(string, "tcp")
+    port             = number
+    cidr_blocks      = optional(list(string))
+    ipv6_cidr_blocks = optional(list(string))
+    security_groups  = optional(list(string))
   }))
   default  = []
   nullable = false
@@ -1033,7 +1034,7 @@ variable "gateway_api_external_alb_sg_rules" {
   validation {
     condition = alltrue([
       for r in var.gateway_api_external_alb_sg_rules :
-      r.cidr_blocks != null || r.security_groups != null
+      r.cidr_blocks != null || r.ipv6_cidr_blocks != null || r.security_groups != null
     ])
     error_message = "Each rule must specify at least one of 'cidr_blocks' or 'security_groups'."
   }
@@ -1042,11 +1043,12 @@ variable "gateway_api_external_alb_sg_rules" {
 variable "gateway_api_internal_alb_sg_rules" {
   description = "Additional ingress rules for the internal Gateway API ALB's backend security group (terraform-aws-alb's backend_ingress_rules), appended to the module's own defaults (HTTPS from all internal networks) — this does not replace them."
   type = list(object({
-    description     = optional(string, "")
-    protocol        = optional(string, "tcp")
-    port            = number
-    cidr_blocks     = optional(list(string))
-    security_groups = optional(list(string))
+    description      = optional(string, "")
+    protocol         = optional(string, "tcp")
+    port             = number
+    cidr_blocks      = optional(list(string))
+    ipv6_cidr_blocks = optional(list(string))
+    security_groups  = optional(list(string))
   }))
   default  = []
   nullable = false
@@ -1054,7 +1056,7 @@ variable "gateway_api_internal_alb_sg_rules" {
   validation {
     condition = alltrue([
       for r in var.gateway_api_internal_alb_sg_rules :
-      r.cidr_blocks != null || r.security_groups != null
+      r.cidr_blocks != null || r.ipv6_cidr_blocks != null || r.security_groups != null
     ])
     error_message = "Each rule must specify at least one of 'cidr_blocks' or 'security_groups'."
   }
