@@ -654,12 +654,12 @@ To remove the cluster you have to:
 
 | Name | Source | Version |
 | ---- | ------ | ------- |
-| <a name="module_alb"></a> [alb](#module\_alb) | git::https://github.com/worldcoin/terraform-aws-alb.git | v1.6.1 |
+| <a name="module_alb"></a> [alb](#module\_alb) | git::https://github.com/worldcoin/terraform-aws-alb.git | v2.0.1 |
 | <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | git::https://github.com/worldcoin/terraform-datadog-kubernetes | v1.3.0 |
 | <a name="module_datadog_monitoring_for_user"></a> [datadog\_monitoring\_for\_user](#module\_datadog\_monitoring\_for\_user) | git::https://github.com/worldcoin/terraform-datadog-kubernetes | v1.3.0 |
-| <a name="module_gateway_api_external_alb"></a> [gateway\_api\_external\_alb](#module\_gateway\_api\_external\_alb) | git::https://github.com/worldcoin/terraform-aws-alb.git | v1.6.1 |
+| <a name="module_gateway_api_external_alb"></a> [gateway\_api\_external\_alb](#module\_gateway\_api\_external\_alb) | git::https://github.com/worldcoin/terraform-aws-alb.git | v2.0.1 |
 | <a name="module_gateway_api_external_nlb"></a> [gateway\_api\_external\_nlb](#module\_gateway\_api\_external\_nlb) | git::https://github.com/worldcoin/terraform-aws-nlb.git | v1.6.0 |
-| <a name="module_gateway_api_internal_alb"></a> [gateway\_api\_internal\_alb](#module\_gateway\_api\_internal\_alb) | git::https://github.com/worldcoin/terraform-aws-alb.git | v1.6.1 |
+| <a name="module_gateway_api_internal_alb"></a> [gateway\_api\_internal\_alb](#module\_gateway\_api\_internal\_alb) | git::https://github.com/worldcoin/terraform-aws-alb.git | v2.0.1 |
 | <a name="module_gateway_api_internal_nlb"></a> [gateway\_api\_internal\_nlb](#module\_gateway\_api\_internal\_nlb) | git::https://github.com/worldcoin/terraform-aws-nlb.git | v1.6.0 |
 | <a name="module_nlb"></a> [nlb](#module\_nlb) | git::https://github.com/worldcoin/terraform-aws-nlb.git | v1.5.0 |
 
