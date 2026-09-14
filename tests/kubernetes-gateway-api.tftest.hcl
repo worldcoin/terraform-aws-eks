@@ -716,7 +716,7 @@ run "gateway_api_internal_sg_rules_include_vpc_ipv6_cidr_associations" {
   command = plan
 
   assert {
-    condition     = local.cluster_vpc_ipv6_cidr_blocks == ["2600:1f14:abcd:1000::/56", "2600:1f14:abcd:2000::/56"]
+    condition     = local.cluster_vpc_ipv6_cidr_blocks == tolist(["2600:1f14:abcd:1000::/56", "2600:1f14:abcd:2000::/56"])
     error_message = "Only active VPC IPv6 CIDR associations should be used in deterministic order"
   }
 
