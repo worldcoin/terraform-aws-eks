@@ -1,6 +1,6 @@
 # Copilot review instructions
 
-Before reviewing, read and follow `AGENTS.md`, the canonical repository guidance for authors and Terraform safety. These instructions supplement the organization-level review policy with repository-specific review behavior.
+Before starting any work, read and follow `AGENTS.md`, the canonical repository guidance for authors and Terraform safety. The review-specific rules below supplement the organization-level review policy.
 
 ## Findings
 
