@@ -111,7 +111,7 @@ root folder represents STANDALONE module, and is expected to clear tests, work a
 ## Pull request template
 
 Use `.github/PULL_REQUEST_TEMPLATE.md` as the PR template.
-Core principle: Every PR must link the relevant tracking issue/ticket in the *Requestor/Issue* field and explain "why this change?" in the PR body.
+Core principle: Link the relevant tracking issue/ticket in the *Requestor/Issue* field when one exists; otherwise name the requestor and explain why there is no ticket. Explain "why this change?" in the PR body.
 
 If the "why" is missing: ask the requestor/owner, e.g., "Why are we making this change?" (business reason, problem being solved, or goal).
 Do not invent reasons. If you don't know, ask and capture the answer in the PR description.
@@ -120,14 +120,14 @@ Any pull request whose description, commits, or code changes include content gen
 
 ## Author preflight
 
-- Before opening any pull request, including a draft, determine the changed module roots and run the applicable local checks defined by the current workflows, runbooks, and repository tooling. Keep validation scoped to the change and affected consumers; use the same required inputs, flags, configuration, tool versions, and comparison refs as CI.
+- Before opening any pull request, including a draft, determine the changed module roots and run the applicable local checks defined by the current workflows, runbooks, and repository tooling. Keep validation scoped to the change and affected consumers; use equivalent non-secret required inputs, flags, configuration, tool versions, and comparison refs. Never copy or request CI credentials for local validation; record checks blocked by unavailable credentials.
 - Run `git diff --check` while editing and `git diff --cached --check` before committing. After committing, run `git diff --check <comparison-base>...HEAD` so the evidence covers the latest commit. For Terraform changes, format and initialize, validate, test, lint, scan, or regenerate documentation only where the current workflows and changed scope require it. Preserve dependency locks and inspect any lockfile or generated-documentation diff.
 - Identify all affected consumers and verify the exact input, output, provider, and module-version contracts they use. Record compatibility, companion changes, and required merge, release, apply, migration, or rollout order. Do not assume a sibling example or newer dependency version matches the pinned contract.
 - Record validation evidence for the latest commit in the pull request: exact commands, scope, results, and links to applicable remote checks. Mark checks as passed, failed, blocked, pending, or not applicable. Never describe an unrun, stale, missing, or blocked check as passing.
 - Inspect the final diff before publication and after every fix batch. Confirm code, tests, generated documentation, user-facing documentation, dependency pins, and the pull-request description all describe the same final behavior.
 - Use the current pull-request template without renaming its headings. Follow Conventional Commits. When using `gh`, submit multiline descriptions with `--body-file`; APIs and connectors must use their structured body field.
-- Apply the repository's AI label when AI materially shaped the change. In the PR body, group disclosure by tool and publish the actual initial prompt plus every material follow-up prompt. Include necessary redactions with a reason and a non-sensitive description of the omitted content. A task summary, chat link, tool name alone, or hidden prompt history is insufficient.
-- Separate instruction gaps and author-caused failures from CI defects. Report remote outages, timeouts, missing CI credentials, and failures reproduced on the unchanged base independently; do not present them as validation mistakes.
+- Apply the repository's AI label whenever the description, commits, or changed content include AI-generated or AI-edited material. When AI materially shaped the change, group disclosure by tool in the PR body and publish the actual initial prompt plus every material follow-up prompt. Include necessary redactions with a reason and a non-sensitive description of the omitted content. A task summary, chat link, or tool name alone is insufficient; do not publish hidden system/developer instructions or internal reasoning.
+- Separate instruction gaps and author-caused failures from CI defects. Classify remote outages, timeouts, missing CI credentials, and pre-existing failures as independent only after evidence shows they are unrelated to the change, such as reproduction on the unchanged base or comparison with the current workflow, secret, and repository configuration.
 
 ## Review follow-through
 

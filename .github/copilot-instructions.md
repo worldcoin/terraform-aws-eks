@@ -1,6 +1,6 @@
 # Copilot review instructions
 
-`AGENTS.md` is the canonical repository guidance for authors and Terraform safety. These instructions supplement the organization-level review policy with repository-specific review behavior.
+Before reviewing, read and follow `AGENTS.md`, the canonical repository guidance for authors and Terraform safety. These instructions supplement the organization-level review policy with repository-specific review behavior.
 
 ## Findings
 
@@ -20,5 +20,5 @@
 
 - Check that the pull-request description matches the final diff and retains the current template headings. Verify validation evidence applies to the latest commit, the affected scope, and the actual commands and inputs used by current workflows.
 - Flag missing, stale, blocked, or unsupported validation claims. Distinguish author-caused failures from remote outages, timeouts, missing CI credentials, repeated runs, and failures reproduced on the unchanged base.
-- When AI materially shaped the change, verify the applicable AI label and the actual initial and material follow-up prompts grouped by tool in the PR body. A summary, chat link, or tool name alone is insufficient. Respect clearly identified redactions and do not request secrets, hidden instructions, or internal reasoning.
+- Verify the applicable AI label whenever the description, commits, or changed content include AI-generated or AI-edited material. When AI materially shaped the change, also verify the actual initial and material follow-up prompts grouped by tool in the PR body. A summary, chat link, or tool name alone is insufficient. Respect clearly identified redactions and do not request secrets, hidden instructions, or internal reasoning.
 - Findings in review summaries require the same disposition as inline comments. Do not infer that silence, an approval, or an outdated thread resolved an earlier finding.
