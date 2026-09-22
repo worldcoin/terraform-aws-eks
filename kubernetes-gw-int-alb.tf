@@ -28,7 +28,7 @@ locals {
 }
 
 module "gateway_api_internal_alb" {
-  source   = "git::https://github.com/worldcoin/terraform-aws-alb.git?ref=v2.0.1"
+  source   = "git::https://github.com/worldcoin/terraform-aws-alb.git?ref=v2.0.2"
   for_each = var.gateway_api_internal_enabled ? toset([local.gateway_api_internal_alb_name]) : []
 
   name_suffix  = each.key
