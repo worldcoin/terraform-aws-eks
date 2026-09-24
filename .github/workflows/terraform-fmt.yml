@@ -1,0 +1,26 @@
+name: Terraform
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  fmt:
+    name: fmt
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        name: Checkout source code
+
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e
+        name: Setup Terraform
+        with:
+          terraform_version: 1.12.1
+          terraform_wrapper: false
+
+      - name: terraform fmt check
+        run: terraform fmt -check -recursive -diff
