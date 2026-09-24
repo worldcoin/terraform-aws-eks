@@ -8,9 +8,9 @@ data "cloudflare_ip_ranges" "cloudflare" {}
 locals {
   cluster_vpc_ipv6_cidr_blocks = sort([for association in data.aws_vpc.cluster_vpc.ipv6_cidr_block_associations : association.ipv6_cidr_block if association.state == "associated"])
 
-  effective_external_cert_arn = var.external_cert_arn != null ? var.external_cert_arn : var.traefik_cert_arn
+  effective_external_cert_arn = var.external_cert_arn
   effective_internal_cert_arn = var.internal_cert_arn != "" ? var.internal_cert_arn : (var.internal_nlb_acm_arn != "" ? var.internal_nlb_acm_arn : local.effective_external_cert_arn)
-  effective_nlb_service_ports = length(var.internal_nlb_service_ports) > 0 ? var.internal_nlb_service_ports : var.traefik_nlb_service_ports
+  effective_nlb_service_ports = var.internal_nlb_service_ports
 
   al2023_standard_ami = {
     amd64 = format("/aws/service/eks/optimized-ami/%s/amazon-linux-2023/x86_64/standard/recommended/image_id", var.cluster_version)
