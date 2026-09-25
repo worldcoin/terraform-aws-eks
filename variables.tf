@@ -152,16 +152,6 @@ variable "internal_nlb_acm_arn" {
   # }
 }
 
-variable "traefik_cert_arn" {
-  description = "(Deprecated: use external_cert_arn) The ARN of the certificate to use for Traefik."
-  type        = string
-  default     = null
-  validation {
-    condition     = var.traefik_cert_arn != null ? can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn)) : true
-    error_message = "Invalid `traefik_cert_arn` ARN"
-  }
-}
-
 variable "efs_csi_driver_enabled" {
   description = "Whether to enable the EFS CSI driver (IAM Role & StorageClass)."
   type        = bool
@@ -318,28 +308,6 @@ variable "vector_audit_s3_backup_bucket" {
       !endswith(var.vector_audit_s3_backup_bucket, "-s3alias")
     )
     error_message = "vector_audit_s3_backup_bucket must be a valid S3 bucket name."
-  }
-}
-
-variable "traefik_nlb_service_ports" {
-  description = "(Deprecated: use internal_nlb_service_ports) List of additional ports for traefik k8s service"
-  type = list(object({
-    name        = string
-    port        = number
-    target_port = string
-    protocol    = string
-  }))
-  default = []
-  validation {
-    condition = alltrue([
-      for port in var.traefik_nlb_service_ports : (
-        can(regex("\\w+", port.name)) &&
-        (can(regex("\\d+", port.port)) && port.port > 0 && port.port <= 65535) &&
-        can(regex("\\w+", port.target_port)) &&
-        can(regex("TCP|UDP", port.protocol))
-      )
-    ])
-    error_message = "Invalid port configuration"
   }
 }
 
@@ -945,7 +913,7 @@ variable "nlb_az_affinity" {
 }
 
 variable "external_cert_arn" {
-  description = "ACM certificate ARN for external load balancers. Overrides traefik_cert_arn when set."
+  description = "ACM certificate ARN for external load balancers."
   type        = string
   default     = null
   validation {
@@ -953,10 +921,9 @@ variable "external_cert_arn" {
       var.external_alb_enabled ||
       var.gateway_api_external_enabled
       ) ? (
-      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn)) ||
-      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn))
+      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn))
     ) : true
-    error_message = "A valid ACM certificate ARN must be set in external_cert_arn (or traefik_cert_arn) when an external load balancer is enabled"
+    error_message = "A valid ACM certificate ARN must be set in external_cert_arn when an external load balancer is enabled"
   }
 }
 
@@ -971,8 +938,7 @@ variable "internal_cert_arn" {
       ) ? (
       var.internal_cert_arn != "" ||
       var.internal_nlb_acm_arn != "" ||
-      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn)) ||
-      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.traefik_cert_arn))
+      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn))
     ) : true
     error_message = "A valid ACM certificate ARN must be set in internal_cert_arn, internal_nlb_acm_arn, or external_cert_arn when an internal load balancer is enabled"
   }
