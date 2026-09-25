@@ -12,12 +12,18 @@ jobs:
       - name: Check out code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e
+        with:
+          terraform_version: "~1.15.0"
+          terraform_wrapper: false
+
+      - name: Configure GitHub module access
+        run: |
+          git config --global --add url."https://github.com/".insteadOf "git@github.com:"
+          git config --global --add url."https://github.com/".insteadOf "ssh://git@github.com/"
+
       - name: terraform test
-        uses: dflook/terraform-test@58481fc46588861db38966e076b8481402817b91
-        env:
-          # Rewrite SSH refs to HTTPS so transitive worldcoin/* module
-          # sources (e.g. inside terraform-datadog-kubernetes) clone
-          # anonymously without an SSH key.
-          TERRAFORM_PRE_RUN: |
-            git config --global --add url."https://github.com/".insteadOf "git@github.com:"
-            git config --global --add url."https://github.com/".insteadOf "ssh://git@github.com/"
+        run: |
+          terraform -chdir="." init -input=false -backend=false
+          terraform -chdir="." test -no-color
