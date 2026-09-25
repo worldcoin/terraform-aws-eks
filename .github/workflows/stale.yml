@@ -12,7 +12,7 @@ permissions:
 jobs:
   stale:
     runs-on:
-      group: arc-large-arm64-runner
+      group: arc-public-large-arm64-runner
     steps:
       - uses: actions/stale@4391f3da665fdf50b6810c1a66712fb9ba21aa93
         with:
