@@ -98,3 +98,8 @@ output "cluster_endpoint" {
   description = "Endpoint for your Kubernetes API server"
   value       = try(aws_eks_cluster.this.endpoint, null)
 }
+
+output "kube_ops_external_secrets_flag" {
+  description = "Value for kube-ops's -external_secrets flag, derived from kube_ops_external_secrets. cluster-apps is GitOps YAML rather than Terraform, so this has to be copied into that cluster's values-kube-ops.yaml - the output exists so the list is authored once, here, next to the IAM grant that has to match it."
+  value       = local.kube_ops_external_secrets_flag
+}
