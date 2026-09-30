@@ -1,7 +1,9 @@
 resource "aws_efs_file_system" "persistent_volume" {
-  count      = var.efs_csi_driver_enabled ? 1 : 0
-  encrypted  = true
-  kms_key_id = aws_kms_key.this.arn
+  count                           = var.efs_csi_driver_enabled ? 1 : 0
+  encrypted                       = true
+  kms_key_id                      = aws_kms_key.this.arn
+  throughput_mode                 = var.efs_throughput_mode
+  provisioned_throughput_in_mibps = var.efs_provisioned_throughput_in_mibps
 
   tags = {
     Name = "eks-node-efs-${var.cluster_name}"
