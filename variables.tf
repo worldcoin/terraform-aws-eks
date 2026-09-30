@@ -168,6 +168,33 @@ variable "efs_csi_driver_enabled" {
   default     = false
 }
 
+variable "efs_throughput_mode" {
+  description = "Throughput mode for the EKS EFS filesystem."
+  type        = string
+  default     = "bursting"
+  nullable    = false
+
+  validation {
+    condition     = contains(["bursting", "elastic", "provisioned"], var.efs_throughput_mode)
+    error_message = "EFS throughput mode must be bursting, elastic, or provisioned."
+  }
+}
+
+variable "efs_provisioned_throughput_in_mibps" {
+  description = "Provisioned EFS throughput in MiB/s; required only in provisioned mode."
+  type        = number
+  default     = null
+
+  validation {
+    condition = var.efs_provisioned_throughput_in_mibps == null ? (
+      var.efs_throughput_mode != "provisioned"
+      ) : (
+      var.efs_throughput_mode == "provisioned" && var.efs_provisioned_throughput_in_mibps >= 1
+    )
+    error_message = "Provisioned mode requires at least 1 MiB/s; other modes require null provisioned throughput."
+  }
+}
+
 variable "monitoring_enabled" {
   description = "Whether to enable monitoring (Datadog)."
   type        = bool
