@@ -3,41 +3,6 @@ output "name" {
   value       = aws_eks_cluster.this.name
 }
 
-output "nlb_dns_names" {
-  description = "Map of dns names of the NLBs"
-  value       = { for k, v in module.nlb : k => v.dns_name }
-}
-
-output "nlb_zone_ids" {
-  description = "Map of zone IDs of the NLBs"
-  value       = { for k, v in module.nlb : k => v.zone_id }
-}
-
-output "nlb_arns" {
-  description = "Map of ARNs of the NLBs"
-  value       = { for k, v in module.nlb : k => v.arn }
-}
-
-output "alb_dns_name" {
-  description = "A dns name of the main ALB (traefik)"
-  value       = join("", [for k, v in module.alb : v.dns_name if k == "traefik"])
-}
-
-output "alb_arn" {
-  description = "An ARN of the main ALB (traefik)"
-  value       = join("", [for k, v in module.alb : v.arn if k == "traefik"])
-}
-
-output "alb_dns_names" {
-  description = "Map of dns names of the ALBs"
-  value       = { for k, v in module.alb : k => v.dns_name }
-}
-
-output "alb_arns" {
-  description = "Map of ARNs of the ALBs"
-  value       = { for k, v in module.alb : k => v.arn }
-}
-
 # Gateway API load balancers
 output "gateway_api_external_alb_dns_name" {
   description = "DNS name of the external Gateway API ALB"

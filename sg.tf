@@ -72,42 +72,6 @@ resource "aws_security_group_rule" "node_egress" {
   description       = "Allow worker nodes to communicate with all"
 }
 
-resource "aws_security_group_rule" "traefik_from_alb_traffic" {
-  for_each = var.external_alb_enabled ? toset([local.external_alb_name]) : []
-
-  security_group_id        = aws_security_group.node.id
-  type                     = "ingress"
-  from_port                = 8443
-  to_port                  = 8443
-  protocol                 = "tcp"
-  source_security_group_id = module.alb[each.key].sg_ids["backend"]
-  description              = "Allow ALB to have access to 8443 ClusterIP with app"
-}
-
-resource "aws_security_group_rule" "traefik_from_alb_metrics" {
-  for_each = var.external_alb_enabled ? toset([local.external_alb_name]) : []
-
-  security_group_id        = aws_security_group.node.id
-  type                     = "ingress"
-  from_port                = 9000
-  to_port                  = 9000
-  protocol                 = "tcp"
-  source_security_group_id = module.alb[each.key].sg_ids["backend"]
-  description              = "Allow ALB to have access to 9000 CluterIP with metrics"
-}
-
-resource "aws_security_group_rule" "node_from_alb_ingress" {
-  count = var.external_alb_enabled ? length(var.alb_additional_node_ports) : 0
-
-  security_group_id        = aws_security_group.node.id
-  type                     = "ingress"
-  from_port                = var.alb_additional_node_ports[count.index]
-  to_port                  = var.alb_additional_node_ports[count.index]
-  protocol                 = "tcp"
-  source_security_group_id = module.alb[local.external_alb_name].sg_ids["backend"]
-  description              = "Allow ALB to have access to node port ${var.alb_additional_node_ports[count.index]}"
-}
-
 resource "aws_security_group_rule" "node_allow_vpc_dns_udp" {
   count = var.vpc_cni_enable_pod_eni ? 1 : 0
 

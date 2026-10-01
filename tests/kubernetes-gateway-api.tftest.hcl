@@ -166,10 +166,7 @@ run "gateway_api_internal_only_no_external_cert" {
   variables {
     gateway_api_crds_enabled     = true
     gateway_api_internal_enabled = true
-    external_alb_enabled         = false
-    internal_nlb_enabled         = false
     external_cert_arn            = null
-    traefik_cert_arn             = null
     internal_cert_arn            = "arn:aws:acm:us-east-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
   }
 
@@ -188,10 +185,7 @@ run "gateway_api_internal_only_nlb_acm_fallback" {
   variables {
     gateway_api_crds_enabled     = true
     gateway_api_internal_enabled = true
-    external_alb_enabled         = false
-    internal_nlb_enabled         = false
     external_cert_arn            = null
-    traefik_cert_arn             = null
     internal_cert_arn            = ""
     internal_nlb_acm_arn         = "arn:aws:acm:us-east-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
   }
@@ -211,10 +205,7 @@ run "gateway_api_internal_only_no_cert_fails" {
   variables {
     gateway_api_crds_enabled     = true
     gateway_api_internal_enabled = true
-    external_alb_enabled         = false
-    internal_nlb_enabled         = false
     external_cert_arn            = null
-    traefik_cert_arn             = null
     internal_cert_arn            = ""
     internal_nlb_acm_arn         = ""
   }
@@ -233,8 +224,6 @@ run "gateway_api_int_alb_extra_certs_default_empty" {
   variables {
     gateway_api_crds_enabled     = true
     gateway_api_internal_enabled = true
-    external_alb_enabled         = false
-    internal_nlb_enabled         = false
     internal_cert_arn            = "arn:aws:acm:us-east-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
   }
 
@@ -253,8 +242,6 @@ run "gateway_api_int_alb_extra_certs_appended" {
   variables {
     gateway_api_crds_enabled     = true
     gateway_api_internal_enabled = true
-    external_alb_enabled         = false
-    internal_nlb_enabled         = false
     internal_cert_arn            = "arn:aws:acm:us-east-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
     gateway_api_int_alb_extra_certificates = [
       "arn:aws:acm:us-east-1:123412341234:certificate/99887766-1312-abcd-qwer-1a2s3d4f5g6h"
@@ -281,8 +268,6 @@ run "gateway_api_int_alb_extra_certs_ignored_on_override" {
   variables {
     gateway_api_crds_enabled     = true
     gateway_api_internal_enabled = true
-    external_alb_enabled         = false
-    internal_nlb_enabled         = false
     internal_cert_arn            = "arn:aws:acm:us-east-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
     gateway_api_int_alb_extra_certificates = [
       "arn:aws:acm:us-east-1:123412341234:certificate/99887766-1312-abcd-qwer-1a2s3d4f5g6h"
@@ -653,8 +638,6 @@ run "gateway_api_internal_alb_sg_rules_additive" {
   variables {
     gateway_api_crds_enabled     = true
     gateway_api_internal_enabled = true
-    external_alb_enabled         = false
-    internal_nlb_enabled         = false
     internal_cert_arn            = "arn:aws:acm:us-east-1:123412341234:certificate/aabbcc11-1312-abcd-qwer-1a2s3d4f5g6h"
     gateway_api_internal_alb_sg_rules = [
       {
