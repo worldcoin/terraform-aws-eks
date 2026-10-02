@@ -81,6 +81,38 @@ variable "kubernetes_provider_enabled" {
   default     = true
 }
 
+variable "kube_ops_external_secrets" {
+  description = "Secrets owned by another AWS account and shared with this one, for kube-ops to publish into the cluster. `secrets` maps a namespace to the ARNs it should receive; a secret whose name ends in dockerconfigjson becomes that namespace's dockerconfigjson Secret, the rest are merged into `application`. This one variable drives both the IAM grant here and the -external_secrets flag kube-ops is started with, exposed as the kube_ops_external_secrets_flag output. Give each cluster its local replica's ARN: a replica ARN differs from the primary's only in the region segment, and a cross-region read fails where Secrets Manager is reached through a regional VPC endpoint. kms_key_arns is required alongside any secret, because a shared secret always uses a customer-managed key - AWS refuses cross-account access to one encrypted with aws/secretsmanager."
+  type = object({
+    secrets      = optional(map(list(string)), {})
+    kms_key_arns = optional(list(string), [])
+  })
+  default  = {}
+  nullable = false
+
+  validation {
+    condition = alltrue([
+      for arn in flatten(values(var.kube_ops_external_secrets.secrets)) :
+      can(regex("^arn:aws:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:", arn))
+    ])
+    error_message = "kube_ops_external_secrets.secrets must contain full Secrets Manager ARNs. A bare name cannot be used: it only resolves inside the calling account."
+  }
+
+  validation {
+    condition = alltrue([
+      for arn in var.kube_ops_external_secrets.kms_key_arns :
+      can(regex("^arn:aws:kms:[a-z0-9-]+:[0-9]{12}:key/", arn))
+    ])
+    error_message = "kube_ops_external_secrets.kms_key_arns must contain full KMS key ARNs."
+  }
+
+  # Without kms:Decrypt the read fails at runtime with an opaque AccessDenied, long after the plan.
+  validation {
+    condition     = length(flatten(values(var.kube_ops_external_secrets.secrets))) == 0 || length(var.kube_ops_external_secrets.kms_key_arns) > 0
+    error_message = "kube_ops_external_secrets.kms_key_arns must be set when secrets are configured: a shared secret is encrypted with a customer-managed key, so the reader needs kms:Decrypt on it."
+  }
+}
+
 variable "kube_ops_enabled" {
   description = "Whether to create a role and association for kube-ops"
   type        = bool

@@ -1,6 +1,16 @@
 locals {
   namespace       = "kube-ops"
   service_account = "kube-ops"
+
+  # One variable drives both the IAM grant below and the flag kube-ops runs with, so the two cannot
+  # drift apart.
+  kube_ops_external_secret_arns = distinct(flatten(values(var.kube_ops_external_secrets.secrets)))
+
+  kube_ops_external_secrets_flag = join(",", flatten([
+    for namespace, arns in var.kube_ops_external_secrets.secrets : [
+      for arn in arns : "${namespace}=${arn}"
+    ]
+  ]))
 }
 
 data "aws_iam_policy_document" "assume_role" {
@@ -74,6 +84,42 @@ data "aws_iam_policy_document" "kube_ops" {
     ]
 
     resources = ["arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.account.id}:secret:${var.environment}/*"]
+  }
+
+  # Secrets owned by another account. Named individually rather than by prefix: the prefix above is
+  # scoped to this account, and a wildcard across accounts would grant far more than intended.
+  dynamic "statement" {
+    for_each = length(local.kube_ops_external_secret_arns) > 0 ? [1] : []
+
+    content {
+      sid    = "readExternalSecretsManager"
+      effect = "Allow"
+
+      # GetSecretValue only: kube-ops addresses these by ARN and does not read their tags, so it
+      # needs neither DescribeSecret nor GetResourcePolicy.
+      actions = [
+        "secretsmanager:GetSecretValue",
+      ]
+
+      resources = local.kube_ops_external_secret_arns
+    }
+  }
+
+  # A shared secret always uses a customer-managed key, and decrypting with one needs an explicit
+  # grant - unlike aws/secretsmanager, where it is implicit.
+  dynamic "statement" {
+    for_each = length(var.kube_ops_external_secrets.kms_key_arns) > 0 ? [1] : []
+
+    content {
+      sid    = "decryptExternalSecrets"
+      effect = "Allow"
+
+      actions = [
+        "kms:Decrypt",
+      ]
+
+      resources = var.kube_ops_external_secrets.kms_key_arns
+    }
   }
 }
 
