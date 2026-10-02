@@ -32,12 +32,6 @@ run "kubernetes_resources_disabled" {
     error_message = "Datadog secret should not be created when kubernetes_provider_enabled is false"
   }
 
-  # Namespaces
-  assert {
-    condition     = length(kubernetes_namespace_v1.traefik) == 0
-    error_message = "Traefik namespace should not be created when kubernetes_provider_enabled is false"
-  }
-
   # RBAC
   assert {
     condition     = length(kubernetes_cluster_role_binding_v1.tfh_cluster_admins) == 0
@@ -200,89 +194,6 @@ run "cluster_role_binding" {
   assert {
     condition     = kubernetes_cluster_role_binding_v1.tfh_cluster_admins[0].metadata[0].annotations["CreatedBy"] == "terraform"
     error_message = "Cluster role binding should have CreatedBy annotation"
-  }
-}
-
-# =============================================================================
-# Test: Traefik namespaces with both ALB and NLB enabled
-# =============================================================================
-run "traefik_namespaces_both_enabled" {
-  command = plan
-
-  variables {
-    kubernetes_provider_enabled = true
-    external_alb_enabled        = true
-    internal_nlb_enabled        = true
-  }
-
-  # Verify both namespaces are created
-  assert {
-    condition     = length(kubernetes_namespace_v1.traefik) == 2
-    error_message = "Two traefik namespaces should be created when both ALB and NLB are enabled"
-  }
-
-  # Verify external namespace exists
-  assert {
-    condition     = contains(keys(kubernetes_namespace_v1.traefik), "traefik")
-    error_message = "Traefik namespace should exist for external ALB"
-  }
-
-  # Verify internal namespace exists
-  assert {
-    condition     = contains(keys(kubernetes_namespace_v1.traefik), "traefik-internal")
-    error_message = "Traefik-internal namespace should exist for internal NLB"
-  }
-
-  # Verify pod readiness gate label
-  assert {
-    condition     = kubernetes_namespace_v1.traefik["traefik"].metadata[0].labels["elbv2.k8s.aws/pod-readiness-gate-inject"] == "enabled"
-    error_message = "Traefik namespace should have pod readiness gate inject label"
-  }
-}
-
-# =============================================================================
-# Test: Traefik namespace with only external ALB
-# =============================================================================
-run "traefik_namespace_alb_only" {
-  command = plan
-
-  variables {
-    kubernetes_provider_enabled = true
-    external_alb_enabled        = true
-    internal_nlb_enabled        = false
-  }
-
-  assert {
-    condition     = length(kubernetes_namespace_v1.traefik) == 1
-    error_message = "Only one traefik namespace should be created when only ALB is enabled"
-  }
-
-  assert {
-    condition     = contains(keys(kubernetes_namespace_v1.traefik), "traefik")
-    error_message = "Traefik namespace should exist for external ALB"
-  }
-}
-
-# =============================================================================
-# Test: Traefik namespace with only internal NLB
-# =============================================================================
-run "traefik_namespace_nlb_only" {
-  command = plan
-
-  variables {
-    kubernetes_provider_enabled = true
-    external_alb_enabled        = false
-    internal_nlb_enabled        = true
-  }
-
-  assert {
-    condition     = length(kubernetes_namespace_v1.traefik) == 1
-    error_message = "Only one traefik namespace should be created when only NLB is enabled"
-  }
-
-  assert {
-    condition     = contains(keys(kubernetes_namespace_v1.traefik), "traefik-internal")
-    error_message = "Traefik-internal namespace should exist for internal NLB"
   }
 }
 
