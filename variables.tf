@@ -237,7 +237,7 @@ variable "monitoring_user_workload_team" {
 }
 
 variable "monitoring_user_workload_excluded_namespaces" {
-  description = "Namespaces with separate workload alerting. Cluster-wide storage alerts are not excluded."
+  description = "Namespaces excluded from user Kubernetes workload monitors. Cluster-wide storage and the separate OOM monitor are unchanged."
   type        = set(string)
   default     = []
   nullable    = false
