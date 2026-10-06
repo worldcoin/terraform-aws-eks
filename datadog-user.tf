@@ -1,12 +1,23 @@
+locals {
+  user_workload_filter_str = length(var.monitoring_user_workload_excluded_namespaces) == 0 ? local.all_filter_str : format(
+    "%s AND NOT kube_namespace IN (%s)",
+    local.all_filter_str,
+    join(",", sort(tolist(var.monitoring_user_workload_excluded_namespaces)))
+  )
+}
+
 module "datadog_monitoring_for_user" {
   count = var.monitoring_user_workload_notification_channel != "" ? 1 : 0
 
   source = "git::https://github.com/worldcoin/terraform-datadog-kubernetes?ref=v1.5.2"
 
-  notification_channel = var.monitoring_user_workload_notification_channel
-  service              = format("EKS %s", var.cluster_name)
-  env                  = var.environment
-  filter_str           = local.all_filter_str
+  notification_channel     = var.monitoring_user_workload_notification_channel
+  service                  = format("EKS %s", var.cluster_name)
+  env                      = var.environment
+  filter_str               = local.user_workload_filter_str
+  filter_str_concatenation = length(var.monitoring_user_workload_excluded_namespaces) == 0 ? "," : " AND "
+  # Persistent volumes are cluster-scoped and do not carry a namespace tag.
+  persistent_volumes_filter_override = local.all_filter_str
   additional_tags = [
     "CreatedBy:terraform",
     "service:k8s",
