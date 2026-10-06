@@ -1,8 +1,8 @@
 locals {
   user_workload_filter_str = length(var.monitoring_user_workload_excluded_namespaces) == 0 ? local.all_filter_str : format(
-    "%s AND NOT kube_namespace IN (%s)",
+    "%s AND NOT (%s)",
     local.all_filter_str,
-    join(",", sort(tolist(var.monitoring_user_workload_excluded_namespaces)))
+    join(" OR ", [for namespace in sort(tolist(var.monitoring_user_workload_excluded_namespaces)) : "kube_namespace:${namespace}"])
   )
 }
 

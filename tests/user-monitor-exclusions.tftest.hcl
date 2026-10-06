@@ -40,7 +40,7 @@ run "explicit_namespaces_are_sorted_and_excluded" {
   }
 
   assert {
-    condition     = local.user_workload_filter_str == "kube_cluster_name:eks-test AND NOT kube_namespace IN (rehearsal-a,rehearsal-b)"
+    condition     = local.user_workload_filter_str == "kube_cluster_name:eks-test AND NOT (kube_namespace:rehearsal-a OR kube_namespace:rehearsal-b)"
     error_message = "Exclude only the named namespaces, with stable query ordering."
   }
 
