@@ -34,9 +34,10 @@ module "datadog_monitoring" {
   pod_ready_filter_override                    = local.pod_ready_filter_override
   deploy_desired_vs_status_filter_override     = local.deploy_desired_vs_status_filter_override
 
-  # don't alert on cpu overbooking
+  # CPU overbooking and high memory reservation from bin packing do not imply node pressure.
   cpu_limits_low_perc_enabled                = false
   cpu_requests_low_perc_enabled              = false
+  memory_requests_low_perc_enabled           = false
   memory_limits_low_perc_enabled             = var.memory_limits_low_perc_enabled
   replicaset_incomplete_enabled              = var.replicaset_incomplete_enabled
   replicaset_unavailable_enabled             = var.replicaset_unavailable_enabled
