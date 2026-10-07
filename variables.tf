@@ -236,6 +236,20 @@ variable "monitoring_user_workload_team" {
   }
 }
 
+variable "monitoring_user_workload_excluded_namespaces" {
+  description = "Namespaces excluded from user Kubernetes workload monitors. Cluster-wide storage and the separate OOM monitor are unchanged."
+  type        = set(string)
+  default     = []
+  nullable    = false
+  validation {
+    condition = alltrue([
+      for namespace in var.monitoring_user_workload_excluded_namespaces :
+      length(namespace) <= 63 && can(regex("^[a-z0-9]([-a-z0-9]*[a-z0-9])?$", namespace))
+    ])
+    error_message = "Excluded namespaces must be valid Kubernetes namespace names."
+  }
+}
+
 variable "monitoring_reachability_fail_locations" {
   description = "Number of locations to fail to trigger the reachability test"
   type        = number
