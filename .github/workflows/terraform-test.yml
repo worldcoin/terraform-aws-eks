@@ -27,3 +27,13 @@ jobs:
         run: |
           terraform -chdir="." init -input=false -backend=false
           terraform -chdir="." test -no-color
+
+      - name: Verify identity access creation order
+        run: |
+          # Mock providers cannot reproduce an AWS 404 caused by missing creation ordering.
+          terraform -chdir=modules/identity init -backend=false -input=false
+          graph=$(terraform -chdir=modules/identity graph)
+          if ! printf '%s\n' "$graph" | grep -F '"aws_eks_access_policy_association.this" -> "aws_eks_access_entry.this";'; then
+            echo "::error::The identity policy association must depend on its access entry."
+            exit 1
+          fi
