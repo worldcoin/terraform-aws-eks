@@ -2,6 +2,10 @@
 
 This module create `pods identity` and `access entries` for EKS cluster based on information provided to module.
 
+Deploy access entries join `NamespaceCreator` and `github-deploy-<application>`.
+Bind the application-specific group to namespace-scoped Kubernetes Roles when a
+deployer needs custom resources not covered by `AmazonEKSAdminPolicy`.
+
 ## Example
 
 Base example how to use this module you can find below.

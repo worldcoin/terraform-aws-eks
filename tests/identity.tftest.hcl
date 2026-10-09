@@ -26,9 +26,9 @@ run "namespace_scoped_deploy_access" {
       aws_eks_access_entry.this["di-migration-tee"].cluster_name == "tee-dev-eu-central-1" &&
       aws_eks_access_entry.this["di-migration-tee"].principal_arn == "arn:aws:iam::123456789012:role/oidc/github-deploy-di-migration-tee" &&
       aws_eks_access_entry.this["di-migration-tee"].type == "STANDARD" &&
-      aws_eks_access_entry.this["di-migration-tee"].kubernetes_groups == toset(["NamespaceCreator"])
+      aws_eks_access_entry.this["di-migration-tee"].kubernetes_groups == toset(["NamespaceCreator", "github-deploy-di-migration-tee"])
     )
-    error_message = "The deploy access entry must retain its cluster, principal, type and namespace-creation group."
+    error_message = "The deploy access entry must retain its cluster, principal, type and deployment groups."
   }
 
   assert {

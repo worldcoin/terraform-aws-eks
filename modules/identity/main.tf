@@ -11,7 +11,7 @@ resource "aws_eks_access_entry" "this" {
   for_each = toset(var.service_accounts)
 
   cluster_name      = var.cluster_name
-  kubernetes_groups = ["NamespaceCreator"]
+  kubernetes_groups = ["NamespaceCreator", "github-deploy-${var.application}"]
   principal_arn     = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/oidc/${substr("github-deploy-${var.application}", 0, 64)}"
   type              = "STANDARD"
 }
