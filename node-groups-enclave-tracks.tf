@@ -98,7 +98,8 @@ resource "aws_autoscaling_group" "enclave_track" {
     launch_template {
       launch_template_specification {
         launch_template_id = aws_launch_template.enclave_track[each.value.track_key].id
-        version            = "$Latest"
+        # A concrete version, not $Latest: AWS refuses auto_rollback refreshes on $Latest.
+        version = aws_launch_template.enclave_track[each.value.track_key].latest_version
       }
     }
   }
