@@ -19,9 +19,9 @@ resource "aws_eks_access_entry" "this" {
 resource "aws_eks_access_policy_association" "this" {
   for_each = toset(var.service_accounts)
 
-  cluster_name  = var.cluster_name
+  cluster_name  = aws_eks_access_entry.this[each.key].cluster_name
   policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
-  principal_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/oidc/${substr("github-deploy-${var.application}", 0, 64)}"
+  principal_arn = aws_eks_access_entry.this[each.key].principal_arn
 
   access_scope {
     type       = "namespace"
