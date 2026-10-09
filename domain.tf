@@ -9,7 +9,7 @@ data "cloudflare_zone" "worldcoin_dev" {
 resource "cloudflare_dns_record" "monitoring" {
   count = var.monitoring_enabled && var.gateway_api_external_enabled ? 1 : 0
 
-  zone_id = one(data.cloudflare_zone.worldcoin_dev).zone_id
+  zone_id = one(data.cloudflare_zone.worldcoin_dev[*].zone_id)
   name    = format("%s.%s", var.cluster_name, "monitoring.worldcoin.dev")
   type    = "CNAME"
   content = module.gateway_api_external_alb[local.gateway_api_external_alb_name].dns_name
