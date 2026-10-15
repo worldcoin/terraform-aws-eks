@@ -191,12 +191,24 @@ data "aws_iam_policy_document" "karpenter" {
 }
 
 resource "aws_iam_role" "karpenter" {
+  count              = var.optional_controller_iam_enabled ? 1 : 0
   name               = trimsuffix(substr("karpenter-controller-${var.cluster_name}", 0, 63), "-")
   assume_role_policy = data.aws_iam_policy_document.karpenter_assume_role_policy.json
 }
 
 resource "aws_iam_role_policy" "karpenter" {
+  count  = var.optional_controller_iam_enabled ? 1 : 0
   name   = trimsuffix(substr("karpenter-controller-${var.cluster_name}", 0, 63), "-")
-  role   = aws_iam_role.karpenter.id
+  role   = aws_iam_role.karpenter[0].id
   policy = data.aws_iam_policy_document.karpenter.json
+}
+
+moved {
+  from = aws_iam_role.karpenter
+  to   = aws_iam_role.karpenter[0]
+}
+
+moved {
+  from = aws_iam_role_policy.karpenter
+  to   = aws_iam_role_policy.karpenter[0]
 }
