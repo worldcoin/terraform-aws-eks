@@ -22,8 +22,9 @@ data "aws_iam_policy_document" "dockerhub_pull_through_cache" {
 }
 
 resource "aws_iam_role" "node" {
-  name               = trimsuffix(substr("eks-node-${var.cluster_name}", 0, 63), "-")
-  assume_role_policy = data.aws_iam_policy_document.node_assume_role_policy.json
+  name                 = trimsuffix(substr("eks-node-${var.cluster_name}", 0, 63), "-")
+  assume_role_policy   = data.aws_iam_policy_document.node_assume_role_policy.json
+  permissions_boundary = var.iam_role_permissions_boundary_arn
 }
 
 resource "aws_iam_role_policy" "dockerhub_pull_through_cache" {

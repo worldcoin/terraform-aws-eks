@@ -55,13 +55,20 @@ resource "aws_eks_cluster" "this" {
 }
 
 data "tls_certificate" "this" {
-  url = aws_eks_cluster.this.identity[0].oidc[0].issuer
+  count = var.oidc_provider_enabled ? 1 : 0
+  url   = aws_eks_cluster.this.identity[0].oidc[0].issuer
 }
 
 resource "aws_iam_openid_connect_provider" "oidc_provider" {
+  count           = var.oidc_provider_enabled ? 1 : 0
   client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = data.tls_certificate.this.certificates[*].sha1_fingerprint
+  thumbprint_list = data.tls_certificate.this[0].certificates[*].sha1_fingerprint
   url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
+}
+
+moved {
+  from = aws_iam_openid_connect_provider.oidc_provider
+  to   = aws_iam_openid_connect_provider.oidc_provider[0]
 }
 
 data "aws_iam_roles" "aws_load_balancer_controller" {

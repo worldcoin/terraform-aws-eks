@@ -31,6 +31,13 @@
 This module is used to create an EKS cluster on AWS with the support of the `vpc`
 and `sso-roles` modules.
 
+For isolated managed-node-only clusters, set `iam_role_permissions_boundary_arn` to
+bound the cluster and node roles. Set `oidc_provider_enabled = false` only when
+`optional_controller_iam_enabled`, `aws_load_balancer_iam_role_enabled`,
+`efs_csi_driver_enabled`, and `s3_mountpoint_csi_driver_enabled` are all false;
+otherwise an IRSA role requires the IAM OIDC provider. Both new inputs preserve
+existing behavior when omitted. Other workload IAM roles have separate enable flags.
+
 ## How to release
 
 New releases are created automagically by [Release Drafter GH action](https://github.com/worldcoin/terraform-aws-eks/actions/workflows/release.yml).
@@ -890,6 +897,7 @@ To remove the cluster you have to:
 | <a name="input_gha_cidr_eu_central_1"></a> [gha\_cidr\_eu\_central\_1](#input\_gha\_cidr\_eu\_central\_1) | GitHub Actions CIDR block for eu-central-1 | `string` | `"10.52.0.0/20"` | no |
 | <a name="input_gha_cidr_us_east_1"></a> [gha\_cidr\_us\_east\_1](#input\_gha\_cidr\_us\_east\_1) | GitHub Actions CIDR block for us-east-1 | `string` | `"10.0.96.0/20"` | no |
 | <a name="input_http_put_response_hop_limit"></a> [http\_put\_response\_hop\_limit](#input\_http\_put\_response\_hop\_limit) | The maximum number of hops allowed for HTTP PUT requests. Must be between 1 and 64. | `number` | `2` | no |
+| <a name="input_iam_role_permissions_boundary_arn"></a> [iam\_role\_permissions\_boundary\_arn](#input\_iam\_role\_permissions\_boundary\_arn) | Optional permissions boundary ARN for the EKS cluster and node IAM roles. Other IAM roles have separate enable flags. | `string` | `null` | no |
 | <a name="input_internal_cert_arn"></a> [internal\_cert\_arn](#input\_internal\_cert\_arn) | ACM certificate ARN for internal load balancers (falls back to external\_cert\_arn). If empty, internal\_nlb\_acm\_arn is used for backwards compatibility. | `string` | `""` | no |
 | <a name="input_internal_nlb_acm_arn"></a> [internal\_nlb\_acm\_arn](#input\_internal\_nlb\_acm\_arn) | (Deprecated: use internal\_cert\_arn) The ARN of the certificate to use for internal NLB. | `string` | `""` | no |
 | <a name="input_internal_nlb_enabled"></a> [internal\_nlb\_enabled](#input\_internal\_nlb\_enabled) | Internal Network load balancers to create. If true, the NLB will be created. | `bool` | `true` | no |
@@ -913,6 +921,7 @@ To remove the cluster you have to:
 | <a name="input_node_monitoring_agent_enabled"></a> [node\_monitoring\_agent\_enabled](#input\_node\_monitoring\_agent\_enabled) | Enable node monitoring agent | `bool` | `false` | no |
 | <a name="input_on_demand_base_capacity"></a> [on\_demand\_base\_capacity](#input\_on\_demand\_base\_capacity) | The number of minimum on-demand instances to launch. | `number` | `1` | no |
 | <a name="input_on_demand_percentage_above_base_capacity"></a> [on\_demand\_percentage\_above\_base\_capacity](#input\_on\_demand\_percentage\_above\_base\_capacity) | The percentage of on-demand instances to use above the base capacity | `number` | `50` | no |
+| <a name="input_oidc_provider_enabled"></a> [oidc\_provider\_enabled](#input\_oidc\_provider\_enabled) | Create the IAM OIDC provider for IRSA. Disable only when Karpenter, AWS Load Balancer Controller, EFS CSI, and S3 Mountpoint CSI roles are all disabled. | `bool` | `true` | no |
 | <a name="input_open_to_all"></a> [open\_to\_all](#input\_open\_to\_all) | Set to `true` if you want to open the cluster to all traffic from internet | `bool` | `false` | no |
 | <a name="input_optional_controller_iam_enabled"></a> [optional\_controller\_iam\_enabled](#input\_optional\_controller\_iam\_enabled) | Create Karpenter, KEDA, CNI metrics helper, and EBS CSI IAM roles and pod identities. Disable only for managed-node-only disposable clusters; existing clusters retain the roles by default. | `bool` | `true` | no |
 | <a name="input_public_access_cidrs"></a> [public\_access\_cidrs](#input\_public\_access\_cidrs) | List of CIDR blocks. Indicates which CIDR blocks can access the Amazon EKS public API server endpoint when enabled. | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |

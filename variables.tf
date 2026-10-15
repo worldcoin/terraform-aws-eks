@@ -106,6 +106,29 @@ variable "optional_controller_iam_enabled" {
   nullable    = false
 }
 
+variable "iam_role_permissions_boundary_arn" {
+  description = "Optional permissions boundary ARN for the EKS cluster and node IAM roles. Other IAM roles have separate enable flags."
+  type        = string
+  default     = null
+}
+
+variable "oidc_provider_enabled" {
+  description = "Create the IAM OIDC provider for IRSA. Disable only when Karpenter, AWS Load Balancer Controller, EFS CSI, and S3 Mountpoint CSI roles are all disabled."
+  type        = bool
+  default     = true
+  nullable    = false
+
+  validation {
+    condition = var.oidc_provider_enabled || (
+      !var.optional_controller_iam_enabled &&
+      !var.aws_load_balancer_iam_role_enabled &&
+      !var.efs_csi_driver_enabled &&
+      !var.s3_mountpoint_csi_driver_enabled
+    )
+    error_message = "OIDC provider must remain enabled when an IRSA role is enabled."
+  }
+}
+
 variable "extra_role_mapping" {
   description = "Extra role mappings to add to the aws-auth configmap."
   type = list(object({

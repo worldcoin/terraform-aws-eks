@@ -1,4 +1,6 @@
 data "aws_iam_policy_document" "aws_efs_csi_driver_assume_role_policy" {
+  count = var.efs_csi_driver_enabled ? 1 : 0
+
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -11,7 +13,7 @@ data "aws_iam_policy_document" "aws_efs_csi_driver_assume_role_policy" {
 
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.oidc_provider.arn]
+      identifiers = [aws_iam_openid_connect_provider.oidc_provider[0].arn]
     }
   }
 }
@@ -71,7 +73,7 @@ resource "aws_iam_role" "aws_efs_csi_driver" {
   count              = var.efs_csi_driver_enabled ? 1 : 0
   name               = trimsuffix(substr("aws-efs-csi-driver-${var.cluster_name}", 0, 63), "-")
   path               = "/system/"
-  assume_role_policy = data.aws_iam_policy_document.aws_efs_csi_driver_assume_role_policy.json
+  assume_role_policy = data.aws_iam_policy_document.aws_efs_csi_driver_assume_role_policy[0].json
 }
 
 resource "aws_iam_role_policy" "aws_efs_csi_driver" {

@@ -1,4 +1,6 @@
 data "aws_iam_policy_document" "aws_s3_mountpoint_csi_s3_assume" {
+  count = var.s3_mountpoint_csi_driver_enabled ? 1 : 0
+
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -16,7 +18,7 @@ data "aws_iam_policy_document" "aws_s3_mountpoint_csi_s3_assume" {
 
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.oidc_provider.arn]
+      identifiers = [aws_iam_openid_connect_provider.oidc_provider[0].arn]
     }
   }
 }
@@ -49,7 +51,7 @@ resource "aws_iam_role" "aws_s3_mountpoint_csi" {
   count              = var.s3_mountpoint_csi_driver_enabled ? 1 : 0
   name               = trimsuffix(substr("aws-mountpoint-s3-csi-${var.cluster_name}", 0, 63), "-")
   path               = "/system/"
-  assume_role_policy = data.aws_iam_policy_document.aws_s3_mountpoint_csi_s3_assume.json
+  assume_role_policy = data.aws_iam_policy_document.aws_s3_mountpoint_csi_s3_assume[0].json
 }
 
 resource "aws_iam_role_policy" "aws_s3_mountpoint_csi" {

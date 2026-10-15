@@ -3,6 +3,8 @@ locals {
 }
 
 data "aws_iam_policy_document" "karpenter_assume_role_policy" {
+  count = var.optional_controller_iam_enabled ? 1 : 0
+
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -15,7 +17,7 @@ data "aws_iam_policy_document" "karpenter_assume_role_policy" {
 
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.oidc_provider.arn]
+      identifiers = [aws_iam_openid_connect_provider.oidc_provider[0].arn]
     }
   }
 }
@@ -193,7 +195,7 @@ data "aws_iam_policy_document" "karpenter" {
 resource "aws_iam_role" "karpenter" {
   count              = var.optional_controller_iam_enabled ? 1 : 0
   name               = trimsuffix(substr("karpenter-controller-${var.cluster_name}", 0, 63), "-")
-  assume_role_policy = data.aws_iam_policy_document.karpenter_assume_role_policy.json
+  assume_role_policy = data.aws_iam_policy_document.karpenter_assume_role_policy[0].json
 }
 
 resource "aws_iam_role_policy" "karpenter" {

@@ -1,4 +1,6 @@
 data "aws_iam_policy_document" "aws_load_balancer_assume_role_policy" {
+  count = var.aws_load_balancer_iam_role_enabled ? 1 : 0
+
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -11,7 +13,7 @@ data "aws_iam_policy_document" "aws_load_balancer_assume_role_policy" {
 
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.oidc_provider.arn]
+      identifiers = [aws_iam_openid_connect_provider.oidc_provider[0].arn]
     }
   }
 }
@@ -333,7 +335,7 @@ resource "aws_iam_role" "aws_load_balancer" {
   name  = trimsuffix(substr("aws-load-balancer-controller-${var.cluster_name}", 0, 63), "-")
 
   path               = "/system/"
-  assume_role_policy = data.aws_iam_policy_document.aws_load_balancer_assume_role_policy.json
+  assume_role_policy = data.aws_iam_policy_document.aws_load_balancer_assume_role_policy[0].json
 }
 
 resource "aws_iam_role_policy" "aws_load_balancer" {
@@ -347,7 +349,7 @@ resource "aws_iam_role" "aws_lbc" {
   count              = var.aws_load_balancer_iam_role_enabled ? 1 : 0
   name               = "aws-lbc-${var.cluster_name}"
   path               = "/system/"
-  assume_role_policy = data.aws_iam_policy_document.aws_load_balancer_assume_role_policy.json
+  assume_role_policy = data.aws_iam_policy_document.aws_load_balancer_assume_role_policy[0].json
 }
 
 resource "aws_iam_role_policy" "aws_lbc" {
