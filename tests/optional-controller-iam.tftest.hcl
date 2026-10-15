@@ -52,3 +52,16 @@ run "default_keeps_existing_controller_roles" {
     error_message = "Existing clusters must retain all controller roles by default"
   }
 }
+
+run "null_does_not_remove_existing_controller_roles" {
+  command = plan
+
+  variables {
+    optional_controller_iam_enabled = null
+  }
+
+  assert {
+    condition     = length(aws_iam_role.karpenter) == 1
+    error_message = "A caller forwarding null must preserve the existing controller role"
+  }
+}
