@@ -99,6 +99,13 @@ variable "argocd_image_updater_enabled" {
   default     = true
 }
 
+variable "optional_controller_iam_enabled" {
+  description = "Create IAM roles and pod identities for Karpenter, KEDA, CNI metrics helper, and EBS CSI. Disable for managed-node-only disposable clusters; other optional roles have separate enable flags."
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
 variable "extra_role_mapping" {
   description = "Extra role mappings to add to the aws-auth configmap."
   type = list(object({
