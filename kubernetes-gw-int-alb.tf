@@ -24,7 +24,10 @@ locals {
     ] : []
   )
 
-  gateway_api_internal_alb_sg_rules = concat(local.gateway_api_internal_alb_default_sg_rules, var.gateway_api_internal_alb_sg_rules)
+  gateway_api_internal_alb_sg_rules = concat(
+    [for rule in local.gateway_api_internal_alb_default_sg_rules : rule if var.gateway_api_internal_alb_default_ipv4_ingress_enabled || rule.cidr_blocks == null],
+    var.gateway_api_internal_alb_sg_rules,
+  )
 }
 
 module "gateway_api_internal_alb" {

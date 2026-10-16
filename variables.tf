@@ -951,8 +951,20 @@ variable "gateway_api_external_alb_sg_rules" {
   }
 }
 
+variable "gateway_api_internal_alb_default_ipv4_ingress_enabled" {
+  description = "Allow HTTPS from 10.0.0.0/8 to the internal Gateway API ALB. Set false with explicit gateway_api_internal_alb_sg_rules to restrict IPv4 clients. VPC IPv6 defaults are preserved."
+  type        = bool
+  default     = true
+  nullable    = false
+
+  validation {
+    condition     = var.gateway_api_internal_alb_default_ipv4_ingress_enabled || length(var.gateway_api_internal_alb_sg_rules) > 0
+    error_message = "Disabling default IPv4 ingress requires at least one explicit gateway_api_internal_alb_sg_rules rule."
+  }
+}
+
 variable "gateway_api_internal_alb_sg_rules" {
-  description = "Additional ingress rules for the internal Gateway API ALB's backend security group (terraform-aws-alb's backend_ingress_rules), appended to the module's own defaults (HTTPS from all internal networks) — this does not replace them."
+  description = "Ingress rules appended to the internal Gateway API ALB defaults. Set gateway_api_internal_alb_default_ipv4_ingress_enabled = false to remove the default 10.0.0.0/8 rule. VPC IPv6 defaults are preserved."
   type = list(object({
     description      = optional(string, "")
     protocol         = optional(string, "tcp")
@@ -995,8 +1007,20 @@ variable "gateway_api_external_nlb_sg_rules" {
   }
 }
 
+variable "gateway_api_internal_nlb_default_ipv4_ingress_enabled" {
+  description = "Allow HTTP/HTTPS from 10.0.0.0/8 to the internal Gateway API NLB. Set false with explicit gateway_api_internal_nlb_sg_rules to restrict IPv4 clients. VPC IPv6 defaults are preserved."
+  type        = bool
+  default     = true
+  nullable    = false
+
+  validation {
+    condition     = var.gateway_api_internal_nlb_default_ipv4_ingress_enabled || length(var.gateway_api_internal_nlb_sg_rules) > 0
+    error_message = "Disabling default IPv4 ingress requires at least one explicit gateway_api_internal_nlb_sg_rules rule."
+  }
+}
+
 variable "gateway_api_internal_nlb_sg_rules" {
-  description = "Additional LB security group ingress rules for the internal Gateway API NLB, appended to the module's own defaults (ports 80/443 from all internal networks) — this does not replace them."
+  description = "Ingress rules appended to the internal Gateway API NLB defaults. Set gateway_api_internal_nlb_default_ipv4_ingress_enabled = false to remove the default 10.0.0.0/8 rules. VPC IPv6 defaults are preserved."
   type = list(object({
     description      = optional(string, "")
     protocol         = optional(string, "tcp")
