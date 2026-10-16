@@ -10,6 +10,46 @@ resource "aws_efs_file_system" "persistent_volume" {
   }
 }
 
+resource "aws_efs_file_system_policy" "persistent_volume" {
+  count          = var.efs_csi_driver_enabled ? 1 : 0
+  file_system_id = aws_efs_file_system.persistent_volume[0].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "AllowClientsViaMountTargets"
+        Effect    = "Allow"
+        Principal = { AWS = "*" }
+        # CSI mounts do not require IAM authentication; keep existing POSIX/root access.
+        Action = [
+          "elasticfilesystem:ClientMount",
+          "elasticfilesystem:ClientWrite",
+          "elasticfilesystem:ClientRootAccess",
+        ]
+        Resource = aws_efs_file_system.persistent_volume[0].arn
+        Condition = {
+          Bool = { "elasticfilesystem:AccessedViaMountTarget" = "true" }
+        }
+      },
+      {
+        Sid       = "DenyUnencryptedClientAccess"
+        Effect    = "Deny"
+        Principal = { AWS = "*" }
+        Action = [
+          "elasticfilesystem:ClientMount",
+          "elasticfilesystem:ClientWrite",
+          "elasticfilesystem:ClientRootAccess",
+        ]
+        Resource = aws_efs_file_system.persistent_volume[0].arn
+        Condition = {
+          Bool = { "aws:SecureTransport" = "false" }
+        }
+      },
+    ]
+  })
+}
+
 resource "aws_efs_mount_target" "persistent_volume" {
   for_each        = var.efs_csi_driver_enabled ? toset(var.vpc_config.private_subnets) : []
   file_system_id  = aws_efs_file_system.persistent_volume[0].id
