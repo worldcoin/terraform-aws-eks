@@ -448,6 +448,8 @@ Monitoring the cluster using Datadog is also included, enabled by default, by us
 
 The module comes with the IAM role for [Amazon EFS CSI driver](https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html), and can be enabled using `efs_csi_driver_enabled` variable. Also with the role, it will create an instance of Elastic File System (EFS) and mount it to the cluster as a StorageClass named `efs`.
 
+The file system policy permits NFS client access through mount targets and requires TLS. It preserves POSIX/root access without requiring IAM-authenticated mounts; network access remains restricted to the EKS node security group. Existing clients must use TLS before upgrading to a module version with this policy. This policy does not replace application-level POSIX permissions or provide per-application IAM isolation.
+
 ## Terraform tips and tricks
 
 ### Gateway API
@@ -496,6 +498,41 @@ For clusters currently using the `gateway-api-crds`, `gateway-api-external`, and
 3. `terraform apply` — imports existing resources
 4. Remove the gateway-api-* Helm charts from ArgoCD
 5. Delete the import file
+
+#### Restricting internal IPv4 ingress
+
+Internal Gateway API load balancers allow `10.0.0.0/8` by default (ALB: TCP/443;
+NLB: TCP/80 and TCP/443). Custom security group rules are additive. To replace
+the broad IPv4 defaults, configure explicit client rules and disable the defaults
+independently for each load balancer:
+
+```hcl
+gateway_api_internal_alb_default_ipv4_ingress_enabled = false
+gateway_api_internal_alb_sg_rules = [{
+  description = "Allow HTTPS from approved client VPC"
+  port        = 443
+  cidr_blocks = ["10.0.160.0/20"]
+}]
+
+gateway_api_internal_nlb_default_ipv4_ingress_enabled = false
+gateway_api_internal_nlb_sg_rules = [{
+  description = "Allow HTTPS from approved PrivateLink client VPC"
+  port        = 443
+  cidr_blocks = ["10.245.0.0/16"]
+}]
+```
+
+Both switches default to `true`, including when explicitly passed `null`.
+VPC IPv6 defaults remain enabled. Disabling an IPv4 default requires at least
+one explicit rule for that load balancer; an empty dynamic ingress block does
+not reliably remove existing rules in the underlying security group resource.
+
+For existing clusters, add and apply the explicit rules first, then disable the
+IPv4 defaults in a separate apply. Review plans for SG ingress changes only,
+without replacing the LB or SG. Test every required client path after each apply.
+For PrivateLink with inbound SG enforcement enabled, allow the actual client IP
+ranges, including any required clients outside the endpoint VPC; allowing only
+the provider VPC or endpoint interface IPs is insufficient.
 
 ### Cluster create
 
@@ -688,6 +725,7 @@ To remove the cluster you have to:
 | [aws_cloudwatch_log_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
 | [aws_cloudwatch_log_subscription_filter.eks_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_subscription_filter) | resource |
 | [aws_efs_file_system.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system) | resource |
+| [aws_efs_file_system_policy.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system_policy) | resource |
 | [aws_efs_mount_target.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_mount_target) | resource |
 | [aws_eks_access_entry.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_access_entry) | resource |
 | [aws_eks_access_policy_association.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_access_policy_association) | resource |
@@ -897,9 +935,11 @@ To remove the cluster you have to:
 | <a name="input_gateway_api_int_alb_listeners"></a> [gateway\_api\_int\_alb\_listeners](#input\_gateway\_api\_int\_alb\_listeners) | Gateway listeners for the internal ALB (gw-int-alb). | `any` | <pre>[<br/>  {<br/>    "allowedRoutes": {<br/>      "namespaces": {<br/>        "from": "All"<br/>      }<br/>    },<br/>    "name": "https",<br/>    "port": 443,<br/>    "protocol": "HTTPS",<br/>    "tls": {<br/>      "certificateRefs": [<br/>        {<br/>          "group": "",<br/>          "kind": "Secret",<br/>          "name": "default-cert"<br/>        }<br/>      ],<br/>      "mode": "Terminate"<br/>    }<br/>  }<br/>]</pre> | no |
 | <a name="input_gateway_api_int_nlb_listener_configs"></a> [gateway\_api\_int\_nlb\_listener\_configs](#input\_gateway\_api\_int\_nlb\_listener\_configs) | Override LoadBalancerConfiguration listenerConfigurations for the internal NLB. When null, defaults to TLS:443 with internal cert and SSL policy. | `any` | `null` | no |
 | <a name="input_gateway_api_int_nlb_listeners"></a> [gateway\_api\_int\_nlb\_listeners](#input\_gateway\_api\_int\_nlb\_listeners) | Gateway listeners for the internal NLB (gw-int-nlb). | `any` | <pre>[<br/>  {<br/>    "allowedRoutes": {<br/>      "kinds": [<br/>        {<br/>          "group": "gateway.networking.k8s.io",<br/>          "kind": "TCPRoute"<br/>        }<br/>      ],<br/>      "namespaces": {<br/>        "from": "All"<br/>      }<br/>    },<br/>    "name": "tcp",<br/>    "port": 80,<br/>    "protocol": "TCP"<br/>  },<br/>  {<br/>    "allowedRoutes": {<br/>      "kinds": [<br/>        {<br/>          "group": "gateway.networking.k8s.io",<br/>          "kind": "TLSRoute"<br/>        }<br/>      ],<br/>      "namespaces": {<br/>        "from": "All"<br/>      }<br/>    },<br/>    "name": "tls",<br/>    "port": 443,<br/>    "protocol": "TLS",<br/>    "tls": {<br/>      "certificateRefs": [<br/>        {<br/>          "group": "",<br/>          "kind": "Secret",<br/>          "name": "default-cert"<br/>        }<br/>      ],<br/>      "mode": "Terminate"<br/>    }<br/>  }<br/>]</pre> | no |
-| <a name="input_gateway_api_internal_alb_sg_rules"></a> [gateway\_api\_internal\_alb\_sg\_rules](#input\_gateway\_api\_internal\_alb\_sg\_rules) | Additional ingress rules for the internal Gateway API ALB's backend security group (terraform-aws-alb's backend\_ingress\_rules), appended to the module's own defaults (HTTPS from all internal networks) — this does not replace them. | <pre>list(object({<br/>    description      = optional(string, "")<br/>    protocol         = optional(string, "tcp")<br/>    port             = number<br/>    cidr_blocks      = optional(list(string))<br/>    ipv6_cidr_blocks = optional(list(string))<br/>    security_groups  = optional(list(string))<br/>  }))</pre> | `[]` | no |
+| <a name="input_gateway_api_internal_alb_default_ipv4_ingress_enabled"></a> [gateway\_api\_internal\_alb\_default\_ipv4\_ingress\_enabled](#input\_gateway\_api\_internal\_alb\_default\_ipv4\_ingress\_enabled) | Allow HTTPS from 10.0.0.0/8 to the internal Gateway API ALB. Set false with explicit gateway\_api\_internal\_alb\_sg\_rules to restrict IPv4 clients. VPC IPv6 defaults are preserved. | `bool` | `true` | no |
+| <a name="input_gateway_api_internal_alb_sg_rules"></a> [gateway\_api\_internal\_alb\_sg\_rules](#input\_gateway\_api\_internal\_alb\_sg\_rules) | Ingress rules appended to the internal Gateway API ALB defaults. Set gateway\_api\_internal\_alb\_default\_ipv4\_ingress\_enabled = false to remove the default 10.0.0.0/8 rule. VPC IPv6 defaults are preserved. | <pre>list(object({<br/>    description      = optional(string, "")<br/>    protocol         = optional(string, "tcp")<br/>    port             = number<br/>    cidr_blocks      = optional(list(string))<br/>    ipv6_cidr_blocks = optional(list(string))<br/>    security_groups  = optional(list(string))<br/>  }))</pre> | `[]` | no |
 | <a name="input_gateway_api_internal_enabled"></a> [gateway\_api\_internal\_enabled](#input\_gateway\_api\_internal\_enabled) | Create internal ALB and NLB for Gateway API (internal, internal-nonhttp). Requires gateway\_api\_crds\_enabled = true. | `bool` | `false` | no |
-| <a name="input_gateway_api_internal_nlb_sg_rules"></a> [gateway\_api\_internal\_nlb\_sg\_rules](#input\_gateway\_api\_internal\_nlb\_sg\_rules) | Additional LB security group ingress rules for the internal Gateway API NLB, appended to the module's own defaults (ports 80/443 from all internal networks) — this does not replace them. | <pre>list(object({<br/>    description      = optional(string, "")<br/>    protocol         = optional(string, "tcp")<br/>    port             = number<br/>    cidr_blocks      = optional(list(string))<br/>    ipv6_cidr_blocks = optional(list(string))<br/>    security_groups  = optional(list(string))<br/>  }))</pre> | `[]` | no |
+| <a name="input_gateway_api_internal_nlb_default_ipv4_ingress_enabled"></a> [gateway\_api\_internal\_nlb\_default\_ipv4\_ingress\_enabled](#input\_gateway\_api\_internal\_nlb\_default\_ipv4\_ingress\_enabled) | Allow HTTP/HTTPS from 10.0.0.0/8 to the internal Gateway API NLB. Set false with explicit gateway\_api\_internal\_nlb\_sg\_rules to restrict IPv4 clients. VPC IPv6 defaults are preserved. | `bool` | `true` | no |
+| <a name="input_gateway_api_internal_nlb_sg_rules"></a> [gateway\_api\_internal\_nlb\_sg\_rules](#input\_gateway\_api\_internal\_nlb\_sg\_rules) | Ingress rules appended to the internal Gateway API NLB defaults. Set gateway\_api\_internal\_nlb\_default\_ipv4\_ingress\_enabled = false to remove the default 10.0.0.0/8 rules. VPC IPv6 defaults are preserved. | <pre>list(object({<br/>    description      = optional(string, "")<br/>    protocol         = optional(string, "tcp")<br/>    port             = number<br/>    cidr_blocks      = optional(list(string))<br/>    ipv6_cidr_blocks = optional(list(string))<br/>    security_groups  = optional(list(string))<br/>  }))</pre> | `[]` | no |
 | <a name="input_gateway_api_lb_name_prefix"></a> [gateway\_api\_lb\_name\_prefix](#input\_gateway\_api\_lb\_name\_prefix) | Prefix for Gateway API load balancer names. Defaults to cluster\_name. Override when cluster\_name is too long to fit within the 32-char AWS LB name limit (prefix + suffix like '-gw-ext-alb' must be <= 32). | `string` | `null` | no |
 | <a name="input_gha_cidr_eu_central_1"></a> [gha\_cidr\_eu\_central\_1](#input\_gha\_cidr\_eu\_central\_1) | GitHub Actions CIDR block for eu-central-1 | `string` | `"10.52.0.0/20"` | no |
 | <a name="input_gha_cidr_us_east_1"></a> [gha\_cidr\_us\_east\_1](#input\_gha\_cidr\_us\_east\_1) | GitHub Actions CIDR block for us-east-1 | `string` | `"10.0.96.0/20"` | no |
