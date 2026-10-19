@@ -18,7 +18,7 @@ locals {
     "1.33" = "v1.11.4-eksbuild.22"
     "1.34" = "v1.13.2-eksbuild.4"
     "1.35" = "v1.13.2-eksbuild.4"
-    "1.36" = "v1.14.7-eksbuild.10"
+    "1.36" = "v1.14.7-eksbuild.11"
   }
 
   # Latest available kube-proxy container image version for each Amazon EKS cluster version
@@ -29,7 +29,7 @@ locals {
     "1.33" = "v1.32.6-eksbuild.8"
     "1.34" = "v1.34.6-eksbuild.2"
     "1.35" = "v1.35.3-eksbuild.2"
-    "1.36" = "v1.36.0-eksbuild.25"
+    "1.36" = "v1.36.0-eksbuild.45"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html

@@ -30,12 +30,12 @@ run "eks_1_36_addon_versions" {
   }
 
   assert {
-    condition     = aws_eks_addon.coredns.addon_version == "v1.14.7-eksbuild.10"
+    condition     = aws_eks_addon.coredns.addon_version == "v1.14.7-eksbuild.11"
     error_message = "Incorrect CoreDNS version for Kubernetes 1.36"
   }
 
   assert {
-    condition     = aws_eks_addon.kube_proxy.addon_version == "v1.36.0-eksbuild.25"
+    condition     = aws_eks_addon.kube_proxy.addon_version == "v1.36.0-eksbuild.45"
     error_message = "Incorrect kube-proxy version for Kubernetes 1.36"
   }
 
