@@ -144,6 +144,7 @@ The module is currently supporting the following versions of Kubernetes:
 - 1.33,
 - 1.34,
 - 1.35,
+- 1.36,
 
 > [!NOTE]
 > Default version for EKS Cluster is 1.35.
