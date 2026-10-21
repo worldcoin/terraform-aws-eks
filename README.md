@@ -64,6 +64,15 @@ the `aws_lb` data source and use its `zone_id`.
 clusters the bump plans no Traefik changes. A cluster that still has a Traefik ALB/NLB
 must tear it down on a 11.x release first; bumping directly would destroy it.
 
+### Karpenter 1.15 controller IAM
+
+The controller role allows `ec2:DescribeInstance*` rather than only the four
+previously enumerated instance-description actions. This includes the
+instance-description APIs needed by newer Karpenter controllers. The existing
+`iam:ListInstanceProfiles` permission remains unchanged. Apply and verify the
+updated controller IAM policy on each cluster before upgrading its Karpenter
+chart; a module release alone does not change deployed permissions.
+
 ### Karpenter spot interruption EventBridge rules are now per-cluster
 
 The spot interruption EventBridge rules (`aws_cloudwatch_event_rule.spot_aws_health`
