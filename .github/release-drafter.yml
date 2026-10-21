@@ -52,6 +52,8 @@ autolabeler:
     branch:
       - '/feat\/.+/'
       - "/INFRA-[0-9]{1,4}/"
+    title:
+      - '/^feat:/i'
     body:
       - "/INFRA-[0-9]{1,4}/"
 
