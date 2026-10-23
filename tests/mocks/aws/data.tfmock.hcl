@@ -11,6 +11,12 @@ mock_data "aws_caller_identity" {
   }
 }
 
+mock_data "aws_iam_role" {
+  defaults = {
+    arn = "arn:aws:iam::123123123123:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AdministratorAccess"
+  }
+}
+
 mock_data "aws_region" {
   defaults = {
     name = "us-west-2"

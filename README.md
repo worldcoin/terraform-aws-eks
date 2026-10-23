@@ -347,7 +347,7 @@ module "eks" {
 }
 ```
 
-Once the policy_arn is not specified, the default AmazonEKSAdminPolicy is used.
+When `policy_arn` is omitted, the existing default AmazonEKSAdminPolicy is associated. Set `associate_access_policy = false` for an RBAC-only access entry; its `kubernetes_groups` then need a matching Kubernetes RoleBinding or ClusterRoleBinding. `user_name` can preserve a username previously assigned by `aws-auth`.
 
 #### AWS EKS Cluster Policies
 
@@ -365,6 +365,31 @@ If you need specyfic access to the cluster, you can list the available AWS Poliv
 ```
 aws eks list-access-policies --output table --region us-east-1
 ```
+
+### Migrate `aws-auth` role mappings to access entries
+
+`kubernetes_config_map_v1_data.aws_auth` only updates an existing ConfigMap. On a new cluster it can run before `aws-auth` exists. Access entries do not depend on a managed node group or the Kubernetes provider. For clusters in `API_AND_CONFIG_MAP` mode, migrate in two reviewed TFE applies:
+
+1. Set `enable_role_mapping_access_entries = true` and leave `manage_aws_auth_config_map = true`. This creates policy-free access entries for the module's `eks-cluster-*` IAM role and each nonempty `extra_role_mapping`. The module resolves the real IAM role ARN (including paths stripped from SSO `aws-auth` mappings) and preserves the Kubernetes username and groups. The TFE role must be able to call `iam:GetRole`. EKS manages access entries for managed node-group roles.
+2. Inventory the fixed `role/admin`, `role/tfe`, and `role/github-deploy` mappings in `kubernetes-aws-auth.tf`. They are **not** automatically migrated: some accounts have no such role or use a different IAM path. For every effective role, verify an existing equivalent EKS access entry or explicitly add one with its actual role ARN and `associate_access_policy = false`. Do not recreate an EKS-managed or separately managed entry. Verify SSO view-only/power-user groups and the `tfh-cluster-admins` RoleBinding; do not attach the default admin policy to RBAC-only entries.
+3. After the new entries are active and each principal's access is verified, set `manage_aws_auth_config_map = false` in a separate apply. Review removal of the old `mapRoles` data and confirm that any node role still has its EKS-managed entry before applying. Keep `kubernetes_provider_enabled = true` for the RBAC bindings and other Kubernetes resources.
+
+For a **new** cluster with API authentication, set `enable_role_mapping_access_entries = true`, `manage_aws_auth_config_map = false`, and `kubernetes_provider_enabled = false` for the first apply. Enable Kubernetes-provider resources after the API is reachable. `CONFIG_MAP`-only clusters cannot use the access-entry option. Do not switch an existing cluster's authentication mode as part of this cutover.
+
+Example for an additional role that needs its existing Kubernetes RBAC group, not an EKS admin access policy:
+
+```terraform
+access_entries = {
+  deploy_role = {
+    principal_arn           = aws_iam_role.deploy.arn
+    user_name               = "tfh-github-deploy"
+    kubernetes_groups       = ["tfh-cluster-admins"]
+    associate_access_policy = false
+  }
+}
+```
+
+Existing callers keep their current `aws-auth` behavior until they opt in. A module release and per-workspace plan are required before changing consumers; a draft module PR alone does not migrate any deployed cluster.
 
 ## Datadog
 
@@ -737,6 +762,8 @@ To remove the cluster you have to:
 | [aws_efs_file_system.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system) | resource |
 | [aws_efs_file_system_policy.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system_policy) | resource |
 | [aws_efs_mount_target.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_mount_target) | resource |
+| [aws_eks_access_entry.cluster_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_access_entry) | resource |
+| [aws_eks_access_entry.role_mapping](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_access_entry) | resource |
 | [aws_eks_access_entry.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_access_entry) | resource |
 | [aws_eks_access_policy_association.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_access_policy_association) | resource |
 | [aws_eks_addon.coredns](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
@@ -879,6 +906,7 @@ To remove the cluster you have to:
 | [aws_iam_policy_document.spot_notification_sqs_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.vector](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.vector_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_role.role_mapping](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_role) | data source |
 | [aws_iam_roles.aws_load_balancer_controller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_roles) | data source |
 | [aws_ssm_parameter.al2023_ami](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ssm_parameter) | data source |
 | [aws_vpc.cluster_vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/vpc) | data source |
@@ -892,7 +920,7 @@ To remove the cluster you have to:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_access_entries"></a> [access\_entries](#input\_access\_entries) | Map of access entries to add to the cluster | <pre>map(object({<br/>    principal_arn           = string<br/>    kubernetes_groups       = optional(list(string), null)<br/>    type                    = optional(string, "STANDARD")<br/>    tags                    = optional(map(string), {})<br/>    access_scope_type       = optional(string, "namespace")<br/>    access_scope_namespaces = optional(list(string), [])<br/>    policy_arn              = optional(string, "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy")<br/>  }))</pre> | `{}` | no |
+| <a name="input_access_entries"></a> [access\_entries](#input\_access\_entries) | Map of access entries to add to the cluster | <pre>map(object({<br/>    principal_arn           = string<br/>    kubernetes_groups       = optional(list(string), null)<br/>    user_name               = optional(string)<br/>    associate_access_policy = optional(bool, true)<br/>    type                    = optional(string, "STANDARD")<br/>    tags                    = optional(map(string), {})<br/>    access_scope_type       = optional(string, "namespace")<br/>    access_scope_namespaces = optional(list(string), [])<br/>    policy_arn              = optional(string, "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy")<br/>  }))</pre> | `{}` | no |
 | <a name="input_additional_cluster_security_group_rules"></a> [additional\_cluster\_security\_group\_rules](#input\_additional\_cluster\_security\_group\_rules) | Additional cluster security group rules | <pre>list(object({<br/>    type      = string<br/>    from_port = number<br/>    to_port   = number<br/>    protocol  = string<br/><br/>    description                = optional(string)<br/>    cidr_blocks                = optional(list(string))<br/>    ipv6_cidr_blocks           = optional(list(string))<br/>    prefix_list_ids            = optional(list(string))<br/>    self                       = optional(bool)<br/>    source_node_security_group = optional(bool, false)<br/>    sg_id                      = optional(string)<br/>  }))</pre> | `[]` | no |
 | <a name="input_additional_open_ports"></a> [additional\_open\_ports](#input\_additional\_open\_ports) | Additional ports accessible from the Internet for the ALB | <pre>set(object({<br/>    port     = number<br/>    protocol = optional(string, "tcp")<br/>  }))</pre> | `[]` | no |
 | <a name="input_additional_security_group_rules"></a> [additional\_security\_group\_rules](#input\_additional\_security\_group\_rules) | Additional security group rules | <pre>list(object({<br/>    type      = string<br/>    from_port = number<br/>    to_port   = number<br/>    protocol  = string<br/><br/>    description                   = optional(string)<br/>    cidr_blocks                   = optional(list(string))<br/>    ipv6_cidr_blocks              = optional(list(string))<br/>    prefix_list_ids               = optional(list(string))<br/>    self                          = optional(bool)<br/>    source_cluster_security_group = optional(bool, false)<br/>    sg_id                         = optional(string)<br/>  }))</pre> | `[]` | no |
@@ -922,6 +950,7 @@ To remove the cluster you have to:
 | <a name="input_eks_node_group"></a> [eks\_node\_group](#input\_eks\_node\_group) | Configuration for EKS node group | <pre>object({<br/>    arch  = string<br/>    types = list(string)<br/>    disk  = optional(number, 100)<br/>    dns   = optional(string, "172.20.0.10")<br/>  })</pre> | `null` | no |
 | <a name="input_enable_aws_load_balancer_controller_explicit_deny"></a> [enable\_aws\_load\_balancer\_controller\_explicit\_deny](#input\_enable\_aws\_load\_balancer\_controller\_explicit\_deny) | Safety switch: set to false to disable creating the aws-load-balancer-controller explicit deny policy and attachment. | `bool` | `true` | no |
 | <a name="input_enable_deletion_protection"></a> [enable\_deletion\_protection](#input\_enable\_deletion\_protection) | Whether to enable deletion protection on the Gateway API NLB/ALB load balancers. Set to false before destroying the cluster. | `bool` | `true` | no |
+| <a name="input_enable_role_mapping_access_entries"></a> [enable\_role\_mapping\_access\_entries](#input\_enable\_role\_mapping\_access\_entries) | Create policy-free EKS access entries for the cluster role and extra\_role\_mapping. Enable before retiring aws-auth; managed node roles get their own EKS entries. | `bool` | `false` | no |
 | <a name="input_enclave_tracks"></a> [enclave\_tracks](#input\_enclave\_tracks) | Additional enclave tracks for multi-version deployments. Key is used as track identifier. | <pre>map(object({<br/>    autoscaling_group = optional(object({<br/>      size     = optional(number, 1)<br/>      min_size = optional(number, 0)<br/>      max_size = optional(number, 10)<br/>    }), {})<br/>    instance_type  = optional(string)<br/>    cpu_allocation = optional(string)<br/>    # Cluster Autoscaler's advertised hugepage capacity in MiB. Null preserves<br/>    # the legacy behavior of deriving it from memory_allocation.<br/>    hugepages         = optional(string)<br/>    memory_allocation = optional(string)<br/>    arch              = optional(string, "amd64")<br/>  }))</pre> | `{}` | no |
 | <a name="input_enclaves_cpu_allocation"></a> [enclaves\_cpu\_allocation](#input\_enclaves\_cpu\_allocation) | Number of CPUs to allocate for Nitro Enclaves per node | `string` | `"4"` | no |
 | <a name="input_enclaves_instance_type"></a> [enclaves\_instance\_type](#input\_enclaves\_instance\_type) | Instance type for Nitro Enclaves | `string` | `"m7a.2xlarge"` | no |
@@ -960,6 +989,7 @@ To remove the cluster you have to:
 | <a name="input_kube_ops_enabled"></a> [kube\_ops\_enabled](#input\_kube\_ops\_enabled) | Whether to create a role and association for kube-ops | `bool` | `true` | no |
 | <a name="input_kubelet_extra_args"></a> [kubelet\_extra\_args](#input\_kubelet\_extra\_args) | kubelet extra args to pass to the node group | `string` | `"--register-with-taints=critical:NoExecute"` | no |
 | <a name="input_kubernetes_provider_enabled"></a> [kubernetes\_provider\_enabled](#input\_kubernetes\_provider\_enabled) | Create Kubernetes resources. Set to false for initial cluster creation and before cluster removal. | `bool` | `true` | no |
+| <a name="input_manage_aws_auth_config_map"></a> [manage\_aws\_auth\_config\_map](#input\_manage\_aws\_auth\_config\_map) | Manage mapRoles on the existing aws-auth ConfigMap. Disable only after equivalent access entries are active and verified. | `bool` | `true` | no |
 | <a name="input_memory_limits_low_perc_enabled"></a> [memory\_limits\_low\_perc\_enabled](#input\_memory\_limits\_low\_perc\_enabled) | Enable memory limits low percentage alert | `bool` | `false` | no |
 | <a name="input_monitor_system_workload_only"></a> [monitor\_system\_workload\_only](#input\_monitor\_system\_workload\_only) | Monitor system workloads only (infra team). | `bool` | `false` | no |
 | <a name="input_monitoring_enabled"></a> [monitoring\_enabled](#input\_monitoring\_enabled) | Whether to enable monitoring (Datadog). | `bool` | `true` | no |
