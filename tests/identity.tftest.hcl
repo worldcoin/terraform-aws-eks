@@ -73,3 +73,46 @@ run "empty_service_accounts" {
     error_message = "No service accounts must produce no access entries, policies or Pod Identity associations."
   }
 }
+
+run "custom_deployment_groups" {
+  command = plan
+
+  module {
+    source = "./modules/identity"
+  }
+
+  variables {
+    deployment_kubernetes_groups = ["otto-namespace-creators"]
+  }
+
+  assert {
+    condition = (
+      aws_eks_access_entry.this["di-migration-tee"].kubernetes_groups == toset(["otto-namespace-creators"]) &&
+      aws_eks_access_entry.this["di-migration-tee"].principal_arn == "arn:aws:iam::123456789012:role/oidc/github-deploy-di-migration-tee" &&
+      aws_eks_access_policy_association.this["di-migration-tee"].access_scope[0].namespaces == toset(["di-migration-tee"]) &&
+      aws_eks_pod_identity_association.this["di-migration-tee"].role_arn == "arn:aws:iam::123456789012:role/di-migration-tee-dev"
+    )
+    error_message = "Custom groups must replace NamespaceCreator without changing the principal, application scope or Pod Identity role."
+  }
+}
+
+run "no_deployment_groups" {
+  command = plan
+
+  module {
+    source = "./modules/identity"
+  }
+
+  variables {
+    deployment_kubernetes_groups = []
+  }
+
+  assert {
+    condition = (
+      length(aws_eks_access_entry.this["di-migration-tee"].kubernetes_groups) == 0 &&
+      length(aws_eks_access_policy_association.this) == 1 &&
+      length(aws_eks_pod_identity_association.this) == 1
+    )
+    error_message = "Removing group grants must preserve the access policy and Pod Identity."
+  }
+}

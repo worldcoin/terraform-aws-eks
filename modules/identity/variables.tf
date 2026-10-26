@@ -26,3 +26,10 @@ variable "service_accounts" {
   description = "List of service accounts to be associated with global role"
   type        = list(string)
 }
+
+variable "deployment_kubernetes_groups" {
+  description = "Kubernetes groups for the deployment access entry. Replacing NamespaceCreator also removes its namespace-creation and any additional RBAC grants; provision required replacement bindings separately."
+  type        = list(string)
+  default     = ["NamespaceCreator"]
+  nullable    = false
+}
