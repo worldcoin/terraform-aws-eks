@@ -25,5 +25,8 @@ Set `deployment_kubernetes_groups` to override this list, or `[]` to use only
 the EKS access policy. RBAC permissions are additive: inspect all bindings to
 the selected groups. When replacing the default, provision any required
 namespace-creation binding before deploying with `helm --create-namespace`.
+When using the main EKS module, set its `namespace_creator_groups` to the same
+dedicated groups. That module owns the binding and Kubernetes provider; this
+identity module continues to require only the AWS provider.
 This setting does not change Pod Identity associations or the namespace-scoped
 EKS admin policy.

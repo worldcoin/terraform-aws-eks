@@ -158,6 +158,21 @@ The module is currently supporting the following versions of Kubernetes:
 > [!NOTE]
 > Default version for EKS Cluster is 1.35.
 
+## Additional namespace creators
+
+Set `namespace_creator_groups = ["otto-namespace-creators"]` to bind dedicated
+Kubernetes groups to the existing `NamespaceCreator` ClusterRole. The module uses
+its existing Kubernetes provider and creates one `eks-namespace-creators`
+ClusterRoleBinding. An empty list (the default), explicit null, or
+`kubernetes_provider_enabled = false` creates no binding.
+
+The existing ClusterRole must be supplied by kube-ops and grant only namespace
+creation. This binding does not grant membership in the `NamespaceCreator` group
+or inherit that group's additional Gateway API bindings. Assign the dedicated
+groups to the relevant IAM principals separately, including any identity-module
+access entries. Namespace creation remains cluster-wide; this does not grant
+updates or deletes of existing namespaces.
+
 ## Examples
 
 ### Minimal
@@ -826,6 +841,7 @@ To remove the cluster you have to:
 | [datadog_monitor.oom](https://registry.terraform.io/providers/DataDog/datadog/latest/docs/resources/monitor) | resource |
 | [datadog_monitor.oom_for_user](https://registry.terraform.io/providers/DataDog/datadog/latest/docs/resources/monitor) | resource |
 | [datadog_synthetics_test.cluster_monitoring](https://registry.terraform.io/providers/DataDog/datadog/latest/docs/resources/synthetics_test) | resource |
+| [kubernetes_cluster_role_binding_v1.namespace_creators](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/cluster_role_binding_v1) | resource |
 | [kubernetes_cluster_role_binding_v1.tfh_cluster_admins](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/cluster_role_binding_v1) | resource |
 | [kubernetes_config_map_v1_data.aws_auth](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/config_map_v1_data) | resource |
 | [kubernetes_manifest.gateway_api_crds](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/manifest) | resource |
@@ -971,6 +987,7 @@ To remove the cluster you have to:
 | <a name="input_monitoring_user_workload_notification_channel"></a> [monitoring\_user\_workload\_notification\_channel](#input\_monitoring\_user\_workload\_notification\_channel) | Monitor user workload and send alerts to team channel/webhook). | `string` | `""` | no |
 | <a name="input_monitoring_user_workload_team"></a> [monitoring\_user\_workload\_team](#input\_monitoring\_user\_workload\_team) | The team tag for monitoring user workload. | `string` | `""` | no |
 | <a name="input_mtls_enabled"></a> [mtls\_enabled](#input\_mtls\_enabled) | Enable mutual TLS (mTLS) on the ALB TLS listener | `bool` | `true` | no |
+| <a name="input_namespace_creator_groups"></a> [namespace\_creator\_groups](#input\_namespace\_creator\_groups) | Additional Kubernetes groups bound to the existing NamespaceCreator ClusterRole. Requires that role to grant only namespace creation. | `set(string)` | `[]` | no |
 | <a name="input_nlb_az_affinity"></a> [nlb\_az\_affinity](#input\_nlb\_az\_affinity) | Per-NLB AZ-affinity overrides for the gateway-api NLBs (gateway\_api\_internal, gateway\_api\_external). Unset sub-fields preserve prior module behavior (enable\_cross\_zone\_load\_balancing = true, dns\_record\_client\_routing\_policy = "any\_availability\_zone"). | <pre>object({<br/>    gateway_api_internal = optional(object({<br/>      enable_cross_zone_load_balancing = optional(bool, true)<br/>      dns_record_client_routing_policy = optional(string, "any_availability_zone")<br/>    }), {})<br/>    gateway_api_external = optional(object({<br/>      enable_cross_zone_load_balancing = optional(bool, true)<br/>      dns_record_client_routing_policy = optional(string, "any_availability_zone")<br/>    }), {})<br/>  })</pre> | `{}` | no |
 | <a name="input_node_instance_profile_inline_policies"></a> [node\_instance\_profile\_inline\_policies](#input\_node\_instance\_profile\_inline\_policies) | Inline policies to attach to the node instance profile. Key is the name of the policy, value is the policy document. | `map(string)` | `{}` | no |
 | <a name="input_node_monitoring_agent_enabled"></a> [node\_monitoring\_agent\_enabled](#input\_node\_monitoring\_agent\_enabled) | Enable node monitoring agent | `bool` | `false` | no |
