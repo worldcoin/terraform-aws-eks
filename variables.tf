@@ -81,6 +81,18 @@ variable "kubernetes_provider_enabled" {
   default     = true
 }
 
+variable "namespace_creator_groups" {
+  description = "Additional Kubernetes groups bound to the existing NamespaceCreator ClusterRole. Requires that role to grant only namespace creation."
+  type        = set(string)
+  default     = []
+  nullable    = false
+
+  validation {
+    condition     = alltrue([for group in var.namespace_creator_groups : group != null && group != ""])
+    error_message = "Namespace creator groups must not be null or empty strings."
+  }
+}
+
 variable "kube_ops_enabled" {
   description = "Whether to create a role and association for kube-ops"
   type        = bool
