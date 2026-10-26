@@ -65,4 +65,8 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
   data = {
     mapRoles = yamlencode(local.role_mapping)
   }
+
+  # EKS creates aws-auth when provisioning a managed node group.
+  # With no managed node group, this does not create the ConfigMap.
+  depends_on = [aws_eks_node_group.al2023]
 }
