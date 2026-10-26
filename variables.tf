@@ -117,23 +117,6 @@ variable "extra_role_mapping" {
   }
 }
 
-variable "enable_role_mapping_access_entries" {
-  description = "Create policy-free EKS access entries for the cluster role and extra_role_mapping. Enable before retiring aws-auth; managed node roles get their own EKS entries."
-  type        = bool
-  default     = false
-
-  validation {
-    condition     = !var.enable_role_mapping_access_entries || var.authentication_mode != "CONFIG_MAP"
-    error_message = "EKS access entries require API or API_AND_CONFIG_MAP authentication."
-  }
-}
-
-variable "manage_aws_auth_config_map" {
-  description = "Manage mapRoles on the existing aws-auth ConfigMap. Disable only after equivalent access entries are active and verified."
-  type        = bool
-  default     = true
-}
-
 variable "datadog_api_key" {
   description = "Datadog API key. Stored in kube-system namespace as a secret."
   type        = string
@@ -569,8 +552,6 @@ variable "access_entries" {
   type = map(object({
     principal_arn           = string
     kubernetes_groups       = optional(list(string), null)
-    user_name               = optional(string)
-    associate_access_policy = optional(bool, true)
     type                    = optional(string, "STANDARD")
     tags                    = optional(map(string), {})
     access_scope_type       = optional(string, "namespace")

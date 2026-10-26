@@ -53,7 +53,7 @@ resource "kubernetes_cluster_role_binding_v1" "tfh_cluster_admins" {
 }
 
 resource "kubernetes_config_map_v1_data" "aws_auth" {
-  count = var.kubernetes_provider_enabled && var.manage_aws_auth_config_map ? 1 : 0
+  count = var.kubernetes_provider_enabled ? 1 : 0
 
   metadata {
     name      = "aws-auth"
@@ -66,7 +66,5 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
     mapRoles = yamlencode(local.role_mapping)
   }
 
-  # EKS creates aws-auth when provisioning a managed node group.
-  # With no managed node group, this does not create the ConfigMap.
   depends_on = [aws_eks_node_group.al2023]
 }
