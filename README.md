@@ -158,6 +158,19 @@ The module is currently supporting the following versions of Kubernetes:
 > [!NOTE]
 > Default version for EKS Cluster is 1.35.
 
+## GitHub deployment access
+
+`github_deploy_cluster_admin_enabled` defaults to `true` for compatibility.
+Set it to `false` to remove the module's default `github-deploy` administrator
+mapping from `aws-auth`. Provision and verify a separate trusted platform
+deployment identity and the application's namespace-scoped access before disabling
+the mapping. Use `extra_role_mapping` for an explicitly trusted platform identity
+and `access_entries` for namespace-scoped application policies.
+
+This setting only removes the default mapping. Additional `extra_role_mapping`
+entries, EKS access-policy associations and Kubernetes bindings remain additive
+and must be checked separately. It does not change IAM policies or OIDC trust.
+
 ## Additional namespace creators
 
 Set `namespace_creator_groups = ["otto-namespace-creators"]` to bind dedicated
@@ -969,6 +982,7 @@ To remove the cluster you have to:
 | <a name="input_gateway_api_lb_name_prefix"></a> [gateway\_api\_lb\_name\_prefix](#input\_gateway\_api\_lb\_name\_prefix) | Prefix for Gateway API load balancer names. Defaults to cluster\_name. Override when cluster\_name is too long to fit within the 32-char AWS LB name limit (prefix + suffix like '-gw-ext-alb' must be <= 32). | `string` | `null` | no |
 | <a name="input_gha_cidr_eu_central_1"></a> [gha\_cidr\_eu\_central\_1](#input\_gha\_cidr\_eu\_central\_1) | GitHub Actions CIDR block for eu-central-1 | `string` | `"10.52.0.0/20"` | no |
 | <a name="input_gha_cidr_us_east_1"></a> [gha\_cidr\_us\_east\_1](#input\_gha\_cidr\_us\_east\_1) | GitHub Actions CIDR block for us-east-1 | `string` | `"10.0.96.0/20"` | no |
+| <a name="input_github_deploy_cluster_admin_enabled"></a> [github\_deploy\_cluster\_admin\_enabled](#input\_github\_deploy\_cluster\_admin\_enabled) | Include the default github-deploy cluster-admin mapping in aws-auth. Disable only after migrating platform callers and configuring application access; additional mappings and EKS access policies remain additive. | `bool` | `true` | no |
 | <a name="input_http_put_response_hop_limit"></a> [http\_put\_response\_hop\_limit](#input\_http\_put\_response\_hop\_limit) | IP TTL applied to IMDSv2 token responses, set as metadata\_options.http\_put\_response\_hop\_limit on every node launch template. Must be between 1 and 64. At 1 the response stays in the host network namespace, so a Pod one hop away cannot reach 169.254.169.254 and assume the node IAM role. Pods with hostNetwork: true share that namespace and are unaffected. | `number` | `1` | no |
 | <a name="input_internal_cert_arn"></a> [internal\_cert\_arn](#input\_internal\_cert\_arn) | ACM certificate ARN for internal load balancers (falls back to external\_cert\_arn). If empty, internal\_nlb\_acm\_arn is used for backwards compatibility. | `string` | `""` | no |
 | <a name="input_internal_nlb_acm_arn"></a> [internal\_nlb\_acm\_arn](#input\_internal\_nlb\_acm\_arn) | (Deprecated: use internal\_cert\_arn) The ARN of the certificate to use for internal NLB. | `string` | `""` | no |
