@@ -8,24 +8,36 @@ mock_provider "kubernetes" {
 }
 mock_provider "time" {}
 
-run "security_archive_disabled_by_default" {
+run "security_archive_enabled_by_default" {
   command = plan
 
   assert {
-    condition     = length(aws_cloudwatch_log_subscription_filter.security_audit) == 0
-    error_message = "Central forwarding must be opt in."
+    condition     = length(aws_cloudwatch_log_subscription_filter.security_audit) == 1
+    error_message = "Central forwarding must be enabled by default."
   }
 }
 
-run "null_configuration_uses_disabled_default" {
+run "null_configuration_uses_enabled_default" {
   command = plan
   variables {
     audit_logs = null
   }
 
   assert {
+    condition     = length(aws_cloudwatch_log_subscription_filter.security_audit) == 1
+    error_message = "A null configuration must use the enabled default."
+  }
+}
+
+run "security_archive_can_be_disabled" {
+  command = plan
+  variables {
+    audit_logs = { enabled = false }
+  }
+
+  assert {
     condition     = length(aws_cloudwatch_log_subscription_filter.security_audit) == 0
-    error_message = "A null configuration must use the disabled default."
+    error_message = "Central forwarding must support an explicit opt out."
   }
 }
 

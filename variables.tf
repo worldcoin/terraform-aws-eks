@@ -309,9 +309,9 @@ variable "vector_s3_bucket_arns" {
 }
 
 variable "audit_logs" {
-  description = "Forward EKS control plane logs, including audit events, to a regional cross-account CloudWatch Logs destination. Null destination_arn selects the security-prod destination in var.region."
+  description = "Forward EKS control plane logs, including audit events, to a regional cross-account CloudWatch Logs destination by default. Null destination_arn selects the security-prod destination in var.region."
   type = object({
-    enabled         = optional(bool, false)
+    enabled         = optional(bool, true)
     destination_arn = optional(string)
   })
   default  = {}
