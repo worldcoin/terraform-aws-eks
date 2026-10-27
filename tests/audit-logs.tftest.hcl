@@ -6,7 +6,6 @@ mock_provider "cloudflare" {}
 mock_provider "kubernetes" {
   source = "./tests/mocks/kubernetes"
 }
-mock_provider "time" {}
 
 run "security_archive_enabled_by_default" {
   command = plan
@@ -59,24 +58,20 @@ run "security_destination_preserves_all_records" {
   }
 }
 
-run "custom_destination_and_vector_can_coexist" {
+run "custom_destination_is_used" {
   command = plan
   variables {
     audit_logs = {
       enabled         = true
       destination_arn = "arn:aws:logs:us-east-1:111122223333:destination:custom-eks-logs"
     }
-    vector_audit_enabled             = true
-    vector_audit_firehose_access_key = "test-access-key-32-chars-long-xx"
   }
 
   assert {
     condition = (
-      aws_cloudwatch_log_subscription_filter.security_audit[0].destination_arn == "arn:aws:logs:us-east-1:111122223333:destination:custom-eks-logs" &&
-      length(aws_cloudwatch_log_subscription_filter.eks_audit) == 1 &&
-      length(aws_kinesis_firehose_delivery_stream.eks_audit) == 1
+      aws_cloudwatch_log_subscription_filter.security_audit[0].destination_arn == "arn:aws:logs:us-east-1:111122223333:destination:custom-eks-logs"
     )
-    error_message = "A custom central destination must support concurrent Vector delivery for canary verification."
+    error_message = "Central forwarding must use the configured custom destination."
   }
 }
 

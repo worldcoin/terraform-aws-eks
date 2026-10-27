@@ -413,10 +413,12 @@ The destination stores the original compressed CloudWatch envelopes in S3.
 
 An omitted or null configuration enables forwarding. Accounts without access to
 the default destination must configure an authorized destination or disable
-forwarding. The subscription can run alongside `vector_audit_enabled` for
-delivery comparison;
-disable Vector forwarding only after verifying the central archive. Check the
-log group's subscription quota before enabling a concurrent subscription.
+forwarding.
+
+Callers must remove the `vector_audit_*` inputs before using this version. Verify
+central archive delivery before applying the removal of per-cluster Firehose
+streams, subscription filters and their IAM roles. Vector Agent application log
+permissions are configured separately through `vector_s3_bucket_arns`.
 
 ## Datadog
 
@@ -747,7 +749,6 @@ To remove the cluster you have to:
 | <a name="requirement_datadog"></a> [datadog](#requirement\_datadog) | >= 3.0 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.3 |
-| <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 4.0 |
 
 ## Providers
@@ -760,7 +761,6 @@ To remove the cluster you have to:
 | <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | >= 2.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 3.3 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
-| <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | >= 4.0 |
 
 ## Modules
@@ -785,7 +785,6 @@ To remove the cluster you have to:
 | [aws_cloudwatch_event_target.spot_aws_ec2](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_cloudwatch_event_target.spot_aws_health](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_cloudwatch_log_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
-| [aws_cloudwatch_log_subscription_filter.eks_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_subscription_filter) | resource |
 | [aws_cloudwatch_log_subscription_filter.security_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_subscription_filter) | resource |
 | [aws_efs_file_system.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system) | resource |
 | [aws_efs_file_system_policy.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system_policy) | resource |
@@ -820,10 +819,8 @@ To remove the cluster you have to:
 | [aws_iam_role.aws_s3_mountpoint_csi](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.cni_metrics_helper](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role.cw_logs_to_firehose_eks_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.ebs_csi_controller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.ecr_credentials_sync](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role.firehose_eks_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.karpenter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.keda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.kube_ops](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
@@ -834,9 +831,7 @@ To remove the cluster you have to:
 | [aws_iam_role_policy.aws_load_balancer](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.aws_s3_mountpoint_csi](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.cni_metrics_helper](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
-| [aws_iam_role_policy.cw_logs_to_firehose_eks_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.dockerhub_pull_through_cache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
-| [aws_iam_role_policy.firehose_eks_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.karpenter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.keda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.kube_ops](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
@@ -848,7 +843,6 @@ To remove the cluster you have to:
 | [aws_iam_role_policy_attachment.ebs_csi_controller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.ecr_credentials_sync](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.node](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_kinesis_firehose_delivery_stream.eks_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kinesis_firehose_delivery_stream) | resource |
 | [aws_kms_key.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
 | [aws_launch_template.al2023](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
 | [aws_launch_template.enclave_track](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
@@ -898,7 +892,6 @@ To remove the cluster you have to:
 | [kubernetes_storage_class_v1.gp3](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class_v1) | resource |
 | [random_password.dd_clusteragent_token](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [terraform_data.gateway_api_lb_name_validation](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
-| [time_sleep.wait_firehose_eks_audit_active](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [aws_caller_identity.account](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
 | [aws_eks_cluster_auth.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
@@ -917,12 +910,9 @@ To remove the cluster you have to:
 | [aws_iam_policy_document.cni_metrics_helper](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.cni_metrics_helper_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.cw_logs_firehose_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.cw_logs_firehose_eks_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.dockerhub_pull_through_cache](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.ecr_credentials_sync_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.eks_pod_identity_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.firehose_eks_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.firehose_eks_audit_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.karpenter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.karpenter_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.keda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -1045,11 +1035,6 @@ To remove the cluster you have to:
 | <a name="input_tfe_cidr"></a> [tfe\_cidr](#input\_tfe\_cidr) | Terraform Enterprise CIDR block | `string` | `"10.52.160.0/20"` | no |
 | <a name="input_use_private_subnets"></a> [use\_private\_subnets](#input\_use\_private\_subnets) | Set to `true` to place EKS node groups in private subnets, `false` to use public subnets. | `bool` | `true` | no |
 | <a name="input_use_private_subnets_for_internal_nlb"></a> [use\_private\_subnets\_for\_internal\_nlb](#input\_use\_private\_subnets\_for\_internal\_nlb) | Set to `true` if you want to use private subnets for internal NLB | `bool` | `false` | no |
-| <a name="input_vector_audit_enabled"></a> [vector\_audit\_enabled](#input\_vector\_audit\_enabled) | Create per-cluster EKS audit-log pipeline (Firehose + CW Logs subscription filter → central Vector aggregator). Requires vector\_audit\_firehose\_access\_key. | `bool` | `false` | no |
-| <a name="input_vector_audit_endpoint_url"></a> [vector\_audit\_endpoint\_url](#input\_vector\_audit\_endpoint\_url) | HTTPS URL of the central Vector aggregator's aws\_kinesis\_firehose source. | `string` | `"https://vector.worldcoin.dev/"` | no |
-| <a name="input_vector_audit_firehose_access_key"></a> [vector\_audit\_firehose\_access\_key](#input\_vector\_audit\_firehose\_access\_key) | Shared access key sent by Firehose in X-Amz-Firehose-Access-Key; validated by Vector's aws\_kinesis\_firehose source. | `string` | `null` | no |
-| <a name="input_vector_audit_org"></a> [vector\_audit\_org](#input\_vector\_audit\_org) | Organisation identifier written into the S3 key prefix (kubernetes-audit/org=<org>/...). | `string` | `"tfh"` | no |
-| <a name="input_vector_audit_s3_backup_bucket"></a> [vector\_audit\_s3\_backup\_bucket](#input\_vector\_audit\_s3\_backup\_bucket) | S3 bucket name for Firehose FailedDataOnly backup (failed deliveries to Vector). | `string` | `"wld-log-archive"` | no |
 | <a name="input_vector_s3_bucket_arns"></a> [vector\_s3\_bucket\_arns](#input\_vector\_s3\_bucket\_arns) | S3 bucket ARNs Vector is allowed to write logs to. Empty disables Vector IAM role and pod identity association. | `list(string)` | <pre>[<br/>  "arn:aws:s3:::wld-log-archive"<br/>]</pre> | no |
 | <a name="input_vpc_cni_enable_network_policy"></a> [vpc\_cni\_enable\_network\_policy](#input\_vpc\_cni\_enable\_network\_policy) | Enable Kubernetes NetworkPolicy enforcement via the VPC CNI node agent | `bool` | `false` | no |
 | <a name="input_vpc_cni_enable_pod_eni"></a> [vpc\_cni\_enable\_pod\_eni](#input\_vpc\_cni\_enable\_pod\_eni) | Enable pod ENI support | `bool` | `false` | no |
