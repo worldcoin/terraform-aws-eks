@@ -1,22 +1,5 @@
-locals {
-  effective_access_entries = merge(
-    var.aws_devops_agent_access_enabled && var.authentication_mode != "CONFIG_MAP" ? {
-      aws-devops-agent = {
-        principal_arn           = "arn:aws:iam::${data.aws_caller_identity.account.account_id}:role/DevOpsAgentCrossAccountRole-internal-tools-prod"
-        kubernetes_groups       = ["devops-agent-extra-read"]
-        type                    = "STANDARD"
-        tags                    = {}
-        access_scope_type       = "cluster"
-        access_scope_namespaces = []
-        policy_arn              = "arn:aws:eks::aws:cluster-access-policy/AmazonAIOpsAssistantPolicy"
-      }
-    } : {},
-    var.access_entries,
-  )
-}
-
 resource "aws_eks_access_entry" "this" {
-  for_each = local.effective_access_entries
+  for_each = { for k, v in var.access_entries : k => v }
 
   cluster_name      = aws_eks_cluster.this.id
   kubernetes_groups = each.value.kubernetes_groups
@@ -26,7 +9,7 @@ resource "aws_eks_access_entry" "this" {
 }
 
 resource "aws_eks_access_policy_association" "this" {
-  for_each = local.effective_access_entries
+  for_each = { for k, v in var.access_entries : k => v }
 
   cluster_name  = aws_eks_cluster.this.id
   policy_arn    = each.value.policy_arn

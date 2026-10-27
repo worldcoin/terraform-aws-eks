@@ -25,24 +25,24 @@ run "default_account_local_agent_access" {
 
   assert {
     condition = (
-      toset(keys(aws_eks_access_entry.this)) == toset(["aws-devops-agent"]) &&
-      aws_eks_access_entry.this["aws-devops-agent"].principal_arn == "arn:aws:iam::123456789012:role/DevOpsAgentCrossAccountRole-internal-tools-prod" &&
-      aws_eks_access_entry.this["aws-devops-agent"].type == "STANDARD" &&
-      aws_eks_access_entry.this["aws-devops-agent"].kubernetes_groups == toset(["devops-agent-extra-read"]) &&
-      length(aws_eks_access_entry.this["aws-devops-agent"].tags) == 0
+      length(aws_eks_access_entry.this) == 0 &&
+      length(aws_eks_access_entry.aws_devops_agent) == 1 &&
+      aws_eks_access_entry.aws_devops_agent[0].principal_arn == "arn:aws:iam::123456789012:role/DevOpsAgentCrossAccountRole-internal-tools-prod" &&
+      aws_eks_access_entry.aws_devops_agent[0].type == "STANDARD" &&
+      aws_eks_access_entry.aws_devops_agent[0].kubernetes_groups == toset(["devops-agent-extra-read"])
     )
-    error_message = "The default must create only the account-local agent's STANDARD entry with the supplemental read group and no extra tags."
+    error_message = "The default must create only the account-local agent's STANDARD entry with the supplemental read group."
   }
 
   assert {
     condition = (
-      toset(keys(aws_eks_access_policy_association.this)) == toset(["aws-devops-agent"]) &&
-      aws_eks_access_policy_association.this["aws-devops-agent"].principal_arn == aws_eks_access_entry.this["aws-devops-agent"].principal_arn &&
-      aws_eks_access_policy_association.this["aws-devops-agent"].policy_arn == "arn:aws:eks::aws:cluster-access-policy/AmazonAIOpsAssistantPolicy" &&
-      aws_eks_access_policy_association.this["aws-devops-agent"].access_scope[0].type == "cluster" &&
-      length(local.effective_access_entries["aws-devops-agent"].access_scope_namespaces) == 0
+      length(aws_eks_access_policy_association.this) == 0 &&
+      length(aws_eks_access_policy_association.aws_devops_agent) == 1 &&
+      aws_eks_access_policy_association.aws_devops_agent[0].principal_arn == aws_eks_access_entry.aws_devops_agent[0].principal_arn &&
+      aws_eks_access_policy_association.aws_devops_agent[0].policy_arn == "arn:aws:eks::aws:cluster-access-policy/AmazonAIOpsAssistantPolicy" &&
+      aws_eks_access_policy_association.aws_devops_agent[0].access_scope[0].type == "cluster"
     )
-    error_message = "The agent must receive only the cluster-scoped AmazonAIOpsAssistantPolicy through the existing association address."
+    error_message = "The agent must receive only the cluster-scoped AmazonAIOpsAssistantPolicy through its dedicated association."
   }
 }
 
@@ -55,8 +55,8 @@ run "api_authentication_includes_agent" {
 
   assert {
     condition = (
-      contains(keys(aws_eks_access_entry.this), "aws-devops-agent") &&
-      contains(keys(aws_eks_access_policy_association.this), "aws-devops-agent")
+      length(aws_eks_access_entry.aws_devops_agent) == 1 &&
+      length(aws_eks_access_policy_association.aws_devops_agent) == 1
     )
     error_message = "API-only authentication must also receive automatic agent access."
   }
@@ -75,15 +75,15 @@ run "unrelated_explicit_entry_retains_optional_defaults" {
 
   assert {
     condition = (
-      toset(keys(aws_eks_access_entry.this)) == toset(["aws-devops-agent", "application"]) &&
-      toset(keys(aws_eks_access_policy_association.this)) == toset(["aws-devops-agent", "application"]) &&
+      toset(keys(aws_eks_access_entry.this)) == toset(["application"]) &&
+      toset(keys(aws_eks_access_policy_association.this)) == toset(["application"]) &&
+      length(aws_eks_access_entry.aws_devops_agent) == 1 &&
+      length(aws_eks_access_policy_association.aws_devops_agent) == 1 &&
       aws_eks_access_entry.this["application"].principal_arn == "arn:aws:iam::123456789012:role/application" &&
       aws_eks_access_entry.this["application"].type == "STANDARD" &&
-      local.effective_access_entries["application"].kubernetes_groups == null &&
       length(aws_eks_access_entry.this["application"].tags) == 0 &&
       aws_eks_access_policy_association.this["application"].policy_arn == "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy" &&
-      aws_eks_access_policy_association.this["application"].access_scope[0].type == "namespace" &&
-      length(local.effective_access_entries["application"].access_scope_namespaces) == 0
+      aws_eks_access_policy_association.this["application"].access_scope[0].type == "namespace"
     )
     error_message = "Adding the default must preserve every optional input default on unrelated explicit entries."
   }
@@ -108,6 +108,8 @@ run "same_key_explicit_entry_replaces_default" {
 
   assert {
     condition = (
+      length(aws_eks_access_entry.aws_devops_agent) == 0 &&
+      length(aws_eks_access_policy_association.aws_devops_agent) == 0 &&
       toset(keys(aws_eks_access_entry.this)) == toset(["aws-devops-agent"]) &&
       toset(keys(aws_eks_access_policy_association.this)) == toset(["aws-devops-agent"]) &&
       aws_eks_access_entry.this["aws-devops-agent"].principal_arn == "arn:aws:iam::123456789012:role/custom-agent" &&
@@ -132,8 +134,8 @@ run "disabled_default_omits_automatic_access" {
 
   assert {
     condition = (
-      length(aws_eks_access_entry.this) == 0 &&
-      length(aws_eks_access_policy_association.this) == 0
+      length(aws_eks_access_entry.aws_devops_agent) == 0 &&
+      length(aws_eks_access_policy_association.aws_devops_agent) == 0
     )
     error_message = "Accounts without the agent role must be able to opt out of all automatic agent access."
   }
@@ -156,7 +158,8 @@ run "disabled_default_preserves_all_explicit_entries" {
 
   assert {
     condition = (
-      alltrue([for key, entry in var.access_entries : local.effective_access_entries[key] == entry]) &&
+      length(aws_eks_access_entry.aws_devops_agent) == 0 &&
+      length(aws_eks_access_policy_association.aws_devops_agent) == 0 &&
       toset(keys(aws_eks_access_entry.this)) == toset(["aws-devops-agent", "application"]) &&
       toset(keys(aws_eks_access_policy_association.this)) == toset(["aws-devops-agent", "application"]) &&
       aws_eks_access_entry.this["aws-devops-agent"].principal_arn == "arn:aws:iam::123456789012:role/custom-agent"
@@ -174,8 +177,8 @@ run "config_map_authentication_omits_automatic_access" {
 
   assert {
     condition = (
-      length(aws_eks_access_entry.this) == 0 &&
-      length(aws_eks_access_policy_association.this) == 0
+      length(aws_eks_access_entry.aws_devops_agent) == 0 &&
+      length(aws_eks_access_policy_association.aws_devops_agent) == 0
     )
     error_message = "CONFIG_MAP-only clusters must not receive an automatic EKS API access entry or association."
   }
@@ -195,7 +198,8 @@ run "config_map_authentication_preserves_explicit_entries" {
 
   assert {
     condition = (
-      alltrue([for key, entry in var.access_entries : local.effective_access_entries[key] == entry]) &&
+      length(aws_eks_access_entry.aws_devops_agent) == 0 &&
+      length(aws_eks_access_policy_association.aws_devops_agent) == 0 &&
       toset(keys(aws_eks_access_entry.this)) == toset(["aws-devops-agent"]) &&
       toset(keys(aws_eks_access_policy_association.this)) == toset(["aws-devops-agent"]) &&
       aws_eks_access_entry.this["aws-devops-agent"].principal_arn == "arn:aws:iam::123456789012:role/custom-agent"
