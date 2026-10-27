@@ -126,37 +126,6 @@ run "same_key_with_distinct_principal_preserves_both_entries" {
   }
 }
 
-run "same_principal_under_custom_key_suppresses_default" {
-  command = plan
-
-  variables {
-    access_entries = {
-      custom-monitoring-access = {
-        principal_arn           = "arn:aws:iam::123456789012:role/DevOpsAgentCrossAccountRole-internal-tools-prod"
-        kubernetes_groups       = ["custom-readers"]
-        access_scope_type       = "namespace"
-        access_scope_namespaces = ["finance"]
-        policy_arn              = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
-      }
-    }
-  }
-
-  assert {
-    condition = (
-      length(aws_eks_access_entry.aws_devops_agent) == 0 &&
-      length(aws_eks_access_policy_association.aws_devops_agent) == 0 &&
-      toset(keys(aws_eks_access_entry.this)) == toset(["custom-monitoring-access"]) &&
-      toset(keys(aws_eks_access_policy_association.this)) == toset(["custom-monitoring-access"]) &&
-      aws_eks_access_entry.this["custom-monitoring-access"].principal_arn == "arn:aws:iam::123456789012:role/DevOpsAgentCrossAccountRole-internal-tools-prod" &&
-      aws_eks_access_entry.this["custom-monitoring-access"].kubernetes_groups == toset(["custom-readers"]) &&
-      aws_eks_access_policy_association.this["custom-monitoring-access"].policy_arn == "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy" &&
-      aws_eks_access_policy_association.this["custom-monitoring-access"].access_scope[0].type == "namespace" &&
-      aws_eks_access_policy_association.this["custom-monitoring-access"].access_scope[0].namespaces == toset(["finance"])
-    )
-    error_message = "A caller entry for the same principal must retain its own permissions and suppress duplicate automatic entry/association resources regardless of its key."
-  }
-}
-
 run "disabled_default_omits_automatic_access" {
   command = plan
 
@@ -180,7 +149,7 @@ run "disabled_default_preserves_all_explicit_entries" {
     aws_devops_agent_access_enabled = false
     access_entries = {
       aws-devops-agent = {
-        principal_arn = "arn:aws:iam::123456789012:role/custom-agent"
+        principal_arn = "arn:aws:iam::123456789012:role/DevOpsAgentCrossAccountRole-internal-tools-prod"
       }
       application = {
         principal_arn = "arn:aws:iam::123456789012:role/application"
@@ -194,9 +163,9 @@ run "disabled_default_preserves_all_explicit_entries" {
       length(aws_eks_access_policy_association.aws_devops_agent) == 0 &&
       toset(keys(aws_eks_access_entry.this)) == toset(["aws-devops-agent", "application"]) &&
       toset(keys(aws_eks_access_policy_association.this)) == toset(["aws-devops-agent", "application"]) &&
-      aws_eks_access_entry.this["aws-devops-agent"].principal_arn == "arn:aws:iam::123456789012:role/custom-agent"
+      aws_eks_access_entry.this["aws-devops-agent"].principal_arn == "arn:aws:iam::123456789012:role/DevOpsAgentCrossAccountRole-internal-tools-prod"
     )
-    error_message = "Opting out must leave all caller entries untouched, including the automatic entry's key."
+    error_message = "Opting out must preserve caller-managed access for the agent principal and all unrelated caller entries."
   }
 }
 

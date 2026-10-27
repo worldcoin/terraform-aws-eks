@@ -567,7 +567,7 @@ variable "authentication_mode" {
 }
 
 variable "aws_devops_agent_access_enabled" {
-  description = "Add account-local AWS DevOps Agent access when EKS API authentication is enabled. An explicit entry for the same principal ARN takes precedence. Disable if the account role is absent or principal matching cannot be decided during planning."
+  description = "Add account-local AWS DevOps Agent access when EKS API authentication is enabled. Disable if the account role is absent or its access entry is managed separately."
   type        = bool
   default     = true
 }
