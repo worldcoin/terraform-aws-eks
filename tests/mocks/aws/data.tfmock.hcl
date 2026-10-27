@@ -7,7 +7,8 @@ mock_data "aws_partition" {
 
 mock_data "aws_caller_identity" {
   defaults = {
-    arn = "arn:aws:iam::123456789012:user/test-user"
+    account_id = "123456789012"
+    arn        = "arn:aws:iam::123456789012:user/test-user"
   }
 }
 

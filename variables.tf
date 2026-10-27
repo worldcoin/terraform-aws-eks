@@ -566,6 +566,12 @@ variable "authentication_mode" {
   }
 }
 
+variable "aws_devops_agent_access_enabled" {
+  description = "Add account-local AWS DevOps Agent access when EKS API authentication is enabled. Disable if the account role is absent; explicit access_entries always take precedence."
+  type        = bool
+  default     = true
+}
+
 variable "access_entries" {
   description = "Map of access entries to add to the cluster"
   type = map(object({
