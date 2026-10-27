@@ -394,6 +394,28 @@ If you need specyfic access to the cluster, you can list the available AWS Poliv
 aws eks list-access-policies --output table --region us-east-1
 ```
 
+## EKS control plane log archive
+
+Enable `audit_logs` to forward the cluster's CloudWatch control plane log group
+to the security-prod destination in the cluster Region:
+
+```hcl
+audit_logs = {
+  enabled = true
+}
+```
+
+The regional destination must be deployed before enabling forwarding. Set
+`audit_logs.destination_arn` to use a different destination in the same Region.
+All enabled control plane categories, including audit logs, are forwarded with
+the source account and Region fields. Records are not filtered by JSON validity.
+The destination stores the original compressed CloudWatch envelopes in S3.
+
+Forwarding defaults to disabled. A null configuration uses that default. The
+subscription can run alongside `vector_audit_enabled` for delivery comparison;
+disable Vector forwarding only after verifying the central archive. Check the
+log group's subscription quota before enabling a concurrent subscription.
+
 ## Datadog
 
 The module is creating a DataDog integration secret for the [apiKeyExistingSecret](https://github.com/DataDog/helm-charts/blob/main/charts/datadog/values.yaml#L38) of the DataDog helm chart.
@@ -762,6 +784,7 @@ To remove the cluster you have to:
 | [aws_cloudwatch_event_target.spot_aws_health](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_cloudwatch_log_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
 | [aws_cloudwatch_log_subscription_filter.eks_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_subscription_filter) | resource |
+| [aws_cloudwatch_log_subscription_filter.security_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_subscription_filter) | resource |
 | [aws_efs_file_system.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system) | resource |
 | [aws_efs_file_system_policy.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system_policy) | resource |
 | [aws_efs_mount_target.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_mount_target) | resource |
@@ -929,6 +952,7 @@ To remove the cluster you have to:
 | <a name="input_alb_logs_bucket_id"></a> [alb\_logs\_bucket\_id](#input\_alb\_logs\_bucket\_id) | The ID of the S3 bucket to store logs in for ALB. | `string` | n/a | yes |
 | <a name="input_argocd_image_updater_enabled"></a> [argocd\_image\_updater\_enabled](#input\_argocd\_image\_updater\_enabled) | Whether to create a role and Pod Identity association for the argocd/argocd-image-updater Deployment so it can read ECR image tags without IMDS | `bool` | `true` | no |
 | <a name="input_argocd_role_arn"></a> [argocd\_role\_arn](#input\_argocd\_role\_arn) | The ARN of the remote ArgoCD role used to assume eks-cluster role | `string` | `null` | no |
+| <a name="input_audit_logs"></a> [audit\_logs](#input\_audit\_logs) | Forward EKS control plane logs, including audit events, to a regional cross-account CloudWatch Logs destination. Null destination\_arn selects the security-prod destination in var.region. | <pre>object({<br/>    enabled         = optional(bool, false)<br/>    destination_arn = optional(string)<br/>  })</pre> | `{}` | no |
 | <a name="input_authentication_mode"></a> [authentication\_mode](#input\_authentication\_mode) | The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP` | `string` | `"API_AND_CONFIG_MAP"` | no |
 | <a name="input_aws_autoscaling_group_enabled"></a> [aws\_autoscaling\_group\_enabled](#input\_aws\_autoscaling\_group\_enabled) | Whether to enable AWS Autoscaling group | `bool` | `true` | no |
 | <a name="input_aws_load_balancer_iam_role_enabled"></a> [aws\_load\_balancer\_iam\_role\_enabled](#input\_aws\_load\_balancer\_iam\_role\_enabled) | Whether to enable the IAM role for the AWS Load Balancer | `bool` | `true` | no |

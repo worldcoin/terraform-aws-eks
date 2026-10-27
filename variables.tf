@@ -308,6 +308,24 @@ variable "vector_s3_bucket_arns" {
   }
 }
 
+variable "audit_logs" {
+  description = "Forward EKS control plane logs, including audit events, to a regional cross-account CloudWatch Logs destination. Null destination_arn selects the security-prod destination in var.region."
+  type = object({
+    enabled         = optional(bool, false)
+    destination_arn = optional(string)
+  })
+  default  = {}
+  nullable = false
+
+  validation {
+    condition = var.audit_logs.destination_arn == null ? true : can(regex(
+      "^arn:aws:logs:${var.region}:[0-9]{12}:destination:[A-Za-z0-9_./-]+$",
+      var.audit_logs.destination_arn
+    ))
+    error_message = "audit_logs.destination_arn must be a CloudWatch Logs destination ARN in the cluster Region, or null for the security-prod default."
+  }
+}
+
 variable "vector_audit_enabled" {
   description = "Create per-cluster EKS audit-log pipeline (Firehose + CW Logs subscription filter → central Vector aggregator). Requires vector_audit_firehose_access_key."
   type        = bool
