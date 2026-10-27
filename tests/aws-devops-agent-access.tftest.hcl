@@ -89,7 +89,7 @@ run "unrelated_explicit_entry_retains_optional_defaults" {
   }
 }
 
-run "same_key_explicit_entry_replaces_default" {
+run "same_key_with_distinct_principal_preserves_both_entries" {
   command = plan
 
   variables {
@@ -108,8 +108,9 @@ run "same_key_explicit_entry_replaces_default" {
 
   assert {
     condition = (
-      length(aws_eks_access_entry.aws_devops_agent) == 0 &&
-      length(aws_eks_access_policy_association.aws_devops_agent) == 0 &&
+      length(aws_eks_access_entry.aws_devops_agent) == 1 &&
+      length(aws_eks_access_policy_association.aws_devops_agent) == 1 &&
+      aws_eks_access_entry.aws_devops_agent[0].principal_arn == "arn:aws:iam::123456789012:role/DevOpsAgentCrossAccountRole-internal-tools-prod" &&
       toset(keys(aws_eks_access_entry.this)) == toset(["aws-devops-agent"]) &&
       toset(keys(aws_eks_access_policy_association.this)) == toset(["aws-devops-agent"]) &&
       aws_eks_access_entry.this["aws-devops-agent"].principal_arn == "arn:aws:iam::123456789012:role/custom-agent" &&
@@ -121,7 +122,38 @@ run "same_key_explicit_entry_replaces_default" {
       aws_eks_access_policy_association.this["aws-devops-agent"].access_scope[0].type == "namespace" &&
       aws_eks_access_policy_association.this["aws-devops-agent"].access_scope[0].namespaces == toset(["finance"])
     )
-    error_message = "An explicit same-key entry must wholly replace the default without creating a second entry or policy association."
+    error_message = "A caller key matching the agent name must not suppress automatic access for a distinct principal or change the caller entry."
+  }
+}
+
+run "same_principal_under_custom_key_suppresses_default" {
+  command = plan
+
+  variables {
+    access_entries = {
+      custom-monitoring-access = {
+        principal_arn           = "arn:aws:iam::123456789012:role/DevOpsAgentCrossAccountRole-internal-tools-prod"
+        kubernetes_groups       = ["custom-readers"]
+        access_scope_type       = "namespace"
+        access_scope_namespaces = ["finance"]
+        policy_arn              = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+      }
+    }
+  }
+
+  assert {
+    condition = (
+      length(aws_eks_access_entry.aws_devops_agent) == 0 &&
+      length(aws_eks_access_policy_association.aws_devops_agent) == 0 &&
+      toset(keys(aws_eks_access_entry.this)) == toset(["custom-monitoring-access"]) &&
+      toset(keys(aws_eks_access_policy_association.this)) == toset(["custom-monitoring-access"]) &&
+      aws_eks_access_entry.this["custom-monitoring-access"].principal_arn == "arn:aws:iam::123456789012:role/DevOpsAgentCrossAccountRole-internal-tools-prod" &&
+      aws_eks_access_entry.this["custom-monitoring-access"].kubernetes_groups == toset(["custom-readers"]) &&
+      aws_eks_access_policy_association.this["custom-monitoring-access"].policy_arn == "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy" &&
+      aws_eks_access_policy_association.this["custom-monitoring-access"].access_scope[0].type == "namespace" &&
+      aws_eks_access_policy_association.this["custom-monitoring-access"].access_scope[0].namespaces == toset(["finance"])
+    )
+    error_message = "A caller entry for the same principal must retain its own permissions and suppress duplicate automatic entry/association resources regardless of its key."
   }
 }
 
