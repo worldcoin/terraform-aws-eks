@@ -111,6 +111,13 @@ variable "argocd_image_updater_enabled" {
   default     = true
 }
 
+variable "github_deploy_cluster_admin_enabled" {
+  description = "Include the default github-deploy cluster-admin mapping in aws-auth. Disable only after migrating platform callers and configuring application access; additional mappings and EKS access policies remain additive."
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
 variable "extra_role_mapping" {
   description = "Extra role mappings to add to the aws-auth configmap."
   type = list(object({

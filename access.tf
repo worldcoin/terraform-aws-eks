@@ -19,4 +19,6 @@ resource "aws_eks_access_policy_association" "this" {
     type       = each.value.access_scope_type
     namespaces = each.value.access_scope_type == "namespace" ? each.value.access_scope_namespaces : null
   }
+
+  depends_on = [aws_eks_access_entry.this]
 }
