@@ -39,8 +39,9 @@ template: |
 
 autolabeler:
   - label: "chore"
-    files:
-      - "*.md"
+    branch:
+      - '/chore\/.+/'
+      - '/docs\/.+/'
 
   - label: "patch"
     branch:
@@ -51,11 +52,8 @@ autolabeler:
   - label: "enhancement"
     branch:
       - '/feat\/.+/'
-      - "/INFRA-[0-9]{1,4}/"
     title:
       - '/^feat:/i'
-    body:
-      - "/INFRA-[0-9]{1,4}/"
 
   - label: "breaking"
     branch:
