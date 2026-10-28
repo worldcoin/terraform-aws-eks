@@ -756,7 +756,7 @@ To remove the cluster you have to:
 ## Requirements
 
 | Name | Version |
-| ---- | ------- |
+|------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.11.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.57.1 |
 | <a name="requirement_cloudflare"></a> [cloudflare](#requirement\_cloudflare) | >= 5.8 |
@@ -769,7 +769,7 @@ To remove the cluster you have to:
 ## Providers
 
 | Name | Version |
-| ---- | ------- |
+|------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.57.1 |
 | <a name="provider_cloudflare"></a> [cloudflare](#provider\_cloudflare) | >= 5.8 |
 | <a name="provider_datadog"></a> [datadog](#provider\_datadog) | >= 3.0 |
@@ -782,7 +782,7 @@ To remove the cluster you have to:
 ## Modules
 
 | Name | Source | Version |
-| ---- | ------ | ------- |
+|------|--------|---------|
 | <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | git::https://github.com/worldcoin/terraform-datadog-kubernetes | v1.5.2 |
 | <a name="module_datadog_monitoring_for_user"></a> [datadog\_monitoring\_for\_user](#module\_datadog\_monitoring\_for\_user) | git::https://github.com/worldcoin/terraform-datadog-kubernetes | v1.5.2 |
 | <a name="module_gateway_api_external_alb"></a> [gateway\_api\_external\_alb](#module\_gateway\_api\_external\_alb) | git::https://github.com/worldcoin/terraform-aws-alb.git | v2.1.0 |
@@ -793,7 +793,7 @@ To remove the cluster you have to:
 ## Resources
 
 | Name | Type |
-| ---- | ---- |
+|------|------|
 | [aws_autoscaling_group.enclave_track](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group) | resource |
 | [aws_autoscaling_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group) | resource |
 | [aws_cloudwatch_event_rule.spot_aws_ec2](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
@@ -960,7 +960,7 @@ To remove the cluster you have to:
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-| ---- | ----------- | ---- | ------- | :------: |
+|------|-------------|------|---------|:--------:|
 | <a name="input_access_entries"></a> [access\_entries](#input\_access\_entries) | Map of access entries to add to the cluster | <pre>map(object({<br/>    principal_arn           = string<br/>    kubernetes_groups       = optional(list(string), null)<br/>    type                    = optional(string, "STANDARD")<br/>    tags                    = optional(map(string), {})<br/>    access_scope_type       = optional(string, "namespace")<br/>    access_scope_namespaces = optional(list(string), [])<br/>    policy_arn              = optional(string, "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy")<br/>  }))</pre> | `{}` | no |
 | <a name="input_additional_cluster_security_group_rules"></a> [additional\_cluster\_security\_group\_rules](#input\_additional\_cluster\_security\_group\_rules) | Additional cluster security group rules | <pre>list(object({<br/>    type      = string<br/>    from_port = number<br/>    to_port   = number<br/>    protocol  = string<br/><br/>    description                = optional(string)<br/>    cidr_blocks                = optional(list(string))<br/>    ipv6_cidr_blocks           = optional(list(string))<br/>    prefix_list_ids            = optional(list(string))<br/>    self                       = optional(bool)<br/>    source_node_security_group = optional(bool, false)<br/>    sg_id                      = optional(string)<br/>  }))</pre> | `[]` | no |
 | <a name="input_additional_open_ports"></a> [additional\_open\_ports](#input\_additional\_open\_ports) | Additional ports accessible from the Internet for the ALB | <pre>set(object({<br/>    port     = number<br/>    protocol = optional(string, "tcp")<br/>  }))</pre> | `[]` | no |
@@ -1081,7 +1081,7 @@ To remove the cluster you have to:
 ## Outputs
 
 | Name | Description |
-| ---- | ----------- |
+|------|-------------|
 | <a name="output_cluster_certificate_authority_data"></a> [cluster\_certificate\_authority\_data](#output\_cluster\_certificate\_authority\_data) | Base64 encoded certificate data required to communicate with the cluster |
 | <a name="output_cluster_endpoint"></a> [cluster\_endpoint](#output\_cluster\_endpoint) | Endpoint for your Kubernetes API server |
 | <a name="output_cluster_oidc_issuer_url"></a> [cluster\_oidc\_issuer\_url](#output\_cluster\_oidc\_issuer\_url) | The OIDC issuer URL for the EKS cluster |
