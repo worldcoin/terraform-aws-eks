@@ -8,7 +8,7 @@ locals {
 }
 
 module "gateway_api_external_alb" {
-  source   = "git::https://github.com/worldcoin/terraform-aws-alb.git?ref=d755cac2484c763f851238e153cedc08c33635bd"
+  source   = "git::https://github.com/worldcoin/terraform-aws-alb.git?ref=7255f6192f0634be665ca11fdd2268759f9ddcad"
   for_each = var.gateway_api_external_enabled ? toset([local.gateway_api_external_alb_name]) : []
 
   name_suffix  = each.key
