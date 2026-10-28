@@ -39,7 +39,7 @@ run "null_preserves_shared_defaults" {
   }
 
   assert {
-    condition     = local.gateway_api_external_nlb_egress_sg_rules == local.gateway_api_nlb_default_egress_sg_rules && local.gateway_api_internal_nlb_egress_sg_rules == local.gateway_api_nlb_default_egress_sg_rules
+    condition     = jsonencode(local.gateway_api_external_nlb_egress_sg_rules) == jsonencode(local.gateway_api_nlb_default_egress_sg_rules) && jsonencode(local.gateway_api_internal_nlb_egress_sg_rules) == jsonencode(local.gateway_api_nlb_default_egress_sg_rules)
     error_message = "Null overrides must use the central Gateway defaults."
   }
 }
