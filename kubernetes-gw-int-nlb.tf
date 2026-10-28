@@ -74,6 +74,7 @@ module "gateway_api_internal_nlb" {
   private_subnets = var.use_private_subnets_for_internal_nlb ? var.vpc_config.private_subnets : []
 
   ingress_sg_rules = local.gateway_api_internal_nlb_sg_rules
+  egress_sg_rules  = local.gateway_api_internal_nlb_egress_sg_rules
 
   enable_deletion_protection       = var.enable_deletion_protection
   enable_cross_zone_load_balancing = var.nlb_az_affinity.gateway_api_internal.enable_cross_zone_load_balancing
