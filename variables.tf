@@ -972,6 +972,29 @@ variable "gateway_api_internal_enabled" {
   default     = false
 }
 
+variable "gateway_api_external_alb_egress_sg_rules" {
+  description = "Replacement outbound rules for the external Gateway API ALB's internet SG. Null inherits empty internet-SG egress and forwarding through the backend SG's VPC ranges. Configure destinations outside those ranges explicitly."
+  type = set(object({
+    description      = optional(string, "")
+    protocol         = string
+    from_port        = number
+    to_port          = number
+    security_groups  = optional(list(string), [])
+    cidr_blocks      = optional(list(string), [])
+    ipv6_cidr_blocks = optional(list(string), [])
+  }))
+  default = null
+
+  validation {
+    condition = var.gateway_api_external_alb_egress_sg_rules == null ? true : alltrue([
+      for rule in var.gateway_api_external_alb_egress_sg_rules : rule == null ? false : (
+        length(rule.security_groups) + length(rule.cidr_blocks) + length(rule.ipv6_cidr_blocks) > 0
+      )
+    ])
+    error_message = "Each external ALB egress rule must specify at least one security group, IPv4 CIDR or IPv6 CIDR destination."
+  }
+}
+
 variable "gateway_api_external_alb_sg_rules" {
   description = "Additional ingress rules for the external Gateway API ALB's backend security group (terraform-aws-alb's backend_ingress_rules — the frontend SG is managed separately via Cloudflare IPs/open_to_all), appended to the module's own defaults — this does not replace them."
   type = list(object({
@@ -1025,6 +1048,52 @@ variable "gateway_api_internal_alb_sg_rules" {
       length(coalesce(r.cidr_blocks, [])) > 0 || length(coalesce(r.ipv6_cidr_blocks, [])) > 0 || length(coalesce(r.security_groups, [])) > 0
     ])
     error_message = "Each rule must specify at least one CIDR block or security group in 'cidr_blocks', 'ipv6_cidr_blocks', or 'security_groups'."
+  }
+}
+
+variable "gateway_api_external_nlb_egress_sg_rules" {
+  description = "Replacement outbound rules for the external Gateway API NLB. Null inherits all-port/protocol egress to the VPC IPv4 CIDRs from the NLB module; [] removes outbound rules. Include IPv6 or cross-VPC destinations in explicit overrides."
+  type = set(object({
+    description      = optional(string, "")
+    protocol         = string
+    from_port        = number
+    to_port          = number
+    security_groups  = optional(list(string), [])
+    cidr_blocks      = optional(list(string), [])
+    ipv6_cidr_blocks = optional(list(string), [])
+  }))
+  default = null
+
+  validation {
+    condition = var.gateway_api_external_nlb_egress_sg_rules == null ? true : alltrue([
+      for rule in var.gateway_api_external_nlb_egress_sg_rules : rule == null ? false : (
+        length(rule.security_groups) + length(rule.cidr_blocks) + length(rule.ipv6_cidr_blocks) > 0
+      )
+    ])
+    error_message = "Each external NLB egress rule must specify at least one security group, IPv4 CIDR or IPv6 CIDR destination."
+  }
+}
+
+variable "gateway_api_internal_nlb_egress_sg_rules" {
+  description = "Replacement outbound rules for the internal Gateway API NLB. Null inherits all-port/protocol egress to the VPC IPv4 CIDRs from the NLB module; [] removes outbound rules. Include IPv6 or cross-VPC destinations in explicit overrides."
+  type = set(object({
+    description      = optional(string, "")
+    protocol         = string
+    from_port        = number
+    to_port          = number
+    security_groups  = optional(list(string), [])
+    cidr_blocks      = optional(list(string), [])
+    ipv6_cidr_blocks = optional(list(string), [])
+  }))
+  default = null
+
+  validation {
+    condition = var.gateway_api_internal_nlb_egress_sg_rules == null ? true : alltrue([
+      for rule in var.gateway_api_internal_nlb_egress_sg_rules : rule == null ? false : (
+        length(rule.security_groups) + length(rule.cidr_blocks) + length(rule.ipv6_cidr_blocks) > 0
+      )
+    ])
+    error_message = "Each internal NLB egress rule must specify at least one security group, IPv4 CIDR or IPv6 CIDR destination."
   }
 }
 

@@ -44,7 +44,7 @@ locals {
 }
 
 module "gateway_api_external_nlb" {
-  source = "git::https://github.com/worldcoin/terraform-aws-nlb.git?ref=v1.8.0"
+  source = "git::https://github.com/worldcoin/terraform-aws-nlb.git?ref=v2.0.0"
 
   for_each = var.gateway_api_external_enabled ? toset([local.gateway_api_external_nlb_name]) : []
 
@@ -66,6 +66,7 @@ module "gateway_api_external_nlb" {
   public_subnets = var.vpc_config.public_subnets
 
   ingress_sg_rules = local.gateway_api_external_nlb_sg_rules
+  egress_sg_rules  = var.gateway_api_external_nlb_egress_sg_rules
 
   enable_deletion_protection       = var.enable_deletion_protection
   enable_cross_zone_load_balancing = var.nlb_az_affinity.gateway_api_external.enable_cross_zone_load_balancing
