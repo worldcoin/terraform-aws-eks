@@ -955,7 +955,7 @@ variable "gateway_api_internal_enabled" {
 }
 
 variable "gateway_api_external_alb_egress_sg_rules" {
-  description = "Replacement outbound rules for the external Gateway API ALB's internet SG. Null preserves the ALB module default; [] relies on backend SG egress within the VPC."
+  description = "Replacement outbound rules for the external Gateway API ALB's internet SG. Null inherits empty internet-SG egress and forwarding through the backend SG's VPC ranges. Configure destinations outside those ranges explicitly."
   type = set(object({
     description      = optional(string, "")
     protocol         = string

@@ -15,16 +15,16 @@ variables {
   gateway_api_external_enabled = true
 }
 
-run "default_plans_with_alb_module_default" {
+run "default_inherits_backend_vpc_egress" {
   command = plan
 
   assert {
-    condition     = length(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.internet) == 1 && one(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.internet).protocol == "-1" && toset(one(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.internet).cidr_blocks) == toset(["0.0.0.0/0"])
-    error_message = "Omitted EKS overrides must preserve the ALB module's unrestricted IPv4 default."
+    condition     = length(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.internet) == 0 && length(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.backend) == 1 && one(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.backend).protocol == "-1" && toset(one(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.backend).cidr_blocks) == toset([data.aws_vpc.cluster_vpc.cidr_block]) && toset(one(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.backend).ipv6_cidr_blocks) == toset(local.cluster_vpc_ipv6_cidr_blocks)
+    error_message = "Omitted EKS rules must inherit empty internet-SG egress while preserving backend VPC forwarding."
   }
 }
 
-run "null_plans_with_alb_module_default" {
+run "null_inherits_backend_vpc_egress" {
   command = plan
 
   variables {
@@ -32,8 +32,8 @@ run "null_plans_with_alb_module_default" {
   }
 
   assert {
-    condition     = length(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.internet) == 1 && one(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.internet).protocol == "-1" && toset(one(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.internet).cidr_blocks) == toset(["0.0.0.0/0"])
-    error_message = "Null EKS overrides must preserve the ALB module's unrestricted IPv4 default."
+    condition     = length(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.internet) == 0 && length(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.backend) == 1 && one(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.backend).protocol == "-1" && toset(one(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.backend).cidr_blocks) == toset([data.aws_vpc.cluster_vpc.cidr_block]) && toset(one(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.backend).ipv6_cidr_blocks) == toset(local.cluster_vpc_ipv6_cidr_blocks)
+    error_message = "Null EKS rules must inherit empty internet-SG egress while preserving backend VPC forwarding."
   }
 }
 
@@ -69,7 +69,7 @@ run "external_destination_plans" {
 
   assert {
     condition     = length(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.internet) == 1 && one(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.internet).protocol == "tcp" && one(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.internet).from_port == 443 && one(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.internet).to_port == 443 && toset(one(module.gateway_api_external_alb["gw-ext-alb"].sg_egress_rules.internet).cidr_blocks) == toset(["192.0.2.10/32"])
-    error_message = "Custom EKS rules must replace unrestricted egress in the nested ALB module."
+    error_message = "Explicit EKS rules must allow only the configured external destination."
   }
 }
 
