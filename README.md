@@ -563,6 +563,38 @@ For clusters currently using the `gateway-api-crds`, `gateway-api-external`, and
 4. Remove the gateway-api-* Helm charts from ArgoCD
 5. Delete the import file
 
+#### External Gateway ALB egress
+
+`gateway_api_external_alb_egress_sg_rules` replaces the internet SG's outbound
+rules. Omitted or `null` overrides inherit empty internet-SG egress and rely on
+the attached backend SG's VPC IPv4 and IPv6 egress. Callers do not need to set
+`[]` routinely; explicit empty rules have the same effect.
+
+This narrows the previous unrestricted IPv4 default. Verify target and health-check
+destinations, secondary CIDRs, cross-VPC targets and external authentication
+endpoints before adoption. Use explicit rules for destinations outside the backend
+SG's ranges. Backend SG egress remains all-port within those ranges. Validate the
+exact candidate through a dev consumer PR/TFE before release, then remove routine
+caller overrides.
+
+#### Gateway NLB egress
+
+`gateway_api_external_nlb_egress_sg_rules` and
+`gateway_api_internal_nlb_egress_sg_rules` independently replace NLB outbound
+rules. Omitted or `null` overrides inherit the NLB module default: all ports and
+protocols to the VPC's associated IPv4 CIDRs. New in-VPC target and health-check
+ports work without per-caller SG changes.
+
+Explicit overrides replace the entire default, so include VPC target and health
+traffic alongside any IPv6 or cross-VPC destination exceptions. An explicit `[]`
+removes all outbound rules and prevents forwarding; do not use it merely because
+an NLB currently has no routes. PrivateLink inbound enforcement is unchanged.
+
+This narrows the previous unrestricted IPv4 default. Inventory destination
+coverage before adopting the release, and validate the exact candidate through
+a dev consumer PR/TFE before release. Routine VPC caller overrides can be removed
+after adoption; retain genuine destination exceptions.
+
 #### Restricting internal IPv4 ingress
 
 Internal Gateway API load balancers allow `10.0.0.0/8` by default (ALB: TCP/443;
@@ -742,7 +774,7 @@ To remove the cluster you have to:
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.11.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.57.1 |
 | <a name="requirement_cloudflare"></a> [cloudflare](#requirement\_cloudflare) | >= 5.8 |
@@ -754,7 +786,7 @@ To remove the cluster you have to:
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.57.1 |
 | <a name="provider_cloudflare"></a> [cloudflare](#provider\_cloudflare) | >= 5.8 |
 | <a name="provider_datadog"></a> [datadog](#provider\_datadog) | >= 3.0 |
@@ -766,18 +798,18 @@ To remove the cluster you have to:
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | git::https://github.com/worldcoin/terraform-datadog-kubernetes | v1.5.2 |
 | <a name="module_datadog_monitoring_for_user"></a> [datadog\_monitoring\_for\_user](#module\_datadog\_monitoring\_for\_user) | git::https://github.com/worldcoin/terraform-datadog-kubernetes | v1.5.2 |
-| <a name="module_gateway_api_external_alb"></a> [gateway\_api\_external\_alb](#module\_gateway\_api\_external\_alb) | git::https://github.com/worldcoin/terraform-aws-alb.git | v2.0.2 |
-| <a name="module_gateway_api_external_nlb"></a> [gateway\_api\_external\_nlb](#module\_gateway\_api\_external\_nlb) | git::https://github.com/worldcoin/terraform-aws-nlb.git | v1.7.1 |
-| <a name="module_gateway_api_internal_alb"></a> [gateway\_api\_internal\_alb](#module\_gateway\_api\_internal\_alb) | git::https://github.com/worldcoin/terraform-aws-alb.git | v2.0.2 |
-| <a name="module_gateway_api_internal_nlb"></a> [gateway\_api\_internal\_nlb](#module\_gateway\_api\_internal\_nlb) | git::https://github.com/worldcoin/terraform-aws-nlb.git | v1.7.1 |
+| <a name="module_gateway_api_external_alb"></a> [gateway\_api\_external\_alb](#module\_gateway\_api\_external\_alb) | git::https://github.com/worldcoin/terraform-aws-alb.git | v3.0.0 |
+| <a name="module_gateway_api_external_nlb"></a> [gateway\_api\_external\_nlb](#module\_gateway\_api\_external\_nlb) | git::https://github.com/worldcoin/terraform-aws-nlb.git | v2.0.0 |
+| <a name="module_gateway_api_internal_alb"></a> [gateway\_api\_internal\_alb](#module\_gateway\_api\_internal\_alb) | git::https://github.com/worldcoin/terraform-aws-alb.git | v2.0.3 |
+| <a name="module_gateway_api_internal_nlb"></a> [gateway\_api\_internal\_nlb](#module\_gateway\_api\_internal\_nlb) | git::https://github.com/worldcoin/terraform-aws-nlb.git | v2.0.0 |
 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_autoscaling_group.enclave_track](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group) | resource |
 | [aws_autoscaling_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group) | resource |
 | [aws_cloudwatch_event_rule.spot_aws_ec2](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
@@ -789,7 +821,9 @@ To remove the cluster you have to:
 | [aws_efs_file_system.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system) | resource |
 | [aws_efs_file_system_policy.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system_policy) | resource |
 | [aws_efs_mount_target.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_mount_target) | resource |
+| [aws_eks_access_entry.aws_devops_agent](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_access_entry) | resource |
 | [aws_eks_access_entry.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_access_entry) | resource |
+| [aws_eks_access_policy_association.aws_devops_agent](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_access_policy_association) | resource |
 | [aws_eks_access_policy_association.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_access_policy_association) | resource |
 | [aws_eks_addon.coredns](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_addon.ebs_csi](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
@@ -935,7 +969,7 @@ To remove the cluster you have to:
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_access_entries"></a> [access\_entries](#input\_access\_entries) | Map of access entries to add to the cluster | <pre>map(object({<br/>    principal_arn           = string<br/>    kubernetes_groups       = optional(list(string), null)<br/>    type                    = optional(string, "STANDARD")<br/>    tags                    = optional(map(string), {})<br/>    access_scope_type       = optional(string, "namespace")<br/>    access_scope_namespaces = optional(list(string), [])<br/>    policy_arn              = optional(string, "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy")<br/>  }))</pre> | `{}` | no |
 | <a name="input_additional_cluster_security_group_rules"></a> [additional\_cluster\_security\_group\_rules](#input\_additional\_cluster\_security\_group\_rules) | Additional cluster security group rules | <pre>list(object({<br/>    type      = string<br/>    from_port = number<br/>    to_port   = number<br/>    protocol  = string<br/><br/>    description                = optional(string)<br/>    cidr_blocks                = optional(list(string))<br/>    ipv6_cidr_blocks           = optional(list(string))<br/>    prefix_list_ids            = optional(list(string))<br/>    self                       = optional(bool)<br/>    source_node_security_group = optional(bool, false)<br/>    sg_id                      = optional(string)<br/>  }))</pre> | `[]` | no |
 | <a name="input_additional_open_ports"></a> [additional\_open\_ports](#input\_additional\_open\_ports) | Additional ports accessible from the Internet for the ALB | <pre>set(object({<br/>    port     = number<br/>    protocol = optional(string, "tcp")<br/>  }))</pre> | `[]` | no |
@@ -947,6 +981,7 @@ To remove the cluster you have to:
 | <a name="input_audit_logs"></a> [audit\_logs](#input\_audit\_logs) | Forward EKS control plane logs, including audit events, to a regional cross-account CloudWatch Logs destination by default. Null destination\_arn selects the security-prod destination in var.region. | <pre>object({<br/>    enabled         = optional(bool, true)<br/>    destination_arn = optional(string)<br/>  })</pre> | `{}` | no |
 | <a name="input_authentication_mode"></a> [authentication\_mode](#input\_authentication\_mode) | The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP` | `string` | `"API_AND_CONFIG_MAP"` | no |
 | <a name="input_aws_autoscaling_group_enabled"></a> [aws\_autoscaling\_group\_enabled](#input\_aws\_autoscaling\_group\_enabled) | Whether to enable AWS Autoscaling group | `bool` | `true` | no |
+| <a name="input_aws_devops_agent_access_enabled"></a> [aws\_devops\_agent\_access\_enabled](#input\_aws\_devops\_agent\_access\_enabled) | Add account-local AWS DevOps Agent access when EKS API authentication is enabled. Disable if the account role is absent or its access entry is managed separately. | `bool` | `true` | no |
 | <a name="input_aws_load_balancer_iam_role_enabled"></a> [aws\_load\_balancer\_iam\_role\_enabled](#input\_aws\_load\_balancer\_iam\_role\_enabled) | Whether to enable the IAM role for the AWS Load Balancer | `bool` | `true` | no |
 | <a name="input_cluster_endpoint_public_access"></a> [cluster\_endpoint\_public\_access](#input\_cluster\_endpoint\_public\_access) | Indicates whether or not the Amazon EKS public API server endpoint is enabled | `bool` | `false` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name of the cluster. Has to be unique per region per account. | `string` | n/a | yes |
@@ -982,8 +1017,10 @@ To remove the cluster you have to:
 | <a name="input_gateway_api_ext_alb_listeners"></a> [gateway\_api\_ext\_alb\_listeners](#input\_gateway\_api\_ext\_alb\_listeners) | Gateway listeners for the external ALB (gw-ext-alb). | `any` | <pre>[<br/>  {<br/>    "allowedRoutes": {<br/>      "namespaces": {<br/>        "from": "All"<br/>      }<br/>    },<br/>    "name": "https",<br/>    "port": 443,<br/>    "protocol": "HTTPS",<br/>    "tls": {<br/>      "certificateRefs": [<br/>        {<br/>          "group": "",<br/>          "kind": "Secret",<br/>          "name": "default-cert"<br/>        }<br/>      ],<br/>      "mode": "Terminate"<br/>    }<br/>  }<br/>]</pre> | no |
 | <a name="input_gateway_api_ext_nlb_listener_configs"></a> [gateway\_api\_ext\_nlb\_listener\_configs](#input\_gateway\_api\_ext\_nlb\_listener\_configs) | Override LoadBalancerConfiguration listenerConfigurations for the external NLB. When null, defaults to TLS:443 with external cert and SSL policy. | `any` | `null` | no |
 | <a name="input_gateway_api_ext_nlb_listeners"></a> [gateway\_api\_ext\_nlb\_listeners](#input\_gateway\_api\_ext\_nlb\_listeners) | Gateway listeners for the external NLB (gw-ext-nlb). | `any` | <pre>[<br/>  {<br/>    "allowedRoutes": {<br/>      "kinds": [<br/>        {<br/>          "group": "gateway.networking.k8s.io",<br/>          "kind": "TCPRoute"<br/>        }<br/>      ],<br/>      "namespaces": {<br/>        "from": "All"<br/>      }<br/>    },<br/>    "name": "tcp",<br/>    "port": 80,<br/>    "protocol": "TCP"<br/>  },<br/>  {<br/>    "allowedRoutes": {<br/>      "kinds": [<br/>        {<br/>          "group": "gateway.networking.k8s.io",<br/>          "kind": "TLSRoute"<br/>        }<br/>      ],<br/>      "namespaces": {<br/>        "from": "All"<br/>      }<br/>    },<br/>    "name": "tls",<br/>    "port": 443,<br/>    "protocol": "TLS",<br/>    "tls": {<br/>      "certificateRefs": [<br/>        {<br/>          "group": "",<br/>          "kind": "Secret",<br/>          "name": "default-cert"<br/>        }<br/>      ],<br/>      "mode": "Terminate"<br/>    }<br/>  }<br/>]</pre> | no |
+| <a name="input_gateway_api_external_alb_egress_sg_rules"></a> [gateway\_api\_external\_alb\_egress\_sg\_rules](#input\_gateway\_api\_external\_alb\_egress\_sg\_rules) | Replacement outbound rules for the external Gateway API ALB's internet SG. Null inherits empty internet-SG egress and forwarding through the backend SG's VPC ranges. Configure destinations outside those ranges explicitly. | <pre>set(object({<br/>    description      = optional(string, "")<br/>    protocol         = string<br/>    from_port        = number<br/>    to_port          = number<br/>    security_groups  = optional(list(string), [])<br/>    cidr_blocks      = optional(list(string), [])<br/>    ipv6_cidr_blocks = optional(list(string), [])<br/>  }))</pre> | `null` | no |
 | <a name="input_gateway_api_external_alb_sg_rules"></a> [gateway\_api\_external\_alb\_sg\_rules](#input\_gateway\_api\_external\_alb\_sg\_rules) | Additional ingress rules for the external Gateway API ALB's backend security group (terraform-aws-alb's backend\_ingress\_rules — the frontend SG is managed separately via Cloudflare IPs/open\_to\_all), appended to the module's own defaults — this does not replace them. | <pre>list(object({<br/>    description      = optional(string, "")<br/>    protocol         = optional(string, "tcp")<br/>    port             = number<br/>    cidr_blocks      = optional(list(string))<br/>    ipv6_cidr_blocks = optional(list(string))<br/>    security_groups  = optional(list(string))<br/>  }))</pre> | `[]` | no |
 | <a name="input_gateway_api_external_enabled"></a> [gateway\_api\_external\_enabled](#input\_gateway\_api\_external\_enabled) | Create internet-facing ALB and NLB for Gateway API (external, external-nonhttp). Requires gateway\_api\_crds\_enabled = true. | `bool` | `false` | no |
+| <a name="input_gateway_api_external_nlb_egress_sg_rules"></a> [gateway\_api\_external\_nlb\_egress\_sg\_rules](#input\_gateway\_api\_external\_nlb\_egress\_sg\_rules) | Replacement outbound rules for the external Gateway API NLB. Null inherits all-port/protocol egress to the VPC IPv4 CIDRs from the NLB module; [] removes outbound rules. Include IPv6 or cross-VPC destinations in explicit overrides. | <pre>set(object({<br/>    description      = optional(string, "")<br/>    protocol         = string<br/>    from_port        = number<br/>    to_port          = number<br/>    security_groups  = optional(list(string), [])<br/>    cidr_blocks      = optional(list(string), [])<br/>    ipv6_cidr_blocks = optional(list(string), [])<br/>  }))</pre> | `null` | no |
 | <a name="input_gateway_api_external_nlb_sg_rules"></a> [gateway\_api\_external\_nlb\_sg\_rules](#input\_gateway\_api\_external\_nlb\_sg\_rules) | Additional LB security group ingress rules for the external Gateway API NLB, appended to the module's own defaults (ports 80/443 from Cloudflare IPs) — this does not replace them. | <pre>list(object({<br/>    description      = optional(string, "")<br/>    protocol         = optional(string, "tcp")<br/>    port             = number<br/>    cidr_blocks      = optional(list(string))<br/>    ipv6_cidr_blocks = optional(list(string))<br/>    security_groups  = optional(list(string))<br/>  }))</pre> | `[]` | no |
 | <a name="input_gateway_api_int_alb_extra_certificates"></a> [gateway\_api\_int\_alb\_extra\_certificates](#input\_gateway\_api\_int\_alb\_extra\_certificates) | Additional ACM certificate ARNs to attach as SNI certificates on the internal ALB HTTPS listener, alongside the default certificate. Lets callers add SNI certs without restating listener defaults. Ignored when gateway\_api\_int\_alb\_listener\_configs is set (that override wins). | `list(string)` | `[]` | no |
 | <a name="input_gateway_api_int_alb_listener_configs"></a> [gateway\_api\_int\_alb\_listener\_configs](#input\_gateway\_api\_int\_alb\_listener\_configs) | Override LoadBalancerConfiguration listenerConfigurations for the internal ALB. When null, defaults to HTTPS:443 with internal cert and SSL policy. | `any` | `null` | no |
@@ -994,6 +1031,7 @@ To remove the cluster you have to:
 | <a name="input_gateway_api_internal_alb_sg_rules"></a> [gateway\_api\_internal\_alb\_sg\_rules](#input\_gateway\_api\_internal\_alb\_sg\_rules) | Ingress rules appended to the internal Gateway API ALB defaults. Set gateway\_api\_internal\_alb\_default\_ipv4\_ingress\_enabled = false to remove the default 10.0.0.0/8 rule. VPC IPv6 defaults are preserved. | <pre>list(object({<br/>    description      = optional(string, "")<br/>    protocol         = optional(string, "tcp")<br/>    port             = number<br/>    cidr_blocks      = optional(list(string))<br/>    ipv6_cidr_blocks = optional(list(string))<br/>    security_groups  = optional(list(string))<br/>  }))</pre> | `[]` | no |
 | <a name="input_gateway_api_internal_enabled"></a> [gateway\_api\_internal\_enabled](#input\_gateway\_api\_internal\_enabled) | Create internal ALB and NLB for Gateway API (internal, internal-nonhttp). Requires gateway\_api\_crds\_enabled = true. | `bool` | `false` | no |
 | <a name="input_gateway_api_internal_nlb_default_ipv4_ingress_enabled"></a> [gateway\_api\_internal\_nlb\_default\_ipv4\_ingress\_enabled](#input\_gateway\_api\_internal\_nlb\_default\_ipv4\_ingress\_enabled) | Allow HTTP/HTTPS from 10.0.0.0/8 to the internal Gateway API NLB. Set false with explicit gateway\_api\_internal\_nlb\_sg\_rules to restrict IPv4 clients. VPC IPv6 defaults are preserved. | `bool` | `true` | no |
+| <a name="input_gateway_api_internal_nlb_egress_sg_rules"></a> [gateway\_api\_internal\_nlb\_egress\_sg\_rules](#input\_gateway\_api\_internal\_nlb\_egress\_sg\_rules) | Replacement outbound rules for the internal Gateway API NLB. Null inherits all-port/protocol egress to the VPC IPv4 CIDRs from the NLB module; [] removes outbound rules. Include IPv6 or cross-VPC destinations in explicit overrides. | <pre>set(object({<br/>    description      = optional(string, "")<br/>    protocol         = string<br/>    from_port        = number<br/>    to_port          = number<br/>    security_groups  = optional(list(string), [])<br/>    cidr_blocks      = optional(list(string), [])<br/>    ipv6_cidr_blocks = optional(list(string), [])<br/>  }))</pre> | `null` | no |
 | <a name="input_gateway_api_internal_nlb_sg_rules"></a> [gateway\_api\_internal\_nlb\_sg\_rules](#input\_gateway\_api\_internal\_nlb\_sg\_rules) | Ingress rules appended to the internal Gateway API NLB defaults. Set gateway\_api\_internal\_nlb\_default\_ipv4\_ingress\_enabled = false to remove the default 10.0.0.0/8 rules. VPC IPv6 defaults are preserved. | <pre>list(object({<br/>    description      = optional(string, "")<br/>    protocol         = optional(string, "tcp")<br/>    port             = number<br/>    cidr_blocks      = optional(list(string))<br/>    ipv6_cidr_blocks = optional(list(string))<br/>    security_groups  = optional(list(string))<br/>  }))</pre> | `[]` | no |
 | <a name="input_gateway_api_lb_name_prefix"></a> [gateway\_api\_lb\_name\_prefix](#input\_gateway\_api\_lb\_name\_prefix) | Prefix for Gateway API load balancer names. Defaults to cluster\_name. Override when cluster\_name is too long to fit within the 32-char AWS LB name limit (prefix + suffix like '-gw-ext-alb' must be <= 32). | `string` | `null` | no |
 | <a name="input_gha_cidr_eu_central_1"></a> [gha\_cidr\_eu\_central\_1](#input\_gha\_cidr\_eu\_central\_1) | GitHub Actions CIDR block for eu-central-1 | `string` | `"10.52.0.0/20"` | no |
@@ -1049,7 +1087,7 @@ To remove the cluster you have to:
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_cluster_certificate_authority_data"></a> [cluster\_certificate\_authority\_data](#output\_cluster\_certificate\_authority\_data) | Base64 encoded certificate data required to communicate with the cluster |
 | <a name="output_cluster_endpoint"></a> [cluster\_endpoint](#output\_cluster\_endpoint) | Endpoint for your Kubernetes API server |
 | <a name="output_cluster_oidc_issuer_url"></a> [cluster\_oidc\_issuer\_url](#output\_cluster\_oidc\_issuer\_url) | The OIDC issuer URL for the EKS cluster |
