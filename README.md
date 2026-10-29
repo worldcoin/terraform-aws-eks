@@ -540,15 +540,16 @@ For clusters currently using the `gateway-api-crds`, `gateway-api-external`, and
 #### External Gateway ALB egress
 
 `gateway_api_external_alb_egress_sg_rules` replaces the internet SG's outbound
-rules. Omitted or `null` overrides preserve the ALB module default, including
-unrestricted IPv4 egress. Set it to `[]` to rely on the attached backend SG's VPC
-IPv4 and IPv6 egress.
+rules. Omitted or `null` overrides inherit empty internet-SG egress and rely on
+the attached backend SG's VPC IPv4 and IPv6 egress. Callers do not need to set
+`[]` routinely; explicit empty rules have the same effect.
 
-Before opting in, verify target and health-check destinations, secondary CIDRs,
-cross-VPC targets, and external authentication endpoints. Use explicit rules for
-destinations outside the backend SG's ranges. Backend SG egress remains all-port
-within those ranges. Promote the empty internet egress to shared defaults only
-after validating consumers, then remove temporary caller settings.
+This narrows the previous unrestricted IPv4 default. Verify target and health-check
+destinations, secondary CIDRs, cross-VPC targets and external authentication
+endpoints before adoption. Use explicit rules for destinations outside the backend
+SG's ranges. Backend SG egress remains all-port within those ranges. Validate the
+exact candidate through a dev consumer PR/TFE before release, then remove routine
+caller overrides.
 
 #### Gateway NLB egress
 
@@ -776,7 +777,7 @@ To remove the cluster you have to:
 | ---- | ------ | ------- |
 | <a name="module_datadog_monitoring"></a> [datadog\_monitoring](#module\_datadog\_monitoring) | git::https://github.com/worldcoin/terraform-datadog-kubernetes | v1.5.2 |
 | <a name="module_datadog_monitoring_for_user"></a> [datadog\_monitoring\_for\_user](#module\_datadog\_monitoring\_for\_user) | git::https://github.com/worldcoin/terraform-datadog-kubernetes | v1.5.2 |
-| <a name="module_gateway_api_external_alb"></a> [gateway\_api\_external\_alb](#module\_gateway\_api\_external\_alb) | git::https://github.com/worldcoin/terraform-aws-alb.git | v2.1.0 |
+| <a name="module_gateway_api_external_alb"></a> [gateway\_api\_external\_alb](#module\_gateway\_api\_external\_alb) | git::https://github.com/worldcoin/terraform-aws-alb.git | ea337036e3d10f9c002583e7462613012fb0a61c |
 | <a name="module_gateway_api_external_nlb"></a> [gateway\_api\_external\_nlb](#module\_gateway\_api\_external\_nlb) | git::https://github.com/worldcoin/terraform-aws-nlb.git | v2.0.0 |
 | <a name="module_gateway_api_internal_alb"></a> [gateway\_api\_internal\_alb](#module\_gateway\_api\_internal\_alb) | git::https://github.com/worldcoin/terraform-aws-alb.git | v2.0.3 |
 | <a name="module_gateway_api_internal_nlb"></a> [gateway\_api\_internal\_nlb](#module\_gateway\_api\_internal\_nlb) | git::https://github.com/worldcoin/terraform-aws-nlb.git | v2.0.0 |
@@ -1000,7 +1001,7 @@ To remove the cluster you have to:
 | <a name="input_gateway_api_ext_alb_listeners"></a> [gateway\_api\_ext\_alb\_listeners](#input\_gateway\_api\_ext\_alb\_listeners) | Gateway listeners for the external ALB (gw-ext-alb). | `any` | <pre>[<br/>  {<br/>    "allowedRoutes": {<br/>      "namespaces": {<br/>        "from": "All"<br/>      }<br/>    },<br/>    "name": "https",<br/>    "port": 443,<br/>    "protocol": "HTTPS",<br/>    "tls": {<br/>      "certificateRefs": [<br/>        {<br/>          "group": "",<br/>          "kind": "Secret",<br/>          "name": "default-cert"<br/>        }<br/>      ],<br/>      "mode": "Terminate"<br/>    }<br/>  }<br/>]</pre> | no |
 | <a name="input_gateway_api_ext_nlb_listener_configs"></a> [gateway\_api\_ext\_nlb\_listener\_configs](#input\_gateway\_api\_ext\_nlb\_listener\_configs) | Override LoadBalancerConfiguration listenerConfigurations for the external NLB. When null, defaults to TLS:443 with external cert and SSL policy. | `any` | `null` | no |
 | <a name="input_gateway_api_ext_nlb_listeners"></a> [gateway\_api\_ext\_nlb\_listeners](#input\_gateway\_api\_ext\_nlb\_listeners) | Gateway listeners for the external NLB (gw-ext-nlb). | `any` | <pre>[<br/>  {<br/>    "allowedRoutes": {<br/>      "kinds": [<br/>        {<br/>          "group": "gateway.networking.k8s.io",<br/>          "kind": "TCPRoute"<br/>        }<br/>      ],<br/>      "namespaces": {<br/>        "from": "All"<br/>      }<br/>    },<br/>    "name": "tcp",<br/>    "port": 80,<br/>    "protocol": "TCP"<br/>  },<br/>  {<br/>    "allowedRoutes": {<br/>      "kinds": [<br/>        {<br/>          "group": "gateway.networking.k8s.io",<br/>          "kind": "TLSRoute"<br/>        }<br/>      ],<br/>      "namespaces": {<br/>        "from": "All"<br/>      }<br/>    },<br/>    "name": "tls",<br/>    "port": 443,<br/>    "protocol": "TLS",<br/>    "tls": {<br/>      "certificateRefs": [<br/>        {<br/>          "group": "",<br/>          "kind": "Secret",<br/>          "name": "default-cert"<br/>        }<br/>      ],<br/>      "mode": "Terminate"<br/>    }<br/>  }<br/>]</pre> | no |
-| <a name="input_gateway_api_external_alb_egress_sg_rules"></a> [gateway\_api\_external\_alb\_egress\_sg\_rules](#input\_gateway\_api\_external\_alb\_egress\_sg\_rules) | Replacement outbound rules for the external Gateway API ALB's internet SG. Null preserves the ALB module default; [] relies on backend SG egress within the VPC. | <pre>set(object({<br/>    description      = optional(string, "")<br/>    protocol         = string<br/>    from_port        = number<br/>    to_port          = number<br/>    security_groups  = optional(list(string), [])<br/>    cidr_blocks      = optional(list(string), [])<br/>    ipv6_cidr_blocks = optional(list(string), [])<br/>  }))</pre> | `null` | no |
+| <a name="input_gateway_api_external_alb_egress_sg_rules"></a> [gateway\_api\_external\_alb\_egress\_sg\_rules](#input\_gateway\_api\_external\_alb\_egress\_sg\_rules) | Replacement outbound rules for the external Gateway API ALB's internet SG. Null inherits empty internet-SG egress and forwarding through the backend SG's VPC ranges. Configure destinations outside those ranges explicitly. | <pre>set(object({<br/>    description      = optional(string, "")<br/>    protocol         = string<br/>    from_port        = number<br/>    to_port          = number<br/>    security_groups  = optional(list(string), [])<br/>    cidr_blocks      = optional(list(string), [])<br/>    ipv6_cidr_blocks = optional(list(string), [])<br/>  }))</pre> | `null` | no |
 | <a name="input_gateway_api_external_alb_sg_rules"></a> [gateway\_api\_external\_alb\_sg\_rules](#input\_gateway\_api\_external\_alb\_sg\_rules) | Additional ingress rules for the external Gateway API ALB's backend security group (terraform-aws-alb's backend\_ingress\_rules — the frontend SG is managed separately via Cloudflare IPs/open\_to\_all), appended to the module's own defaults — this does not replace them. | <pre>list(object({<br/>    description      = optional(string, "")<br/>    protocol         = optional(string, "tcp")<br/>    port             = number<br/>    cidr_blocks      = optional(list(string))<br/>    ipv6_cidr_blocks = optional(list(string))<br/>    security_groups  = optional(list(string))<br/>  }))</pre> | `[]` | no |
 | <a name="input_gateway_api_external_enabled"></a> [gateway\_api\_external\_enabled](#input\_gateway\_api\_external\_enabled) | Create internet-facing ALB and NLB for Gateway API (external, external-nonhttp). Requires gateway\_api\_crds\_enabled = true. | `bool` | `false` | no |
 | <a name="input_gateway_api_external_nlb_egress_sg_rules"></a> [gateway\_api\_external\_nlb\_egress\_sg\_rules](#input\_gateway\_api\_external\_nlb\_egress\_sg\_rules) | Replacement outbound rules for the external Gateway API NLB. Null inherits all-port/protocol egress to the VPC IPv4 CIDRs from the NLB module; [] removes outbound rules. Include IPv6 or cross-VPC destinations in explicit overrides. | <pre>set(object({<br/>    description      = optional(string, "")<br/>    protocol         = string<br/>    from_port        = number<br/>    to_port          = number<br/>    security_groups  = optional(list(string), [])<br/>    cidr_blocks      = optional(list(string), [])<br/>    ipv6_cidr_blocks = optional(list(string), [])<br/>  }))</pre> | `null` | no |
