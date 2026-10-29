@@ -60,7 +60,7 @@ run "external_restriction_preserves_internal_defaults" {
   assert {
     condition = (
       length(module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules) == 2 &&
-      alltrue([for rule in module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules : rule.protocol == "tcp" && rule.from_port == rule.to_port && rule.cidr_blocks == toset(["10.0.0.0/16"])]) &&
+      alltrue([for rule in module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules : rule.protocol == "tcp" && rule.from_port == rule.to_port && toset(rule.cidr_blocks) == toset(["10.0.0.0/16"])]) &&
       toset([for rule in module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules : rule.to_port]) == toset([8080, 8081]) &&
       one(module.gateway_api_internal_nlb["gw-int-nlb"].sg_egress_rules).protocol == "-1"
     )
@@ -85,7 +85,7 @@ run "internal_restriction_preserves_external_defaults" {
       length(module.gateway_api_internal_nlb["gw-int-nlb"].sg_egress_rules) == 1 &&
       one(module.gateway_api_internal_nlb["gw-int-nlb"].sg_egress_rules).protocol == "tcp" &&
       one(module.gateway_api_internal_nlb["gw-int-nlb"].sg_egress_rules).to_port == 8453 &&
-      one(module.gateway_api_internal_nlb["gw-int-nlb"].sg_egress_rules).ipv6_cidr_blocks == toset(["2001:db8::/64"]) &&
+      toset(one(module.gateway_api_internal_nlb["gw-int-nlb"].sg_egress_rules).ipv6_cidr_blocks) == toset(["2001:db8::/64"]) &&
       one(module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules).protocol == "-1"
     )
     error_message = "An internal IPv6 override must not change the external NLB."
