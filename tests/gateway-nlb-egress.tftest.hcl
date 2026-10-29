@@ -16,21 +16,21 @@ variables {
   gateway_api_internal_enabled = true
 }
 
-run "defaults_preserve_existing_egress" {
+run "defaults_inherit_vpc_egress" {
   command = plan
 
   assert {
     condition = (
-      length(local.gateway_api_external_nlb_egress_sg_rules) == 1 &&
-      one(local.gateway_api_external_nlb_egress_sg_rules).protocol == "-1" &&
-      toset(one(local.gateway_api_external_nlb_egress_sg_rules).cidr_blocks) == toset(["0.0.0.0/0"]) &&
-      local.gateway_api_internal_nlb_egress_sg_rules == local.gateway_api_external_nlb_egress_sg_rules
+      length(module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules) == 1 &&
+      one(module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules).protocol == "-1" &&
+      toset(one(module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules).cidr_blocks) == toset(["10.0.0.0/16"]) &&
+      module.gateway_api_internal_nlb["gw-int-nlb"].sg_egress_rules == module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules
     )
-    error_message = "Existing callers must retain unrestricted IPv4 egress on both NLBs."
+    error_message = "Both Gateway NLBs must inherit all-port VPC egress without unrestricted destinations."
   }
 }
 
-run "null_preserves_shared_defaults" {
+run "null_inherits_nlb_module_default" {
   command = plan
 
   variables {
@@ -39,8 +39,8 @@ run "null_preserves_shared_defaults" {
   }
 
   assert {
-    condition     = jsonencode(local.gateway_api_external_nlb_egress_sg_rules) == jsonencode(local.gateway_api_nlb_default_egress_sg_rules) && jsonencode(local.gateway_api_internal_nlb_egress_sg_rules) == jsonencode(local.gateway_api_nlb_default_egress_sg_rules)
-    error_message = "Null overrides must use the central Gateway defaults."
+    condition     = toset(one(module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules).cidr_blocks) == toset(["10.0.0.0/16"]) && jsonencode(module.gateway_api_internal_nlb["gw-int-nlb"].sg_egress_rules) == jsonencode(module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules)
+    error_message = "Null overrides must reach the child NLB module default."
   }
 }
 
@@ -59,10 +59,10 @@ run "external_restriction_preserves_internal_defaults" {
 
   assert {
     condition = (
-      length(local.gateway_api_external_nlb_egress_sg_rules) == 2 &&
-      alltrue([for rule in local.gateway_api_external_nlb_egress_sg_rules : rule.protocol == "tcp" && rule.from_port == rule.to_port && rule.cidr_blocks == tolist(["10.0.0.0/16"])]) &&
-      toset([for rule in local.gateway_api_external_nlb_egress_sg_rules : rule.to_port]) == toset([8080, 8081]) &&
-      one(local.gateway_api_internal_nlb_egress_sg_rules).protocol == "-1"
+      length(module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules) == 2 &&
+      alltrue([for rule in module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules : rule.protocol == "tcp" && rule.from_port == rule.to_port && toset(rule.cidr_blocks) == toset(["10.0.0.0/16"])]) &&
+      toset([for rule in module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules : rule.to_port]) == toset([8080, 8081]) &&
+      one(module.gateway_api_internal_nlb["gw-int-nlb"].sg_egress_rules).protocol == "-1"
     )
     error_message = "An external override must replace broad egress, including a distinct health-check port, without changing the internal NLB."
   }
@@ -82,11 +82,11 @@ run "internal_restriction_preserves_external_defaults" {
 
   assert {
     condition = (
-      length(local.gateway_api_internal_nlb_egress_sg_rules) == 1 &&
-      one(local.gateway_api_internal_nlb_egress_sg_rules).protocol == "tcp" &&
-      one(local.gateway_api_internal_nlb_egress_sg_rules).to_port == 8453 &&
-      one(local.gateway_api_internal_nlb_egress_sg_rules).ipv6_cidr_blocks == tolist(["2001:db8::/64"]) &&
-      one(local.gateway_api_external_nlb_egress_sg_rules).protocol == "-1"
+      length(module.gateway_api_internal_nlb["gw-int-nlb"].sg_egress_rules) == 1 &&
+      one(module.gateway_api_internal_nlb["gw-int-nlb"].sg_egress_rules).protocol == "tcp" &&
+      one(module.gateway_api_internal_nlb["gw-int-nlb"].sg_egress_rules).to_port == 8453 &&
+      toset(one(module.gateway_api_internal_nlb["gw-int-nlb"].sg_egress_rules).ipv6_cidr_blocks) == toset(["2001:db8::/64"]) &&
+      one(module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules).protocol == "-1"
     )
     error_message = "An internal IPv6 override must not change the external NLB."
   }
@@ -101,7 +101,7 @@ run "empty_rules_do_not_restore_defaults" {
   }
 
   assert {
-    condition     = length(local.gateway_api_external_nlb_egress_sg_rules) == 0 && length(local.gateway_api_internal_nlb_egress_sg_rules) == 0
+    condition     = length(module.gateway_api_external_nlb["gw-ext-nlb"].sg_egress_rules) == 0 && length(module.gateway_api_internal_nlb["gw-int-nlb"].sg_egress_rules) == 0
     error_message = "Explicit empty overrides must revoke egress on both NLBs."
   }
 }
