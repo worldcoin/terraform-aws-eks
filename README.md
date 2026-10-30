@@ -463,6 +463,27 @@ Each track creates:
 - Node labels: `enclave.tools/track=<track_name>`
 - Node taints: `enclave.tools/track=<track_name>:NoSchedule`
 
+To replace existing nodes when a track's launch template changes, add their
+private subnet IDs to `autoscaling_group.refresh_subnet_ids`. For example, set
+it to `slice(module.vpc.config.private_subnets, 0, 1)` to refresh one ASG first,
+then add the remaining subnets in later applies. An included ASG uses the
+launch template's current numeric version, so Terraform starts a rolling
+instance refresh when that version changes. ASGs outside the set retain
+`$Latest` and do not refresh existing instances on a launch template update.
+Selected ASGs use 100% minimum and 200% maximum healthy capacity to launch a
+replacement before terminating the old instance. Ensure each ASG has room for
+up to twice its desired capacity and its AZ has EC2 capacity.
+
+For existing ASGs moving from `$Latest` to numeric versions, leave
+`instance_refresh_auto_rollback` at its default `false` until every selected
+ASG has completed its first refresh: AWS cannot automatically roll back to
+`$Latest`. Then set `instance_refresh_auto_rollback = true` in a separate apply
+to enable automatic rollback on later refreshes. Check workload disruption
+budgets and replacement capacity before adding each subnet; ASGs selected in
+the same apply can refresh concurrently. ASG refresh does not use Kubernetes
+evictions by itself; without a termination hook and drain handler, pod
+disruption budgets do not protect workloads on the old node.
+
 Deploy workloads to specific tracks using nodeSelector:
 
 ```yaml
@@ -989,7 +1010,7 @@ To remove the cluster you have to:
 | <a name="input_eks_node_group"></a> [eks\_node\_group](#input\_eks\_node\_group) | Configuration for EKS node group | <pre>object({<br/>    arch  = string<br/>    types = list(string)<br/>    disk  = optional(number, 100)<br/>    dns   = optional(string, "172.20.0.10")<br/>  })</pre> | `null` | no |
 | <a name="input_enable_aws_load_balancer_controller_explicit_deny"></a> [enable\_aws\_load\_balancer\_controller\_explicit\_deny](#input\_enable\_aws\_load\_balancer\_controller\_explicit\_deny) | Safety switch: set to false to disable creating the aws-load-balancer-controller explicit deny policy and attachment. | `bool` | `true` | no |
 | <a name="input_enable_deletion_protection"></a> [enable\_deletion\_protection](#input\_enable\_deletion\_protection) | Whether to enable deletion protection on the Gateway API NLB/ALB load balancers. Set to false before destroying the cluster. | `bool` | `true` | no |
-| <a name="input_enclave_tracks"></a> [enclave\_tracks](#input\_enclave\_tracks) | Additional enclave tracks for multi-version deployments. Key is used as track identifier. | <pre>map(object({<br/>    autoscaling_group = optional(object({<br/>      size     = optional(number, 1)<br/>      min_size = optional(number, 0)<br/>      max_size = optional(number, 10)<br/>    }), {})<br/>    instance_type  = optional(string)<br/>    cpu_allocation = optional(string)<br/>    # Cluster Autoscaler's advertised hugepage capacity in MiB. Null preserves<br/>    # the legacy behavior of deriving it from memory_allocation.<br/>    hugepages         = optional(string)<br/>    memory_allocation = optional(string)<br/>    arch              = optional(string, "amd64")<br/>  }))</pre> | `{}` | no |
+| <a name="input_enclave_tracks"></a> [enclave\_tracks](#input\_enclave\_tracks) | Additional enclave tracks for multi-version deployments. Key is used as track identifier. | <pre>map(object({<br/>    autoscaling_group = optional(object({<br/>      size                           = optional(number, 1)<br/>      min_size                       = optional(number, 0)<br/>      max_size                       = optional(number, 10)<br/>      refresh_subnet_ids             = optional(set(string), [])<br/>      instance_refresh_auto_rollback = optional(bool, false)<br/>    }), {})<br/>    instance_type  = optional(string)<br/>    cpu_allocation = optional(string)<br/>    # Cluster Autoscaler's advertised hugepage capacity in MiB. Null preserves<br/>    # the legacy behavior of deriving it from memory_allocation.<br/>    hugepages         = optional(string)<br/>    memory_allocation = optional(string)<br/>    arch              = optional(string, "amd64")<br/>  }))</pre> | `{}` | no |
 | <a name="input_enclaves_cpu_allocation"></a> [enclaves\_cpu\_allocation](#input\_enclaves\_cpu\_allocation) | Number of CPUs to allocate for Nitro Enclaves per node | `string` | `"4"` | no |
 | <a name="input_enclaves_instance_type"></a> [enclaves\_instance\_type](#input\_enclaves\_instance\_type) | Instance type for Nitro Enclaves | `string` | `"m7a.2xlarge"` | no |
 | <a name="input_enclaves_memory_allocation"></a> [enclaves\_memory\_allocation](#input\_enclaves\_memory\_allocation) | Memory in MiB to allocate for Nitro Enclaves per node | `string` | `"4096"` | no |
