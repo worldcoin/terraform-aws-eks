@@ -1088,6 +1088,7 @@ To remove the cluster you have to:
 | <a name="output_gateway_api_internal_alb_dns_name"></a> [gateway\_api\_internal\_alb\_dns\_name](#output\_gateway\_api\_internal\_alb\_dns\_name) | DNS name of the internal Gateway API ALB |
 | <a name="output_gateway_api_internal_nlb_arn"></a> [gateway\_api\_internal\_nlb\_arn](#output\_gateway\_api\_internal\_nlb\_arn) | ARN of the internal Gateway API NLB |
 | <a name="output_gateway_api_internal_nlb_dns_name"></a> [gateway\_api\_internal\_nlb\_dns\_name](#output\_gateway\_api\_internal\_nlb\_dns\_name) | DNS name of the internal Gateway API NLB |
+| <a name="output_managed_node_group_autoscaling_group_names"></a> [managed\_node\_group\_autoscaling\_group\_names](#output\_managed\_node\_group\_autoscaling\_group\_names) | Auto Scaling group names for the managed node group, or an empty list when disabled |
 | <a name="output_name"></a> [name](#output\_name) | The name of the cluster |
 | <a name="output_node_security_group_id"></a> [node\_security\_group\_id](#output\_node\_security\_group\_id) | The security group ID of the EKS nodes |
 <!-- END_TF_DOCS -->
