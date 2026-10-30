@@ -394,6 +394,33 @@ If you need specyfic access to the cluster, you can list the available AWS Poliv
 aws eks list-access-policies --output table --region us-east-1
 ```
 
+## EKS control plane log archive
+
+The cluster's CloudWatch control plane log group is forwarded to the
+security-prod destination in the cluster Region by default. To disable it:
+
+```hcl
+audit_logs = {
+  enabled = false
+}
+```
+
+The regional destination must be deployed before applying this module. Set
+`audit_logs.destination_arn` to use a different destination in the same Region.
+The module creates a source-account role for organization-scoped destinations.
+CloudWatch Logs may assume it only for the cluster's log group, and its
+`logs:PutLogEvents` permission is limited to that group's log streams.
+All enabled control plane categories, including audit logs, are forwarded with
+the source account and Region fields. Records are not filtered by JSON validity.
+The destination stores the original compressed CloudWatch envelopes in S3.
+
+An omitted or null configuration enables forwarding. Accounts without access to
+the default destination must configure an authorized destination or disable
+forwarding. The subscription can run alongside `vector_audit_enabled` for
+delivery comparison;
+disable Vector forwarding only after verifying the central archive. Check the
+log group's subscription quota before enabling a concurrent subscription.
+
 ## Datadog
 
 The module is creating a DataDog integration secret for the [apiKeyExistingSecret](https://github.com/DataDog/helm-charts/blob/main/charts/datadog/values.yaml#L38) of the DataDog helm chart.
@@ -797,6 +824,7 @@ To remove the cluster you have to:
 | [aws_cloudwatch_event_target.spot_aws_health](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_cloudwatch_log_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
 | [aws_cloudwatch_log_subscription_filter.eks_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_subscription_filter) | resource |
+| [aws_cloudwatch_log_subscription_filter.security_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_subscription_filter) | resource |
 | [aws_efs_file_system.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system) | resource |
 | [aws_efs_file_system_policy.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system_policy) | resource |
 | [aws_efs_mount_target.persistent_volume](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_mount_target) | resource |
@@ -840,6 +868,7 @@ To remove the cluster you have to:
 | [aws_iam_role.keda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.kube_ops](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.node](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role.security_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.vector](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy.aws_efs_csi_driver](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.aws_lbc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
@@ -853,6 +882,7 @@ To remove the cluster you have to:
 | [aws_iam_role_policy.keda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.kube_ops](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.node_inline_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.security_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy.vector](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy_attachment.argocd_image_updater](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.aws_load_balancer_controller_explicit_deny](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
@@ -942,6 +972,8 @@ To remove the cluster you have to:
 | [aws_iam_policy_document.kms](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.kube_ops](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.node_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.security_audit](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.security_audit_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.spot_notification_sqs_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.vector](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.vector_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -966,6 +998,7 @@ To remove the cluster you have to:
 | <a name="input_alb_logs_bucket_id"></a> [alb\_logs\_bucket\_id](#input\_alb\_logs\_bucket\_id) | The ID of the S3 bucket to store logs in for ALB. | `string` | n/a | yes |
 | <a name="input_argocd_image_updater_enabled"></a> [argocd\_image\_updater\_enabled](#input\_argocd\_image\_updater\_enabled) | Whether to create a role and Pod Identity association for the argocd/argocd-image-updater Deployment so it can read ECR image tags without IMDS | `bool` | `true` | no |
 | <a name="input_argocd_role_arn"></a> [argocd\_role\_arn](#input\_argocd\_role\_arn) | The ARN of the remote ArgoCD role used to assume eks-cluster role | `string` | `null` | no |
+| <a name="input_audit_logs"></a> [audit\_logs](#input\_audit\_logs) | Forward EKS control plane logs, including audit events, to a regional cross-account CloudWatch Logs destination by default. Null destination\_arn selects the security-prod destination in var.region. | <pre>object({<br/>    enabled         = optional(bool, true)<br/>    destination_arn = optional(string)<br/>  })</pre> | `{}` | no |
 | <a name="input_authentication_mode"></a> [authentication\_mode](#input\_authentication\_mode) | The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP` | `string` | `"API_AND_CONFIG_MAP"` | no |
 | <a name="input_aws_autoscaling_group_enabled"></a> [aws\_autoscaling\_group\_enabled](#input\_aws\_autoscaling\_group\_enabled) | Whether to enable AWS Autoscaling group | `bool` | `true` | no |
 | <a name="input_aws_devops_agent_access_enabled"></a> [aws\_devops\_agent\_access\_enabled](#input\_aws\_devops\_agent\_access\_enabled) | Add account-local AWS DevOps Agent access when EKS API authentication is enabled. Disable if the account role is absent or its access entry is managed separately. | `bool` | `true` | no |
