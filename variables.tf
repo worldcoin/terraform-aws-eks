@@ -1052,7 +1052,7 @@ variable "gateway_api_internal_alb_sg_rules" {
 }
 
 variable "gateway_api_external_nlb_egress_sg_rules" {
-  description = "Replacement outbound rules for the external Gateway API NLB. Null inherits all-port/protocol egress to the VPC IPv4 CIDRs from the NLB module; [] removes outbound rules. Include IPv6 or cross-VPC destinations in explicit overrides."
+  description = "Replacement outbound rules for the external Gateway API NLB. Null allows TCP 5052, 5053, 8080, 8081, 8085 and 8443 to associated VPC IPv4 CIDRs; [] removes outbound rules. Include other target/health-check ports, IPv6 or cross-VPC destinations in explicit overrides."
   type = set(object({
     description      = optional(string, "")
     protocol         = string
@@ -1075,7 +1075,7 @@ variable "gateway_api_external_nlb_egress_sg_rules" {
 }
 
 variable "gateway_api_internal_nlb_egress_sg_rules" {
-  description = "Replacement outbound rules for the internal Gateway API NLB. Null inherits all-port/protocol egress to the VPC IPv4 CIDRs from the NLB module; [] removes outbound rules. Include IPv6 or cross-VPC destinations in explicit overrides."
+  description = "Replacement outbound rules for the internal Gateway API NLB. Null allows TCP 5052, 5053, 8080, 8081, 8085 and 8443 to associated VPC IPv4 CIDRs; [] removes outbound rules. Include other target/health-check ports, IPv6 or cross-VPC destinations in explicit overrides."
   type = set(object({
     description      = optional(string, "")
     protocol         = string
