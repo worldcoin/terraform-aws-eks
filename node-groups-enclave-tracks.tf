@@ -98,7 +98,11 @@ resource "aws_autoscaling_group" "enclave_track" {
     launch_template {
       launch_template_specification {
         launch_template_id = aws_launch_template.enclave_track[each.value.track_key].id
-        version            = "$Latest"
+        version = (
+          contains(each.value.track_value.autoscaling_group.refresh_subnet_ids, each.value.subnet) ?
+          aws_launch_template.enclave_track[each.value.track_key].latest_version :
+          "$Latest"
+        )
       }
     }
   }
@@ -148,8 +152,15 @@ resource "aws_autoscaling_group" "enclave_track" {
   instance_refresh {
     strategy = "Rolling"
     preferences {
-      min_healthy_percentage = 50
-      auto_rollback          = true
+      # Launch replacements before terminating nodes in selected ASGs.
+      min_healthy_percentage = contains(each.value.track_value.autoscaling_group.refresh_subnet_ids, each.value.subnet) ? 100 : 50
+      max_healthy_percentage = contains(each.value.track_value.autoscaling_group.refresh_subnet_ids, each.value.subnet) ? 200 : null
+      # The first refresh cannot auto-rollback when the ASG previously used $Latest.
+      auto_rollback = (
+        contains(each.value.track_value.autoscaling_group.refresh_subnet_ids, each.value.subnet) ?
+        each.value.track_value.autoscaling_group.instance_refresh_auto_rollback :
+        true
+      )
     }
   }
 }

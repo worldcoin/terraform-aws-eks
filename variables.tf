@@ -717,9 +717,11 @@ variable "enclave_tracks" {
   description = "Additional enclave tracks for multi-version deployments. Key is used as track identifier."
   type = map(object({
     autoscaling_group = optional(object({
-      size     = optional(number, 1)
-      min_size = optional(number, 0)
-      max_size = optional(number, 10)
+      size                           = optional(number, 1)
+      min_size                       = optional(number, 0)
+      max_size                       = optional(number, 10)
+      refresh_subnet_ids             = optional(set(string), [])
+      instance_refresh_auto_rollback = optional(bool, false)
     }), {})
     instance_type  = optional(string)
     cpu_allocation = optional(string)
@@ -753,6 +755,16 @@ variable "enclave_tracks" {
       v.hugepages == null || (can(tonumber(v.hugepages)) && tonumber(v.hugepages) > 0 && tonumber(v.hugepages) % 1024 == 0)
     ])
     error_message = "Each enclave track hugepages value must be a positive multiple of 1024 MiB."
+  }
+
+  validation {
+    condition = alltrue(flatten([
+      for _, track in var.enclave_tracks : [
+        for subnet_id in track.autoscaling_group.refresh_subnet_ids :
+        contains(var.vpc_config.private_subnets, subnet_id)
+      ]
+    ]))
+    error_message = "Enclave track refresh_subnet_ids must be private subnets in the cluster VPC."
   }
 }
 
