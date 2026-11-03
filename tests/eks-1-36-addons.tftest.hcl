@@ -25,32 +25,32 @@ run "eks_1_36_addon_versions" {
   }
 
   assert {
-    condition     = aws_eks_addon.vpc_cni.addon_version == "v1.22.4-eksbuild.3"
+    condition     = aws_eks_addon.vpc_cni.addon_version == "v1.23.2-eksbuild.8"
     error_message = "Incorrect VPC CNI version for Kubernetes 1.36"
   }
 
   assert {
-    condition     = aws_eks_addon.coredns.addon_version == "v1.14.7-eksbuild.11"
+    condition     = aws_eks_addon.coredns.addon_version == "v1.14.7-eksbuild.22"
     error_message = "Incorrect CoreDNS version for Kubernetes 1.36"
   }
 
   assert {
-    condition     = aws_eks_addon.kube_proxy.addon_version == "v1.36.0-eksbuild.45"
+    condition     = aws_eks_addon.kube_proxy.addon_version == "v1.36.0-eksbuild.58"
     error_message = "Incorrect kube-proxy version for Kubernetes 1.36"
   }
 
   assert {
-    condition     = aws_eks_addon.ebs_csi.addon_version == "v1.67.0-eksbuild.1"
+    condition     = aws_eks_addon.ebs_csi.addon_version == "v1.67.2-eksbuild.1"
     error_message = "Incorrect EBS CSI driver version for Kubernetes 1.36"
   }
 
   assert {
-    condition     = aws_eks_addon.snapshot_controller.addon_version == "v8.6.0-eksbuild.10"
+    condition     = aws_eks_addon.snapshot_controller.addon_version == "v8.7.0-eksbuild.2"
     error_message = "Incorrect snapshot controller version for Kubernetes 1.36"
   }
 
   assert {
-    condition     = aws_eks_addon.eks_pod_identity_agent.addon_version == "v1.3.10-eksbuild.3"
+    condition     = aws_eks_addon.eks_pod_identity_agent.addon_version == "v1.4.1-eksbuild.3"
     error_message = "Incorrect Pod Identity agent version for Kubernetes 1.36"
   }
 
@@ -65,7 +65,7 @@ run "eks_1_36_addon_versions" {
   }
 
   assert {
-    condition     = aws_eks_addon.metrics_server.addon_version == "v0.9.0-eksbuild.13"
+    condition     = aws_eks_addon.metrics_server.addon_version == "v0.9.0-eksbuild.14"
     error_message = "Incorrect metrics server version for Kubernetes 1.36"
   }
 }

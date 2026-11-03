@@ -1,13 +1,13 @@
 locals {
-  # Recommended version of the Amazon VPC CNI add-on for each cluster version
+  # Latest version of the Amazon VPC CNI add-on compatible with each cluster version
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
   # aws eks describe-addon-versions --addon-name vpc-cni --region us-east-1 --output json| jq '.addons[0].addonVersions[0]'
   vpc_cni_version = {
     "1.32" = "v1.20.1-eksbuild.3"
     "1.33" = "v1.20.1-eksbuild.3"
     "1.34" = "v1.21.1-eksbuild.1"
-    "1.35" = "v1.21.1-eksbuild.1"
-    "1.36" = "v1.22.4-eksbuild.3"
+    "1.35" = "v1.23.2-eksbuild.8"
+    "1.36" = "v1.23.2-eksbuild.8"
   }
 
   # CoreDNS version deployed with each Amazon EKS supported cluster version
@@ -17,8 +17,8 @@ locals {
     "1.32" = "v1.11.4-eksbuild.22"
     "1.33" = "v1.11.4-eksbuild.22"
     "1.34" = "v1.13.2-eksbuild.4"
-    "1.35" = "v1.13.2-eksbuild.4"
-    "1.36" = "v1.14.7-eksbuild.11"
+    "1.35" = "v1.14.7-eksbuild.22"
+    "1.36" = "v1.14.7-eksbuild.22"
   }
 
   # Latest available kube-proxy container image version for each Amazon EKS cluster version
@@ -28,8 +28,8 @@ locals {
     "1.32" = "v1.32.6-eksbuild.8"
     "1.33" = "v1.32.6-eksbuild.8"
     "1.34" = "v1.34.6-eksbuild.2"
-    "1.35" = "v1.35.3-eksbuild.2"
-    "1.36" = "v1.36.0-eksbuild.45"
+    "1.35" = "v1.35.3-eksbuild.62"
+    "1.36" = "v1.36.0-eksbuild.58"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html
@@ -38,8 +38,8 @@ locals {
     "1.32" = "v1.58.0-eksbuild.1"
     "1.33" = "v1.58.0-eksbuild.1"
     "1.34" = "v1.59.0-eksbuild.1"
-    "1.35" = "v1.59.0-eksbuild.1"
-    "1.36" = "v1.67.0-eksbuild.1"
+    "1.35" = "v1.67.2-eksbuild.1"
+    "1.36" = "v1.67.2-eksbuild.1"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/workloads-add-ons-available-eks.html#addons-csi-snapshot-controller
@@ -49,8 +49,8 @@ locals {
     "1.32" = "v8.3.0-eksbuild.1"
     "1.33" = "v8.3.0-eksbuild.1"
     "1.34" = "v8.5.0-eksbuild.4"
-    "1.35" = "v8.5.0-eksbuild.4"
-    "1.36" = "v8.6.0-eksbuild.10"
+    "1.35" = "v8.7.0-eksbuild.2"
+    "1.36" = "v8.7.0-eksbuild.2"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/pod-id-agent-setup.html
@@ -59,8 +59,8 @@ locals {
     "1.32" = "v1.3.8-eksbuild.2"
     "1.33" = "v1.3.8-eksbuild.2"
     "1.34" = "v1.3.10-eksbuild.3"
-    "1.35" = "v1.3.10-eksbuild.3"
-    "1.36" = "v1.3.10-eksbuild.3"
+    "1.35" = "v1.4.1-eksbuild.3"
+    "1.36" = "v1.4.1-eksbuild.3"
   }
 
   # https://docs.aws.amazon.com/eks/latest/userguide/node-health.html
@@ -89,8 +89,8 @@ locals {
     "1.32" = "v0.8.0-eksbuild.2"
     "1.33" = "v0.8.0-eksbuild.2"
     "1.34" = "v0.8.1-eksbuild.6"
-    "1.35" = "v0.8.1-eksbuild.6"
-    "1.36" = "v0.9.0-eksbuild.13"
+    "1.35" = "v0.9.0-eksbuild.14"
+    "1.36" = "v0.9.0-eksbuild.14"
   }
 
   # Stays null unless a caller opts in, so clusters that do not set the input see
