@@ -3,6 +3,11 @@ output "name" {
   value       = aws_eks_cluster.this.name
 }
 
+output "managed_node_group_autoscaling_group_names" {
+  description = "Auto Scaling group names for the managed node group, or an empty list when disabled"
+  value       = flatten(aws_eks_node_group.al2023[*].resources[*].autoscaling_groups[*].name)
+}
+
 # Gateway API load balancers
 output "gateway_api_external_alb_dns_name" {
   description = "DNS name of the external Gateway API ALB"
