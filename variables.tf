@@ -64,8 +64,8 @@ variable "vpc_cni_version_override" {
   type        = string
   default     = ""
   validation {
-    condition     = var.vpc_cni_version_override != "" ? can(regex("\\d+{1}\\.\\d+{1,2}\\.\\d+{1,2}", var.vpc_cni_version_override)) : true
-    error_message = "Invalid version format"
+    condition     = var.vpc_cni_version_override != "" ? can(regex("^v[0-9]+\\.[0-9]+\\.[0-9]+-eksbuild\\.[0-9]+$", var.vpc_cni_version_override)) : true
+    error_message = "Expected an EKS add-on version such as v1.23.3-eksbuild.1, or an empty string."
   }
 }
 
