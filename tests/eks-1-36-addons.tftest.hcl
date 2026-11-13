@@ -69,3 +69,39 @@ run "eks_1_36_addon_versions" {
     error_message = "Incorrect metrics server version for Kubernetes 1.36"
   }
 }
+
+run "vpc_cni_version_override" {
+  command = plan
+
+  variables {
+    vpc_cni_version_override = "v1.23.3-eksbuild.1"
+  }
+
+  assert {
+    condition     = aws_eks_addon.vpc_cni.addon_version == "v1.23.3-eksbuild.1"
+    error_message = "The VPC CNI add-on must receive the configured EKS version."
+  }
+}
+
+run "vpc_cni_empty_version_override_uses_default" {
+  command = plan
+
+  variables {
+    vpc_cni_version_override = ""
+  }
+
+  assert {
+    condition     = aws_eks_addon.vpc_cni.addon_version == "v1.22.4-eksbuild.3"
+    error_message = "An empty override must preserve the Kubernetes 1.36 default."
+  }
+}
+
+run "vpc_cni_rejects_malformed_version_override" {
+  command = plan
+
+  variables {
+    vpc_cni_version_override = "v1.23.3-eksbuild.1-extra"
+  }
+
+  expect_failures = [var.vpc_cni_version_override]
+}
