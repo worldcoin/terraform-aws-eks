@@ -66,7 +66,7 @@ resource "aws_iam_role_policy_attachment" "argocd_image_updater" {
   count = var.argocd_image_updater_enabled ? 1 : 0
 
   role       = aws_iam_role.argocd_image_updater[0].name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
 resource "aws_eks_pod_identity_association" "argocd_image_updater" {

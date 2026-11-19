@@ -68,7 +68,7 @@ resource "aws_iam_role_policy_attachment" "ecr_credentials_sync" {
   count = var.ecr_credentials_sync_enabled ? 1 : 0
 
   role       = aws_iam_role.ecr_credentials_sync[0].name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
 resource "aws_eks_pod_identity_association" "ecr_credentials_sync" {

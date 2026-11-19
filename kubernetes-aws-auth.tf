@@ -6,24 +6,24 @@ locals {
       groups   = ["system:bootstrappers", "system:nodes"]
     },
     {
-      rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/admin"
+      rolearn  = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.account.id}:role/admin"
       username = "tfh-admin"
       groups   = ["tfh-cluster-admins"]
     },
     {
-      rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/tfe"
+      rolearn  = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.account.id}:role/tfe"
       username = "tfh-tfe"
       groups   = ["tfh-cluster-admins"]
     },
     ],
     var.github_deploy_cluster_admin_enabled ? [{
-      rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/github-deploy"
+      rolearn  = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.account.id}:role/github-deploy"
       username = "tfh-github-deploy"
       groups   = ["tfh-cluster-admins"]
     }] : [],
     [
       { # This role is used by remote ArgoCD to deploy applications
-        rolearn  = "arn:aws:iam::${data.aws_caller_identity.account.id}:role/eks-cluster-${var.cluster_name}"
+        rolearn  = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.account.id}:role/eks-cluster-${var.cluster_name}"
         username = "eks-cluster-${var.cluster_name}"
         groups   = ["tfh-cluster-admins"]
       },

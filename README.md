@@ -776,6 +776,25 @@ To remove the cluster you have to:
 
 > **See also:** [`docs/EKS_CLUSTER_REMOVAL.md`](https://github.com/worldcoin/infrastructure/blob/main/docs/EKS_CLUSTER_REMOVAL.md) in `worldcoin/infrastructure` for a more detailed runbook including pre-steps, failure mode troubleshooting, and workspace-specific guidance.
 
+## AWS European Sovereign Cloud
+
+Generated IAM, KMS and EKS access ARNs use the current AWS partition. The
+namespace-admin access policy default is resolved in the resource so an
+omitted `access_entries[*].policy_arn` also works in `aws-eusc`. Explicit
+policy ARNs retain their existing behavior.
+
+Commercial defaults are unchanged. Outside the commercial partition, provide
+same-partition DockerHub cache and Vector bucket ARNs. The cache policy does
+not create a cache or copy images across partitions. Pass `[]` for Vector only
+when the collector is not deployed; otherwise configure its approved delivery
+destination. Enabled audit forwarding requires an explicit same-partition,
+same-Region `audit_logs.destination_arn`; the commercial security account is
+not a fallback for EUSC. Local control-plane logs remain enabled.
+
+Verify EKS/add-on versions, AMIs, node instance availability and deployment
+runner connectivity in EUSC before applying. Service principals and OIDC
+audiences are not API hostnames and must not be rewritten from `.com` to `.eu`.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
@@ -968,6 +987,7 @@ To remove the cluster you have to:
 | [aws_iam_policy_document.vector](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.vector_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_roles.aws_load_balancer_controller](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_roles) | data source |
+| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 | [aws_ssm_parameter.al2023_ami](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ssm_parameter) | data source |
 | [aws_vpc.cluster_vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/vpc) | data source |
 | [cloudflare_ip_ranges.cloudflare](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/data-sources/ip_ranges) | data source |
@@ -980,7 +1000,7 @@ To remove the cluster you have to:
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
-| <a name="input_access_entries"></a> [access\_entries](#input\_access\_entries) | Map of access entries to add to the cluster | <pre>map(object({<br/>    principal_arn           = string<br/>    kubernetes_groups       = optional(list(string), null)<br/>    type                    = optional(string, "STANDARD")<br/>    tags                    = optional(map(string), {})<br/>    access_scope_type       = optional(string, "namespace")<br/>    access_scope_namespaces = optional(list(string), [])<br/>    policy_arn              = optional(string, "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy")<br/>  }))</pre> | `{}` | no |
+| <a name="input_access_entries"></a> [access\_entries](#input\_access\_entries) | Map of access entries to add to the cluster | <pre>map(object({<br/>    principal_arn           = string<br/>    kubernetes_groups       = optional(list(string), null)<br/>    type                    = optional(string, "STANDARD")<br/>    tags                    = optional(map(string), {})<br/>    access_scope_type       = optional(string, "namespace")<br/>    access_scope_namespaces = optional(list(string), [])<br/>    policy_arn              = optional(string)<br/>  }))</pre> | `{}` | no |
 | <a name="input_additional_cluster_security_group_rules"></a> [additional\_cluster\_security\_group\_rules](#input\_additional\_cluster\_security\_group\_rules) | Additional cluster security group rules | <pre>list(object({<br/>    type      = string<br/>    from_port = number<br/>    to_port   = number<br/>    protocol  = string<br/><br/>    description                = optional(string)<br/>    cidr_blocks                = optional(list(string))<br/>    ipv6_cidr_blocks           = optional(list(string))<br/>    prefix_list_ids            = optional(list(string))<br/>    self                       = optional(bool)<br/>    source_node_security_group = optional(bool, false)<br/>    sg_id                      = optional(string)<br/>  }))</pre> | `[]` | no |
 | <a name="input_additional_open_ports"></a> [additional\_open\_ports](#input\_additional\_open\_ports) | Additional ports accessible from the Internet for the ALB | <pre>set(object({<br/>    port     = number<br/>    protocol = optional(string, "tcp")<br/>  }))</pre> | `[]` | no |
 | <a name="input_additional_security_group_rules"></a> [additional\_security\_group\_rules](#input\_additional\_security\_group\_rules) | Additional security group rules | <pre>list(object({<br/>    type      = string<br/>    from_port = number<br/>    to_port   = number<br/>    protocol  = string<br/><br/>    description                   = optional(string)<br/>    cidr_blocks                   = optional(list(string))<br/>    ipv6_cidr_blocks              = optional(list(string))<br/>    prefix_list_ids               = optional(list(string))<br/>    self                          = optional(bool)<br/>    source_cluster_security_group = optional(bool, false)<br/>    sg_id                         = optional(string)<br/>  }))</pre> | `[]` | no |
@@ -988,7 +1008,7 @@ To remove the cluster you have to:
 | <a name="input_alb_logs_bucket_id"></a> [alb\_logs\_bucket\_id](#input\_alb\_logs\_bucket\_id) | The ID of the S3 bucket to store logs in for ALB. | `string` | n/a | yes |
 | <a name="input_argocd_image_updater_enabled"></a> [argocd\_image\_updater\_enabled](#input\_argocd\_image\_updater\_enabled) | Whether to create a role and Pod Identity association for the argocd/argocd-image-updater Deployment so it can read ECR image tags without IMDS | `bool` | `true` | no |
 | <a name="input_argocd_role_arn"></a> [argocd\_role\_arn](#input\_argocd\_role\_arn) | The ARN of the remote ArgoCD role used to assume eks-cluster role | `string` | `null` | no |
-| <a name="input_audit_logs"></a> [audit\_logs](#input\_audit\_logs) | Forward EKS control plane logs, including audit events, to a regional cross-account CloudWatch Logs destination by default. Null destination\_arn selects the security-prod destination in var.region. | <pre>object({<br/>    enabled         = optional(bool, true)<br/>    destination_arn = optional(string)<br/>  })</pre> | `{}` | no |
+| <a name="input_audit_logs"></a> [audit\_logs](#input\_audit\_logs) | Forward EKS control plane logs to a regional CloudWatch Logs destination. Null destination\_arn selects the commercial security-prod default; other partitions require an explicit destination. | <pre>object({<br/>    enabled         = optional(bool, true)<br/>    destination_arn = optional(string)<br/>  })</pre> | `{}` | no |
 | <a name="input_authentication_mode"></a> [authentication\_mode](#input\_authentication\_mode) | The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP` | `string` | `"API_AND_CONFIG_MAP"` | no |
 | <a name="input_aws_autoscaling_group_enabled"></a> [aws\_autoscaling\_group\_enabled](#input\_aws\_autoscaling\_group\_enabled) | Whether to enable AWS Autoscaling group | `bool` | `true` | no |
 | <a name="input_aws_devops_agent_access_enabled"></a> [aws\_devops\_agent\_access\_enabled](#input\_aws\_devops\_agent\_access\_enabled) | Add account-local AWS DevOps Agent access when EKS API authentication is enabled. Disable if the account role is absent or its access entry is managed separately. | `bool` | `true` | no |
@@ -1002,7 +1022,7 @@ To remove the cluster you have to:
 | <a name="input_deploy_desired_vs_status_critical"></a> [deploy\_desired\_vs\_status\_critical](#input\_deploy\_desired\_vs\_status\_critical) | Threshold for critical for Desired pods vs current pods (Deployments) | `number` | `10` | no |
 | <a name="input_deploy_desired_vs_status_evaluation_period"></a> [deploy\_desired\_vs\_status\_evaluation\_period](#input\_deploy\_desired\_vs\_status\_evaluation\_period) | Evaluation period for Desired pods vs current pods (Deployments) | `string` | `"last_15m"` | no |
 | <a name="input_deploy_desired_vs_status_warning"></a> [deploy\_desired\_vs\_status\_warning](#input\_deploy\_desired\_vs\_status\_warning) | Threshold for warning for Desired pods vs current pods (Deployments) | `number` | `1` | no |
-| <a name="input_dockerhub_pull_through_cache_repositories_arn"></a> [dockerhub\_pull\_through\_cache\_repositories\_arn](#input\_dockerhub\_pull\_through\_cache\_repositories\_arn) | The ARN of the repositories to allow the EKS node group to pull images from the DockerHub pull-through cache. | `string` | `"arn:aws:ecr:us-east-1:507152310572:repository/docker-cache/*"` | no |
+| <a name="input_dockerhub_pull_through_cache_repositories_arn"></a> [dockerhub\_pull\_through\_cache\_repositories\_arn](#input\_dockerhub\_pull\_through\_cache\_repositories\_arn) | Repository ARN pattern for the DockerHub pull-through cache. The default targets the commercial internal-tools cache; other partitions must supply a cache in their own partition. | `string` | `"arn:aws:ecr:us-east-1:507152310572:repository/docker-cache/*"` | no |
 | <a name="input_drop_invalid_header_fields"></a> [drop\_invalid\_header\_fields](#input\_drop\_invalid\_header\_fields) | Drop invalid header fields | `bool` | `true` | no |
 | <a name="input_ebs_csi_metadata_sources"></a> [ebs\_csi\_metadata\_sources](#input\_ebs\_csi\_metadata\_sources) | Comma-separated metadata sources for the aws-ebs-csi-driver node plugin, rendered as node.metadataSources. Defaults to kubernetes because every cluster runs at IMDS hop limit 1, where the driver's own default order (imds then kubernetes) always fails the imds attempt first and costs a 5s timeout plus one error log per node start (INFRA-7097). Set to null to send no configuration and let the driver use its own default, which is only meaningful on a cluster at hop limit 2 or higher. Valid tokens: imds, kubernetes, metadata-labeler. | `string` | `"kubernetes"` | no |
 | <a name="input_ecr_credentials_sync_enabled"></a> [ecr\_credentials\_sync\_enabled](#input\_ecr\_credentials\_sync\_enabled) | Whether to create a role and Pod Identity association for the argocd/ecr-credentials-sync CronJob so it can call ecr:GetAuthorizationToken without IMDS | `bool` | `true` | no |
