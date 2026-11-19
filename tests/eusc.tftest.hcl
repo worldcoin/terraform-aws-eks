@@ -93,6 +93,21 @@ run "reject_commercial_cache_in_eusc" {
   expect_failures = [var.dockerhub_pull_through_cache_repositories_arn]
 }
 
+run "reject_empty_explicit_access_policy" {
+  command = plan
+
+  variables {
+    access_entries = {
+      deploy = {
+        principal_arn = "arn:aws:iam::123456789012:role/deploy"
+        policy_arn    = ""
+      }
+    }
+  }
+
+  expect_failures = [var.access_entries]
+}
+
 run "require_explicit_eusc_audit_destination" {
   command = plan
   override_data {

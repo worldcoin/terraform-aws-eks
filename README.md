@@ -782,6 +782,7 @@ Generated IAM, KMS and EKS access ARNs use the current AWS partition. The
 namespace-admin access policy default is resolved in the resource so an
 omitted `access_entries[*].policy_arn` also works in `aws-eusc`. Explicit
 policy ARNs retain their existing behavior.
+An explicitly empty policy ARN is rejected and never selects the default.
 
 Commercial defaults are unchanged. Outside the commercial partition, provide
 same-partition DockerHub cache and Vector bucket ARNs. The cache policy does

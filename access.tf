@@ -12,7 +12,7 @@ resource "aws_eks_access_policy_association" "this" {
   for_each = { for k, v in var.access_entries : k => v }
 
   cluster_name  = aws_eks_cluster.this.id
-  policy_arn    = coalesce(each.value.policy_arn, "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy")
+  policy_arn    = each.value.policy_arn != null ? each.value.policy_arn : "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
   principal_arn = each.value.principal_arn
 
   access_scope {

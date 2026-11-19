@@ -556,6 +556,13 @@ variable "access_entries" {
     policy_arn              = optional(string)
   }))
   default = {}
+
+  validation {
+    condition = alltrue([
+      for entry in values(var.access_entries) : entry.policy_arn == null ? true : trimspace(entry.policy_arn) != ""
+    ])
+    error_message = "An explicit access_entries policy_arn must not be empty; omit it to use the partition's default namespace-admin policy."
+  }
 }
 
 variable "s3_mountpoint_csi_driver_enabled" {
