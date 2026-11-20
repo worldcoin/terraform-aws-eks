@@ -60,13 +60,13 @@ data "aws_iam_policy_document" "karpenter" {
     sid       = "PassNodeIAMRole"
     effect    = "Allow"
     actions   = ["iam:PassRole"]
-    resources = ["arn:aws:iam::${data.aws_caller_identity.account.id}:role/eks-node-${var.cluster_name}"]
+    resources = ["arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.account.id}:role/eks-node-${var.cluster_name}"]
   }
   statement {
     sid       = "EKSClusterEndpointLookup"
     effect    = "Allow"
     actions   = ["eks:DescribeCluster"]
-    resources = ["arn:aws:eks:${var.region}:${data.aws_caller_identity.account.id}:cluster/${var.cluster_name}"]
+    resources = ["arn:${data.aws_partition.current.partition}:eks:${var.region}:${data.aws_caller_identity.account.id}:cluster/${var.cluster_name}"]
   }
   statement {
     sid       = "AllowScopedInstanceProfileCreationActions"
@@ -178,7 +178,7 @@ data "aws_iam_policy_document" "karpenter" {
     sid       = "AllowScopedEC2SpotServiceLinkedRoleCreation"
     effect    = "Allow"
     actions   = ["iam:CreateServiceLinkedRole"]
-    resources = ["arn:aws:iam::${data.aws_caller_identity.account.id}:role/aws-service-role/spot.amazonaws.com/AWSServiceRoleForEC2Spot"]
+    resources = ["arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.account.id}:role/aws-service-role/spot.amazonaws.com/AWSServiceRoleForEC2Spot"]
     condition {
       test     = "StringEquals"
       variable = "iam:AWSServiceName"

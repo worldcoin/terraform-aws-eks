@@ -1,3 +1,4 @@
+data "aws_partition" "current" {}
 data "aws_caller_identity" "account" {}
 data "aws_vpc" "cluster_vpc" {
   id = var.vpc_config.vpc_id

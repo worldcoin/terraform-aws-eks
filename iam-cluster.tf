@@ -30,6 +30,6 @@ resource "aws_iam_role_policy_attachment" "cluster" {
     "AmazonEKSServicePolicy",
     "AmazonEKSVPCResourceController",
   ])
-  policy_arn = "arn:aws:iam::aws:policy/${each.value}"
+  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/${each.value}"
   role       = aws_iam_role.cluster.name
 }

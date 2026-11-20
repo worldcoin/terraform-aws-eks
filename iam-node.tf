@@ -49,7 +49,7 @@ resource "aws_iam_role_policy_attachment" "node" {
     "AmazonEBSCSIDriverPolicyV2",
   ])
 
-  policy_arn = "arn:aws:iam::aws:policy/${each.value}"
+  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/${each.value}"
   role       = aws_iam_role.node.name
 }
 

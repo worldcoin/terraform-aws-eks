@@ -73,7 +73,7 @@ data "aws_iam_policy_document" "kube_ops" {
       "secretsmanager:ListSecretVersionIds",
     ]
 
-    resources = ["arn:aws:secretsmanager:${var.region}:${data.aws_caller_identity.account.id}:secret:${var.environment}/*"]
+    resources = ["arn:${data.aws_partition.current.partition}:secretsmanager:${var.region}:${data.aws_caller_identity.account.id}:secret:${var.environment}/*"]
   }
 }
 

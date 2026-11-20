@@ -129,7 +129,7 @@ variable "extra_role_mapping" {
   validation {
     condition = alltrue([
       for role_mapping in var.extra_role_mapping : (
-        role_mapping.rolearn != "" ? can(regex("arn:aws:iam::[0-9]{12}:role/[a-zA-Z0-9+=,.@_/-]+$", role_mapping.rolearn)) : true
+        role_mapping.rolearn != "" ? can(regex("^arn:${data.aws_partition.current.partition}:iam::[0-9]{12}:role/[a-zA-Z0-9+=,.@_/-]+$", role_mapping.rolearn)) : true
       )
     ])
     error_message = "Invalid role mapping"
@@ -154,7 +154,7 @@ variable "internal_nlb_acm_arn" {
   # commented due to tests passed, but in module it is not working
   # regex match certificate arn
   # validation {
-  #   condition     = can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.internal_nlb_acm_arn))
+  #   condition     = can(regex("^arn:${data.aws_partition.current.partition}:acm:[a-z0-9-]+:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.internal_nlb_acm_arn))
   #   error_message = "Invalid ACM ARN"
   # }
 }
@@ -303,13 +303,13 @@ variable "vector_s3_bucket_arns" {
   default     = ["arn:aws:s3:::wld-log-archive"]
 
   validation {
-    condition     = alltrue([for arn in var.vector_s3_bucket_arns : can(regex("^arn:aws:s3:::[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$", arn))])
+    condition     = alltrue([for arn in var.vector_s3_bucket_arns : can(regex("^arn:${data.aws_partition.current.partition}:s3:::[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$", arn))])
     error_message = "Vector S3 bucket ARNs must be valid S3 bucket ARNs."
   }
 }
 
 variable "audit_logs" {
-  description = "Forward EKS control plane logs, including audit events, to a regional cross-account CloudWatch Logs destination by default. Null destination_arn selects the security-prod destination in var.region."
+  description = "Forward EKS control plane logs to a regional CloudWatch Logs destination. Null destination_arn selects the commercial security-prod default; other partitions require an explicit destination."
   type = object({
     enabled         = optional(bool, true)
     destination_arn = optional(string)
@@ -319,10 +319,15 @@ variable "audit_logs" {
 
   validation {
     condition = var.audit_logs.destination_arn == null ? true : can(regex(
-      "^arn:aws:logs:${var.region}:[0-9]{12}:destination:[A-Za-z0-9_./-]+$",
+      "^arn:${data.aws_partition.current.partition}:logs:${var.region}:[0-9]{12}:destination:[A-Za-z0-9_./-]+$",
       var.audit_logs.destination_arn
     ))
-    error_message = "audit_logs.destination_arn must be a CloudWatch Logs destination ARN in the cluster Region, or null for the security-prod default."
+    error_message = "audit_logs.destination_arn must be a CloudWatch Logs destination ARN in the cluster Region and partition, or null for the commercial security-prod default."
+  }
+
+  validation {
+    condition     = !var.audit_logs.enabled || data.aws_partition.current.partition == "aws" || var.audit_logs.destination_arn != null
+    error_message = "Set audit_logs.destination_arn explicitly outside the commercial AWS partition; the security-prod default is not reachable across partitions."
   }
 }
 
@@ -375,7 +380,7 @@ variable "argocd_role_arn" {
   type        = string
   default     = null
   validation {
-    condition     = var.argocd_role_arn != null ? can(regex("^arn:aws:iam::\\d{12}:role/[A-Za-z0-9\\-]+$", var.argocd_role_arn)) : true
+    condition     = var.argocd_role_arn != null ? can(regex("^arn:${data.aws_partition.current.partition}:iam::\\d{12}:role/[A-Za-z0-9\\-]+$", var.argocd_role_arn)) : true
     error_message = "Invalid IAM role ARN"
   }
 }
@@ -478,11 +483,11 @@ variable "drop_invalid_header_fields" {
 }
 
 variable "dockerhub_pull_through_cache_repositories_arn" {
-  description = "The ARN of the repositories to allow the EKS node group to pull images from the DockerHub pull-through cache."
+  description = "Repository ARN pattern for the DockerHub pull-through cache. The default targets the commercial internal-tools cache; other partitions must supply a cache in their own partition."
   type        = string
   default     = "arn:aws:ecr:us-east-1:507152310572:repository/docker-cache/*" # internal-tools docker-cache ECR repositories
   validation {
-    condition     = can(regex("arn:aws:ecr:[a-z][a-z]-\\w+-\\d{1}:\\d{12}:repository/.*", var.dockerhub_pull_through_cache_repositories_arn))
+    condition     = can(regex("^arn:${data.aws_partition.current.partition}:ecr:[a-z0-9-]+:[0-9]{12}:repository/.+$", var.dockerhub_pull_through_cache_repositories_arn))
     error_message = "Invalid ECR repository ARN"
   }
 }
@@ -548,9 +553,16 @@ variable "access_entries" {
     tags                    = optional(map(string), {})
     access_scope_type       = optional(string, "namespace")
     access_scope_namespaces = optional(list(string), [])
-    policy_arn              = optional(string, "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy")
+    policy_arn              = optional(string)
   }))
   default = {}
+
+  validation {
+    condition = alltrue([
+      for entry in values(var.access_entries) : entry.policy_arn == null ? true : trimspace(entry.policy_arn) != ""
+    ])
+    error_message = "An explicit access_entries policy_arn must not be empty; omit it to use the partition's default namespace-admin policy."
+  }
 }
 
 variable "s3_mountpoint_csi_driver_enabled" {
@@ -883,7 +895,7 @@ variable "external_cert_arn" {
   default     = null
   validation {
     condition = var.gateway_api_external_enabled ? (
-      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn))
+      can(regex("^arn:${data.aws_partition.current.partition}:acm:[a-z0-9-]+:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn))
     ) : true
     error_message = "A valid ACM certificate ARN must be set in external_cert_arn when an external load balancer is enabled"
   }
@@ -897,7 +909,7 @@ variable "internal_cert_arn" {
     condition = var.gateway_api_internal_enabled ? (
       var.internal_cert_arn != "" ||
       var.internal_nlb_acm_arn != "" ||
-      can(regex("^arn:aws:acm:[a-z][a-z]-[a-z]+-[1-9]:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn))
+      can(regex("^arn:${data.aws_partition.current.partition}:acm:[a-z0-9-]+:[0-9]{12}:certificate/[A-Za-z0-9\\-]+$", var.external_cert_arn))
     ) : true
     error_message = "A valid ACM certificate ARN must be set in internal_cert_arn, internal_nlb_acm_arn, or external_cert_arn when an internal load balancer is enabled"
   }

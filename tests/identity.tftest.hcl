@@ -1,4 +1,9 @@
 mock_provider "aws" {
+  mock_data "aws_partition" {
+    defaults = {
+      partition = "aws"
+    }
+  }
   mock_data "aws_caller_identity" {
     defaults = {
       account_id = "123456789012"
@@ -50,6 +55,28 @@ run "namespace_scoped_deploy_access" {
       aws_eks_pod_identity_association.this["di-migration-tee"].role_arn == "arn:aws:iam::123456789012:role/di-migration-tee-dev"
     )
     error_message = "Pod Identity must retain its service account, namespace and workload role."
+  }
+}
+
+run "eusc_namespace_scoped_deploy_access" {
+  command = plan
+
+  module {
+    source = "./modules/identity"
+  }
+
+  override_data {
+    target = data.aws_partition.current
+    values = { partition = "aws-eusc" }
+  }
+
+  assert {
+    condition = (
+      aws_eks_access_entry.this["di-migration-tee"].principal_arn == "arn:aws-eusc:iam::123456789012:role/oidc/github-deploy-di-migration-tee" &&
+      aws_eks_access_policy_association.this["di-migration-tee"].policy_arn == "arn:aws-eusc:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy" &&
+      aws_eks_pod_identity_association.this["di-migration-tee"].role_arn == "arn:aws-eusc:iam::123456789012:role/di-migration-tee-dev"
+    )
+    error_message = "Identity access and Pod Identity must use EUSC ARNs without changing namespace scope."
   }
 }
 
