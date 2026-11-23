@@ -368,7 +368,7 @@ variable "internal_tls_listener_version" {
 variable "external_tls_listener_version" {
   description = "Minimum TLS version for external Gateway ALB and NLB listeners."
   type        = string
-  default     = "1.2"
+  default     = "1.3"
   validation {
     condition     = var.external_tls_listener_version == "1.2" || var.external_tls_listener_version == "1.3"
     error_message = "Only TLS >= 1.2 or 1.3 are supported"

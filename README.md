@@ -588,9 +588,10 @@ For clusters currently using the `gateway-api-crds`, `gateway-api-external`, and
 
 #### Gateway TLS and HSTS defaults
 
-External Gateway ALB and NLB listeners allow TLS 1.2 and TLS 1.3 with
-`ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09`. Set
-`external_tls_listener_version = "1.3"` to retain a TLS 1.3-only minimum.
+External Gateway ALB and NLB listeners retain their TLS 1.3-only default with
+`ELBSecurityPolicy-TLS13-1-3-PQ-2025-09`. Set
+`external_tls_listener_version = "1.2"` to allow TLS 1.2 and TLS 1.3 with
+`ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09`.
 Internal listeners retain their TLS 1.3 minimum; both TLS version selections
 now use hybrid PQ policies. PQ-capable TLS 1.3 clients negotiate hybrid ML-KEM;
 other supported clients use classical key exchange.
@@ -608,7 +609,7 @@ when using them.
 
 Adopt a released module version in staging first and verify PQ/classical
 handshakes, HSTS, and application traffic before production. Existing consumers
-with no external TLS version override will start accepting TLS 1.2 on upgrade.
+with no external TLS version override retain their TLS 1.3 minimum.
 Existing explicit TLS 1.2 configurations gain TLS 1.3 and PQ support but lose
 legacy RSA/CBC cipher suites under the restricted policy. No consumer changes
 until its module pin is upgraded. ALB HTTPS and NLB TLS backend policy selection
@@ -1089,7 +1090,7 @@ audiences are not API hostnames and must not be rewritten from `.com` to `.eu`.
 | <a name="input_external_alb_hsts_header_value"></a> [external\_alb\_hsts\_header\_value](#input\_external\_alb\_hsts\_header\_value) | HSTS header for external Gateway ALBs. Use an empty string to disable ALB insertion or max-age=0 to clear returning clients' cached HSTS. Full listener overrides take precedence. | `string` | `"max-age=31536000"` | no |
 | <a name="input_external_cert_arn"></a> [external\_cert\_arn](#input\_external\_cert\_arn) | ACM certificate ARN for external load balancers. | `string` | `null` | no |
 | <a name="input_external_check_locations"></a> [external\_check\_locations](#input\_external\_check\_locations) | List of DD locations to check cluster availability from | `list(string)` | <pre>[<br/>  "azure:eastus",<br/>  "aws:eu-central-1",<br/>  "gcp:asia-northeast1"<br/>]</pre> | no |
-| <a name="input_external_tls_listener_version"></a> [external\_tls\_listener\_version](#input\_external\_tls\_listener\_version) | Minimum TLS version for external Gateway ALB and NLB listeners. | `string` | `"1.2"` | no |
+| <a name="input_external_tls_listener_version"></a> [external\_tls\_listener\_version](#input\_external\_tls\_listener\_version) | Minimum TLS version for external Gateway ALB and NLB listeners. | `string` | `"1.3"` | no |
 | <a name="input_extra_role_mapping"></a> [extra\_role\_mapping](#input\_extra\_role\_mapping) | Extra role mappings to add to the aws-auth configmap. | <pre>list(object({<br/>    rolearn  = string<br/>    username = string<br/>    groups   = list(string)<br/>  }))</pre> | `[]` | no |
 | <a name="input_gateway_api_crds_enabled"></a> [gateway\_api\_crds\_enabled](#input\_gateway\_api\_crds\_enabled) | Install Gateway API and AWS LBC CRDs. Must be enabled before gateway\_api\_external\_enabled or gateway\_api\_internal\_enabled. | `bool` | `false` | no |
 | <a name="input_gateway_api_ext_alb_extra_certificates"></a> [gateway\_api\_ext\_alb\_extra\_certificates](#input\_gateway\_api\_ext\_alb\_extra\_certificates) | Additional ACM certificate ARNs to attach as SNI certificates on the external ALB HTTPS listener, alongside the default certificate. Lets callers add SNI certs without restating listener defaults. Ignored when gateway\_api\_ext\_alb\_listener\_configs is set (that override wins). | `list(string)` | `[]` | no |

@@ -51,8 +51,8 @@ run "gateway_api_tls_defaults" {
   command = plan
 
   assert {
-    condition     = var.external_tls_listener_version == "1.2"
-    error_message = "External TLS listener version should default to 1.2"
+    condition     = var.external_tls_listener_version == "1.3"
+    error_message = "External TLS listener version should default to 1.3"
   }
 
   assert {
@@ -763,10 +763,10 @@ run "gateway_tls_and_hsts_defaults" {
 
   assert {
     condition = (
-      local.gateway_api_ext_alb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09" &&
-      local.gateway_api_ext_nlb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
+      local.gateway_api_ext_alb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09" &&
+      local.gateway_api_ext_nlb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09"
     )
-    error_message = "External listeners must allow TLS 1.2 and TLS 1.3 with hybrid PQ support."
+    error_message = "External listeners must preserve the TLS 1.3-only default with hybrid PQ support."
   }
 
   assert {
@@ -789,17 +789,17 @@ run "gateway_tls_and_hsts_defaults" {
   }
 }
 
-run "gateway_external_tls13_only" {
+run "gateway_external_tls12_compatibility" {
   command = plan
   variables {
-    external_tls_listener_version = "1.3"
+    external_tls_listener_version = "1.2"
   }
   assert {
     condition = (
-      local.gateway_api_ext_alb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09" &&
-      local.gateway_api_ext_nlb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09"
+      local.gateway_api_ext_alb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09" &&
+      local.gateway_api_ext_nlb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
     )
-    error_message = "Explicit TLS 1.3 must remain strict on both external listener types."
+    error_message = "Explicit TLS 1.2 must allow TLS 1.2 and TLS 1.3 with PQ on both external listener types."
   }
 }
 
