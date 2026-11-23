@@ -228,6 +228,32 @@ Changing only these sizes updates the existing node group. Increasing its size
 adds capacity without replacing the existing nodes, provided the reviewed plan
 contains no other node group or launch template changes.
 
+To allow several equivalent instance types, use a unique node group name prefix:
+
+```hcl
+eks_node_group = {
+  arch         = "amd64"
+  name_prefix  = "eks-system-"
+  types        = ["m6a.large", "m6i.large", "m7a.large", "m7i.large"]
+  min_size     = 3
+  desired_size = 3
+  max_size     = 3
+}
+```
+
+Changing instance types replaces the managed node group. Setting `name_prefix`
+(1-37 characters, starting with a letter or digit) lets Terraform create a uniquely
+named replacement before deleting the old group. Review the plan for `+/-`
+replacement ordering and allow capacity for both groups during the transition.
+Verify node readiness and workload health after each cluster before proceeding.
+If creation fails, keep the old group and diagnose the failure before replanning.
+
+Omitting `name_prefix` or setting it to null preserves the existing fixed name.
+Replacements now always create first; a fixed-name replacement will fail with a
+name conflict rather than delete the current group. Opt into a prefix before
+changing instance types or another setting that requires replacement. Switching
+back to fixed naming also replaces the group; prefer a forward fix after rollout.
+
 ### Internal Load Balancer
 
 Example of Internal load balancer setup
@@ -1050,7 +1076,7 @@ audiences are not API hostnames and must not be rewritten from `.com` to `.eu`.
 | <a name="input_efs_csi_driver_enabled"></a> [efs\_csi\_driver\_enabled](#input\_efs\_csi\_driver\_enabled) | Whether to enable the EFS CSI driver (IAM Role & StorageClass). | `bool` | `false` | no |
 | <a name="input_efs_provisioned_throughput_in_mibps"></a> [efs\_provisioned\_throughput\_in\_mibps](#input\_efs\_provisioned\_throughput\_in\_mibps) | Provisioned EFS throughput in MiB/s; required only in provisioned mode. | `number` | `null` | no |
 | <a name="input_efs_throughput_mode"></a> [efs\_throughput\_mode](#input\_efs\_throughput\_mode) | Throughput mode for the EKS EFS filesystem. | `string` | `"bursting"` | no |
-| <a name="input_eks_node_group"></a> [eks\_node\_group](#input\_eks\_node\_group) | Configuration for EKS node group | <pre>object({<br/>    arch         = string<br/>    types        = list(string)<br/>    disk         = optional(number, 100)<br/>    dns          = optional(string, "172.20.0.10")<br/>    min_size     = optional(number, 1)<br/>    desired_size = optional(number, 2)<br/>    max_size     = optional(number, 2)<br/>  })</pre> | `null` | no |
+| <a name="input_eks_node_group"></a> [eks\_node\_group](#input\_eks\_node\_group) | Configuration for EKS node group | <pre>object({<br/>    arch         = string<br/>    types        = list(string)<br/>    name_prefix  = optional(string)<br/>    disk         = optional(number, 100)<br/>    dns          = optional(string, "172.20.0.10")<br/>    min_size     = optional(number, 1)<br/>    desired_size = optional(number, 2)<br/>    max_size     = optional(number, 2)<br/>  })</pre> | `null` | no |
 | <a name="input_enable_aws_load_balancer_controller_explicit_deny"></a> [enable\_aws\_load\_balancer\_controller\_explicit\_deny](#input\_enable\_aws\_load\_balancer\_controller\_explicit\_deny) | Safety switch: set to false to disable creating the aws-load-balancer-controller explicit deny policy and attachment. | `bool` | `true` | no |
 | <a name="input_enable_deletion_protection"></a> [enable\_deletion\_protection](#input\_enable\_deletion\_protection) | Whether to enable deletion protection on the Gateway API NLB/ALB load balancers. Set to false before destroying the cluster. | `bool` | `true` | no |
 | <a name="input_enclave_tracks"></a> [enclave\_tracks](#input\_enclave\_tracks) | Additional enclave tracks for multi-version deployments. Key is used as track identifier. | <pre>map(object({<br/>    autoscaling_group = optional(object({<br/>      size     = optional(number, 1)<br/>      min_size = optional(number, 0)<br/>      max_size = optional(number, 10)<br/>    }), {})<br/>    instance_type  = optional(string)<br/>    cpu_allocation = optional(string)<br/>    # Cluster Autoscaler's advertised hugepage capacity in MiB. Null preserves<br/>    # the legacy behavior of deriving it from memory_allocation.<br/>    hugepages         = optional(string)<br/>    memory_allocation = optional(string)<br/>    arch              = optional(string, "amd64")<br/>  }))</pre> | `{}` | no |

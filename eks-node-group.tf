@@ -52,10 +52,11 @@ resource "aws_launch_template" "al2023" {
 resource "aws_eks_node_group" "al2023" {
   count = var.eks_node_group != null ? 1 : 0
 
-  node_group_name = trimsuffix(substr(local.al2023_name, 0, 63), "-")
-  node_role_arn   = aws_iam_role.node.arn
-  cluster_name    = aws_eks_cluster.this.name
-  subnet_ids      = var.use_private_subnets ? var.vpc_config.private_subnets : var.vpc_config.public_subnets
+  node_group_name        = var.eks_node_group.name_prefix == null ? trimsuffix(substr(local.al2023_name, 0, 63), "-") : null
+  node_group_name_prefix = var.eks_node_group.name_prefix
+  node_role_arn          = aws_iam_role.node.arn
+  cluster_name           = aws_eks_cluster.this.name
+  subnet_ids             = var.use_private_subnets ? var.vpc_config.private_subnets : var.vpc_config.public_subnets
 
 
   # https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#API_Nodegroup_Contents
@@ -74,6 +75,10 @@ resource "aws_eks_node_group" "al2023" {
   launch_template {
     id      = aws_launch_template.al2023[0].id
     version = try(aws_launch_template.al2023[0].latest_version, "$Latest")
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   tags = {

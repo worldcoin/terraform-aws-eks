@@ -813,6 +813,7 @@ variable "eks_node_group" {
   type = object({
     arch         = string
     types        = list(string)
+    name_prefix  = optional(string)
     disk         = optional(number, 100)
     dns          = optional(string, "172.20.0.10")
     min_size     = optional(number, 1)
@@ -821,6 +822,14 @@ variable "eks_node_group" {
   })
 
   default = null
+
+  validation {
+    condition = var.eks_node_group == null ? true : (
+      var.eks_node_group.name_prefix == null ? true :
+      can(regex("^[A-Za-z0-9][A-Za-z0-9_-]{0,36}$", var.eks_node_group.name_prefix))
+    )
+    error_message = "Node group name_prefix must be 1-37 letters, digits, hyphens or underscores, starting with a letter or digit."
+  }
 
   validation {
     condition = var.eks_node_group == null ? true : (
