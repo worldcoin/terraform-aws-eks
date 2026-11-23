@@ -66,9 +66,9 @@ resource "aws_eks_node_group" "al2023" {
   instance_types = var.eks_node_group.types
 
   scaling_config {
-    desired_size = 2
-    min_size     = 1
-    max_size     = 2
+    desired_size = var.eks_node_group.desired_size
+    min_size     = var.eks_node_group.min_size
+    max_size     = var.eks_node_group.max_size
   }
 
   launch_template {
