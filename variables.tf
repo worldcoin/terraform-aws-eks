@@ -811,13 +811,29 @@ variable "aws_load_balancer_iam_role_enabled" {
 variable "eks_node_group" {
   description = "Configuration for EKS node group"
   type = object({
-    arch  = string
-    types = list(string)
-    disk  = optional(number, 100)
-    dns   = optional(string, "172.20.0.10")
+    arch         = string
+    types        = list(string)
+    disk         = optional(number, 100)
+    dns          = optional(string, "172.20.0.10")
+    min_size     = optional(number, 1)
+    desired_size = optional(number, 2)
+    max_size     = optional(number, 2)
   })
 
   default = null
+
+  validation {
+    condition = var.eks_node_group == null ? true : (
+      alltrue([
+        for size in [var.eks_node_group.min_size, var.eks_node_group.desired_size, var.eks_node_group.max_size] :
+        size >= 0 && size == floor(size)
+      ]) &&
+      var.eks_node_group.max_size >= 1 &&
+      var.eks_node_group.min_size <= var.eks_node_group.desired_size &&
+      var.eks_node_group.desired_size <= var.eks_node_group.max_size
+    )
+    error_message = "Node group sizes must be non-negative integers with min_size <= desired_size <= max_size and max_size >= 1."
+  }
 }
 
 variable "aws_autoscaling_group_enabled" {
