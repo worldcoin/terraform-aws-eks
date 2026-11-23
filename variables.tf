@@ -533,6 +533,11 @@ variable "bootstrap_cluster_creator_admin_permissions" {
   type        = bool
   default     = true
   nullable    = false
+
+  validation {
+    condition     = var.bootstrap_cluster_creator_admin_permissions || var.authentication_mode != "CONFIG_MAP"
+    error_message = "Disabling cluster-creator admin bootstrap requires API or API_AND_CONFIG_MAP authentication."
+  }
 }
 
 variable "authentication_mode" {

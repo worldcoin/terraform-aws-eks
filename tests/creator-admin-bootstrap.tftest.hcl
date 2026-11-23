@@ -62,3 +62,41 @@ run "disable_bootstrap_preserves_explicit_admin" {
     error_message = "Disabling bootstrap must preserve explicitly managed administrator access."
   }
 }
+
+run "config_map_keeps_creator_admin_bootstrap" {
+  command = plan
+
+  variables {
+    authentication_mode = "CONFIG_MAP"
+  }
+
+  assert {
+    condition     = aws_eks_cluster.this.access_config[0].bootstrap_cluster_creator_admin_permissions
+    error_message = "CONFIG_MAP consumers must retain creator-admin bootstrap."
+  }
+}
+
+run "reject_disabled_bootstrap_without_access_api" {
+  command = plan
+
+  variables {
+    authentication_mode                         = "CONFIG_MAP"
+    bootstrap_cluster_creator_admin_permissions = false
+  }
+
+  expect_failures = [var.bootstrap_cluster_creator_admin_permissions]
+}
+
+run "api_only_can_disable_creator_bootstrap" {
+  command = plan
+
+  variables {
+    authentication_mode                         = "API"
+    bootstrap_cluster_creator_admin_permissions = false
+  }
+
+  assert {
+    condition     = !aws_eks_cluster.this.access_config[0].bootstrap_cluster_creator_admin_permissions
+    error_message = "API-only clusters must support explicit administrator access without creator bootstrap."
+  }
+}
