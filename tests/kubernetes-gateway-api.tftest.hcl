@@ -51,8 +51,8 @@ run "gateway_api_tls_defaults" {
   command = plan
 
   assert {
-    condition     = var.external_tls_listener_version == "1.3"
-    error_message = "External TLS listener version should default to 1.3"
+    condition     = var.external_tls_listener_version == "1.2"
+    error_message = "External TLS listener version should default to 1.2"
   }
 
   assert {
@@ -581,13 +581,13 @@ run "gateway_api_ssl_policy_mapping" {
   command = plan
 
   assert {
-    condition     = local.gateway_api_ssl_policies["1.3"] == "ELBSecurityPolicy-TLS13-1-3-2021-06"
-    error_message = "TLS 1.3 should map to ELBSecurityPolicy-TLS13-1-3-2021-06"
+    condition     = local.gateway_api_ssl_policies["1.3"] == "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09"
+    error_message = "TLS 1.3 should map to ELBSecurityPolicy-TLS13-1-3-PQ-2025-09"
   }
 
   assert {
-    condition     = local.gateway_api_ssl_policies["1.2"] == "ELBSecurityPolicy-TLS-1-2-2017-01"
-    error_message = "TLS 1.2 should map to ELBSecurityPolicy-TLS-1-2-2017-01"
+    condition     = local.gateway_api_ssl_policies["1.2"] == "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
+    error_message = "TLS 1.2 should map to ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
   }
 }
 
@@ -755,5 +755,100 @@ run "gateway_api_alb_sg_rules_accept_ipv6_only_overrides" {
   assert {
     condition     = one([for rule in local.gateway_api_external_alb_sg_rules : rule if rule.description == "Allow external IPv6 client"]).ipv6_cidr_blocks == tolist(["2001:db8:1234::/48"]) && one([for rule in local.gateway_api_internal_alb_sg_rules : rule if rule.description == "Allow internal IPv6 client"]).ipv6_cidr_blocks == tolist(["2001:db8:5678::/48"])
     error_message = "Gateway API ALB security group overrides should accept IPv6-only CIDR sources"
+  }
+}
+
+run "gateway_tls_and_hsts_defaults" {
+  command = plan
+
+  assert {
+    condition = (
+      local.gateway_api_ext_alb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09" &&
+      local.gateway_api_ext_nlb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
+    )
+    error_message = "External listeners must allow TLS 1.2 and TLS 1.3 with hybrid PQ support."
+  }
+
+  assert {
+    condition = (
+      local.gateway_api_int_alb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09" &&
+      local.gateway_api_int_nlb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09"
+    )
+    error_message = "Internal listeners must preserve their TLS 1.3 minimum with PQ support."
+  }
+
+  assert {
+    condition = (
+      local.gateway_api_ext_alb_listener_configs[0].listenerAttributes[0].key == "routing.http.response.strict_transport_security.header_value" &&
+      local.gateway_api_ext_alb_listener_configs[0].listenerAttributes[0].value == "max-age=31536000" &&
+      !contains(keys(local.gateway_api_int_alb_listener_configs[0]), "listenerAttributes") &&
+      !contains(keys(local.gateway_api_ext_nlb_listener_configs[0]), "listenerAttributes") &&
+      !contains(keys(local.gateway_api_int_nlb_listener_configs[0]), "listenerAttributes")
+    )
+    error_message = "Only external ALBs should receive one-year HSTS by default."
+  }
+}
+
+run "gateway_external_tls13_only" {
+  command = plan
+  variables {
+    external_tls_listener_version = "1.3"
+  }
+  assert {
+    condition = (
+      local.gateway_api_ext_alb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09" &&
+      local.gateway_api_ext_nlb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09"
+    )
+    error_message = "Explicit TLS 1.3 must remain strict on both external listener types."
+  }
+}
+
+run "gateway_hsts_custom" {
+  command = plan
+  variables {
+    external_alb_hsts_header_value = "max-age=300"
+  }
+  assert {
+    condition     = local.gateway_api_ext_alb_listener_configs[0].listenerAttributes[0].value == "max-age=300"
+    error_message = "Custom HSTS must reach the listener configuration."
+  }
+}
+
+run "gateway_hsts_disabled" {
+  command = plan
+  variables {
+    external_alb_hsts_header_value = ""
+  }
+  assert {
+    condition     = local.gateway_api_ext_alb_listener_configs[0].listenerAttributes[0].value == ""
+    error_message = "Disabling HSTS must send an explicit empty value so the controller resets it."
+  }
+}
+
+run "gateway_hsts_null_uses_default" {
+  command = plan
+  variables {
+    external_alb_hsts_header_value = null
+  }
+  assert {
+    condition     = local.gateway_api_ext_alb_listener_configs[0].listenerAttributes[0].value == "max-age=31536000"
+    error_message = "Null must use the non-null HSTS default."
+  }
+}
+
+run "gateway_listener_override_retains_control" {
+  command = plan
+  variables {
+    gateway_api_ext_alb_listener_configs = [{
+      protocolPort = "HTTPS:443"
+      sslPolicy    = "ELBSecurityPolicy-TLS13-1-3-2021-06"
+    }]
+  }
+  assert {
+    condition = (
+      local.gateway_api_ext_alb_listener_configs[0].sslPolicy == "ELBSecurityPolicy-TLS13-1-3-2021-06" &&
+      !contains(keys(local.gateway_api_ext_alb_listener_configs[0]), "listenerAttributes")
+    )
+    error_message = "Full listener overrides must continue to replace defaults, including HSTS."
   }
 }

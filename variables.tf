@@ -356,7 +356,7 @@ variable "vpc_cni_warm_eni_target" {
 }
 
 variable "internal_tls_listener_version" {
-  description = "The version of the TLS listener to use for internal NLB."
+  description = "Minimum TLS version for internal Gateway ALB and NLB listeners."
   type        = string
   default     = "1.3"
   validation {
@@ -366,13 +366,20 @@ variable "internal_tls_listener_version" {
 }
 
 variable "external_tls_listener_version" {
-  description = "The version of the TLS listener to use for external ALB."
+  description = "Minimum TLS version for external Gateway ALB and NLB listeners."
   type        = string
-  default     = "1.3"
+  default     = "1.2"
   validation {
     condition     = var.external_tls_listener_version == "1.2" || var.external_tls_listener_version == "1.3"
     error_message = "Only TLS >= 1.2 or 1.3 are supported"
   }
+}
+
+variable "external_alb_hsts_header_value" {
+  description = "HSTS header for external Gateway ALBs. Use an empty string to disable ALB insertion or max-age=0 to clear returning clients' cached HSTS. Full listener overrides take precedence."
+  type        = string
+  default     = "max-age=31536000"
+  nullable    = false
 }
 
 variable "argocd_role_arn" {

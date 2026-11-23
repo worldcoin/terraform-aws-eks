@@ -586,6 +586,34 @@ For clusters currently using the `gateway-api-crds`, `gateway-api-external`, and
 4. Remove the gateway-api-* Helm charts from ArgoCD
 5. Delete the import file
 
+#### Gateway TLS and HSTS defaults
+
+External Gateway ALB and NLB listeners allow TLS 1.2 and TLS 1.3 with
+`ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09`. Set
+`external_tls_listener_version = "1.3"` to retain a TLS 1.3-only minimum.
+Internal listeners retain their TLS 1.3 minimum; both TLS version selections
+now use hybrid PQ policies. PQ-capable TLS 1.3 clients negotiate hybrid ML-KEM;
+other supported clients use classical key exchange.
+
+External ALBs insert `Strict-Transport-Security: max-age=31536000` on all
+responses, replacing application-supplied HSTS. There is no `includeSubDomains`
+or preload directive. Use `external_alb_hsts_header_value` to customize it;
+`null` inherits the default and `""` explicitly resets ALB insertion. To clear
+cached HSTS for returning clients, first serve `"max-age=0"`. Reset insertion
+with this version before downgrading; simply removing the attribute or reverting
+the module version can leave it active. Internal ALBs
+and NLBs do not receive this header. Full listener configuration overrides
+continue to replace the defaults, so include the desired policy and headers
+when using them.
+
+Adopt a released module version in staging first and verify PQ/classical
+handshakes, HSTS, and application traffic before production. Existing consumers
+with no external TLS version override will start accepting TLS 1.2 on upgrade.
+Existing explicit TLS 1.2 configurations gain TLS 1.3 and PQ support but lose
+legacy RSA/CBC cipher suites under the restricted policy. No consumer changes
+until its module pin is upgraded. ALB HTTPS and NLB TLS backend policy selection
+also follows the frontend PQ policy; check encrypted-target compatibility.
+
 #### External Gateway ALB egress
 
 `gateway_api_external_alb_egress_sg_rules` replaces the internet SG's outbound
@@ -1058,9 +1086,10 @@ audiences are not API hostnames and must not be rewritten from `.com` to `.eu`.
 | <a name="input_enclaves_instance_type"></a> [enclaves\_instance\_type](#input\_enclaves\_instance\_type) | Instance type for Nitro Enclaves | `string` | `"m7a.2xlarge"` | no |
 | <a name="input_enclaves_memory_allocation"></a> [enclaves\_memory\_allocation](#input\_enclaves\_memory\_allocation) | Memory in MiB to allocate for Nitro Enclaves per node | `string` | `"4096"` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment of cluster | `string` | n/a | yes |
+| <a name="input_external_alb_hsts_header_value"></a> [external\_alb\_hsts\_header\_value](#input\_external\_alb\_hsts\_header\_value) | HSTS header for external Gateway ALBs. Use an empty string to disable ALB insertion or max-age=0 to clear returning clients' cached HSTS. Full listener overrides take precedence. | `string` | `"max-age=31536000"` | no |
 | <a name="input_external_cert_arn"></a> [external\_cert\_arn](#input\_external\_cert\_arn) | ACM certificate ARN for external load balancers. | `string` | `null` | no |
 | <a name="input_external_check_locations"></a> [external\_check\_locations](#input\_external\_check\_locations) | List of DD locations to check cluster availability from | `list(string)` | <pre>[<br/>  "azure:eastus",<br/>  "aws:eu-central-1",<br/>  "gcp:asia-northeast1"<br/>]</pre> | no |
-| <a name="input_external_tls_listener_version"></a> [external\_tls\_listener\_version](#input\_external\_tls\_listener\_version) | The version of the TLS listener to use for external ALB. | `string` | `"1.3"` | no |
+| <a name="input_external_tls_listener_version"></a> [external\_tls\_listener\_version](#input\_external\_tls\_listener\_version) | Minimum TLS version for external Gateway ALB and NLB listeners. | `string` | `"1.2"` | no |
 | <a name="input_extra_role_mapping"></a> [extra\_role\_mapping](#input\_extra\_role\_mapping) | Extra role mappings to add to the aws-auth configmap. | <pre>list(object({<br/>    rolearn  = string<br/>    username = string<br/>    groups   = list(string)<br/>  }))</pre> | `[]` | no |
 | <a name="input_gateway_api_crds_enabled"></a> [gateway\_api\_crds\_enabled](#input\_gateway\_api\_crds\_enabled) | Install Gateway API and AWS LBC CRDs. Must be enabled before gateway\_api\_external\_enabled or gateway\_api\_internal\_enabled. | `bool` | `false` | no |
 | <a name="input_gateway_api_ext_alb_extra_certificates"></a> [gateway\_api\_ext\_alb\_extra\_certificates](#input\_gateway\_api\_ext\_alb\_extra\_certificates) | Additional ACM certificate ARNs to attach as SNI certificates on the external ALB HTTPS listener, alongside the default certificate. Lets callers add SNI certs without restating listener defaults. Ignored when gateway\_api\_ext\_alb\_listener\_configs is set (that override wins). | `list(string)` | `[]` | no |
@@ -1091,7 +1120,7 @@ audiences are not API hostnames and must not be rewritten from `.com` to `.eu`.
 | <a name="input_http_put_response_hop_limit"></a> [http\_put\_response\_hop\_limit](#input\_http\_put\_response\_hop\_limit) | IP TTL applied to IMDSv2 token responses, set as metadata\_options.http\_put\_response\_hop\_limit on every node launch template. Must be between 1 and 64. At 1 the response stays in the host network namespace, so a Pod one hop away cannot reach 169.254.169.254 and assume the node IAM role. Pods with hostNetwork: true share that namespace and are unaffected. | `number` | `1` | no |
 | <a name="input_internal_cert_arn"></a> [internal\_cert\_arn](#input\_internal\_cert\_arn) | ACM certificate ARN for internal load balancers (falls back to external\_cert\_arn). If empty, internal\_nlb\_acm\_arn is used for backwards compatibility. | `string` | `""` | no |
 | <a name="input_internal_nlb_acm_arn"></a> [internal\_nlb\_acm\_arn](#input\_internal\_nlb\_acm\_arn) | (Deprecated: use internal\_cert\_arn) The ARN of the certificate to use for internal NLB. | `string` | `""` | no |
-| <a name="input_internal_tls_listener_version"></a> [internal\_tls\_listener\_version](#input\_internal\_tls\_listener\_version) | The version of the TLS listener to use for internal NLB. | `string` | `"1.3"` | no |
+| <a name="input_internal_tls_listener_version"></a> [internal\_tls\_listener\_version](#input\_internal\_tls\_listener\_version) | Minimum TLS version for internal Gateway ALB and NLB listeners. | `string` | `"1.3"` | no |
 | <a name="input_kube_ops_enabled"></a> [kube\_ops\_enabled](#input\_kube\_ops\_enabled) | Whether to create a role and association for kube-ops | `bool` | `true` | no |
 | <a name="input_kubelet_extra_args"></a> [kubelet\_extra\_args](#input\_kubelet\_extra\_args) | kubelet extra args to pass to the node group | `string` | `"--register-with-taints=critical:NoExecute"` | no |
 | <a name="input_kubernetes_provider_enabled"></a> [kubernetes\_provider\_enabled](#input\_kubernetes\_provider\_enabled) | Create Kubernetes resources. Set to false for initial cluster creation and before cluster removal. | `bool` | `true` | no |

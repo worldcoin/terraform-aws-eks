@@ -1,7 +1,7 @@
 locals {
   gateway_api_ssl_policies = {
-    "1.3" = "ELBSecurityPolicy-TLS13-1-3-2021-06"
-    "1.2" = "ELBSecurityPolicy-TLS-1-2-2017-01"
+    "1.3" = "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09"
+    "1.2" = "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
   }
 
   _gateway_api_crd_docs = [
@@ -51,6 +51,10 @@ locals {
     defaultCertificate   = local.effective_external_cert_arn
     certificates         = length(var.gateway_api_ext_alb_extra_certificates) > 0 ? var.gateway_api_ext_alb_extra_certificates : null
     mutualAuthentication = local._ext_alb_mtls_config
+    listenerAttributes = [{
+      key   = "routing.http.response.strict_transport_security.header_value"
+      value = var.external_alb_hsts_header_value
+    }]
   }]
 
   _default_ext_nlb_listener_configs = [{
