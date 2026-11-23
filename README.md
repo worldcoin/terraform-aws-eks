@@ -588,32 +588,16 @@ For clusters currently using the `gateway-api-crds`, `gateway-api-external`, and
 
 #### Gateway TLS and HSTS defaults
 
-External Gateway ALB and NLB listeners retain their TLS 1.3-only default with
-`ELBSecurityPolicy-TLS13-1-3-PQ-2025-09`. Set
-`external_tls_listener_version = "1.2"` to allow TLS 1.2 and TLS 1.3 with
-`ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09`.
-Internal listeners retain their TLS 1.3 minimum; both TLS version selections
-now use hybrid PQ policies. PQ-capable TLS 1.3 clients negotiate hybrid ML-KEM;
-other supported clients use classical key exchange.
+`external_tls_listener_version` and `internal_tls_listener_version`:
 
-External ALBs insert `Strict-Transport-Security: max-age=31536000` on all
-responses, replacing application-supplied HSTS. There is no `includeSubDomains`
-or preload directive. Use `external_alb_hsts_header_value` to customize it;
-`null` inherits the default and `""` explicitly resets ALB insertion. To clear
-cached HSTS for returning clients, first serve `"max-age=0"`. Reset insertion
-with this version before downgrading; simply removing the attribute or reverting
-the module version can leave it active. Internal ALBs
-and NLBs do not receive this header. Full listener configuration overrides
-continue to replace the defaults, so include the desired policy and headers
-when using them.
+| Value | Security policy |
+|-------|-----------------|
+| `"1.3"` (default) | `ELBSecurityPolicy-TLS13-1-3-PQ-2025-09` |
+| `"1.2"` | `ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09` |
 
-Adopt a released module version in staging first and verify PQ/classical
-handshakes, HSTS, and application traffic before production. Existing consumers
-with no external TLS version override retain their TLS 1.3 minimum.
-Existing explicit TLS 1.2 configurations gain TLS 1.3 and PQ support but lose
-legacy RSA/CBC cipher suites under the restricted policy. No consumer changes
-until its module pin is upgraded. ALB HTTPS and NLB TLS backend policy selection
-also follows the frontend PQ policy; check encrypted-target compatibility.
+- External ALBs replace target HSTS with `max-age=31536000`; customize with `external_alb_hsts_header_value`.
+- `null` uses the default; `""` resets insertion. Serve `"max-age=0"` to clear returning clients' cached HSTS before resetting or downgrading.
+- Internal ALBs and NLBs omit HSTS. Full listener overrides replace these defaults.
 
 #### External Gateway ALB egress
 
