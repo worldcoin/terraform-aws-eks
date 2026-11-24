@@ -99,7 +99,7 @@ data "aws_iam_policy_document" "kube_ops_app_config_read" {
     effect  = "Allow"
     actions = ["ssm:GetParameters"]
     resources = [
-      "arn:${data.aws_partition.current.partition}:ssm:${var.region}:${data.aws_caller_identity.account.id}:parameter/app-config/${var.environment}/*",
+      "arn:${data.aws_partition.current.partition}:ssm:${var.region}:${data.aws_caller_identity.account.account_id}:parameter/app-config/${var.environment}/*",
     ]
   }
 }

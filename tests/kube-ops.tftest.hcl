@@ -12,6 +12,14 @@ mock_provider "kubernetes" {
 run "kube_ops_app_config_read_policy" {
   command = plan
 
+  override_resource {
+    target          = aws_iam_policy.kube_ops_app_config_read[0]
+    override_during = plan
+    values = {
+      arn = "arn:aws:iam::123456789012:policy/system/kube-ops-eks-test-app-config-read"
+    }
+  }
+
   assert {
     condition = (
       aws_iam_policy.kube_ops_app_config_read[0].name == "kube-ops-eks-test-app-config-read" &&
