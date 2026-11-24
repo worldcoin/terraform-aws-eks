@@ -32,6 +32,24 @@
 This module is used to create an EKS cluster on AWS with the support of the `vpc`
 and `sso-roles` modules.
 
+### ConfigMaps
+
+Use `config_maps` to manage non-secret configuration in existing namespaces using
+the module's Kubernetes provider. The map keys are Terraform instance identifiers;
+keep them stable. Values are stored in Terraform state. Namespaces must already
+exist. Disabling `kubernetes_provider_enabled` removes these resources from the
+configuration, so review the resulting plan before applying it.
+
+```hcl
+config_maps = {
+  signup = {
+    name      = "application-config"
+    namespace = "signup-service-app"
+    data      = { FEATURE_ENABLED = "true" }
+  }
+}
+```
+
 ## How to release
 
 New releases are created automagically by [Release Drafter GH action](https://github.com/worldcoin/terraform-aws-eks/actions/workflows/release.yml).
@@ -970,6 +988,7 @@ audiences are not API hostnames and must not be rewritten from `.com` to `.eu`.
 | [datadog_synthetics_test.cluster_monitoring](https://registry.terraform.io/providers/DataDog/datadog/latest/docs/resources/synthetics_test) | resource |
 | [kubernetes_cluster_role_binding_v1.namespace_creators](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/cluster_role_binding_v1) | resource |
 | [kubernetes_cluster_role_binding_v1.tfh_cluster_admins](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/cluster_role_binding_v1) | resource |
+| [kubernetes_config_map_v1.this](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/config_map_v1) | resource |
 | [kubernetes_config_map_v1_data.aws_auth](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/config_map_v1_data) | resource |
 | [kubernetes_manifest.gateway_api_crds](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/manifest) | resource |
 | [kubernetes_manifest.gateway_class_alb](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/manifest) | resource |
@@ -1050,6 +1069,7 @@ audiences are not API hostnames and must not be rewritten from `.com` to `.eu`.
 | <a name="input_cluster_endpoint_public_access"></a> [cluster\_endpoint\_public\_access](#input\_cluster\_endpoint\_public\_access) | Indicates whether or not the Amazon EKS public API server endpoint is enabled | `bool` | `false` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name of the cluster. Has to be unique per region per account. | `string` | n/a | yes |
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | The Kubernetes version to use for the cluster. | `string` | `"1.36"` | no |
+| <a name="input_config_maps"></a> [config\_maps](#input\_config\_maps) | Non-secret ConfigMaps to manage in existing namespaces, keyed by a stable Terraform identifier. Values are stored in Terraform state. | <pre>map(object({<br/>    name      = string<br/>    namespace = string<br/>    data      = map(string)<br/>  }))</pre> | `{}` | no |
 | <a name="input_coredns_max_replicas"></a> [coredns\_max\_replicas](#input\_coredns\_max\_replicas) | Maximum number of replicas for CoreDNS | `number` | `10` | no |
 | <a name="input_coredns_min_replicas"></a> [coredns\_min\_replicas](#input\_coredns\_min\_replicas) | Minimum number of replicas for CoreDNS | `number` | `2` | no |
 | <a name="input_datadog_api_key"></a> [datadog\_api\_key](#input\_datadog\_api\_key) | Datadog API key. Stored in kube-system namespace as a secret. | `string` | n/a | yes |

@@ -81,6 +81,30 @@ variable "kubernetes_provider_enabled" {
   default     = true
 }
 
+variable "config_maps" {
+  description = "Non-secret ConfigMaps to manage in existing namespaces, keyed by a stable Terraform identifier. Values are stored in Terraform state."
+  type = map(object({
+    name      = string
+    namespace = string
+    data      = map(string)
+  }))
+  default  = {}
+  nullable = false
+
+  validation {
+    condition = alltrue([
+      for config_map in values(var.config_maps) :
+      try(config_map.name != null && config_map.name != "" && config_map.namespace != null && config_map.namespace != "" && config_map.data != null, false)
+    ])
+    error_message = "Each ConfigMap must have a non-empty name and namespace and a non-null data map."
+  }
+
+  validation {
+    condition     = try(length(distinct([for config_map in values(var.config_maps) : jsonencode([config_map.namespace, config_map.name])])) == length(var.config_maps), false)
+    error_message = "Each ConfigMap must have a unique namespace and name."
+  }
+}
+
 variable "namespace_creator_groups" {
   description = "Additional Kubernetes groups bound to the existing NamespaceCreator ClusterRole. Requires that role to grant only namespace creation."
   type        = set(string)
