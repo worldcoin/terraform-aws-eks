@@ -85,6 +85,41 @@ resource "aws_iam_role_policy" "kube_ops" {
   policy = data.aws_iam_policy_document.kube_ops.json
 }
 
+data "aws_iam_policy_document" "kube_ops_app_config_read" {
+  # DescribeParameters requires a wildcard resource for metadata discovery.
+  statement {
+    sid       = "DescribeParameters"
+    effect    = "Allow"
+    actions   = ["ssm:DescribeParameters"]
+    resources = ["*"]
+  }
+
+  statement {
+    sid     = "GetAppConfigParameters"
+    effect  = "Allow"
+    actions = ["ssm:GetParameters"]
+    resources = [
+      "arn:${data.aws_partition.current.partition}:ssm:${var.region}:${data.aws_caller_identity.account.id}:parameter/app-config/${var.environment}/*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "kube_ops_app_config_read" {
+  count = var.kube_ops_enabled ? 1 : 0
+
+  name        = "${aws_iam_role.kube_ops[0].name}-app-config-read"
+  description = "Allows kube-ops to read application configuration from SSM Parameter Store"
+  path        = "/system/"
+  policy      = data.aws_iam_policy_document.kube_ops_app_config_read.json
+}
+
+resource "aws_iam_role_policy_attachment" "kube_ops_app_config_read" {
+  count = var.kube_ops_enabled ? 1 : 0
+
+  role       = aws_iam_role.kube_ops[0].name
+  policy_arn = aws_iam_policy.kube_ops_app_config_read[0].arn
+}
+
 resource "aws_eks_pod_identity_association" "this" {
   count = var.kube_ops_enabled ? 1 : 0
 
