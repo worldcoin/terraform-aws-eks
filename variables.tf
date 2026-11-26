@@ -559,6 +559,18 @@ variable "http_put_response_hop_limit" {
   }
 }
 
+variable "bootstrap_cluster_creator_admin_permissions" {
+  description = "Grant cluster-admin access to the cluster creator at creation. Existing clusters retain their original setting. When false, configure administrator access explicitly through access_entries."
+  type        = bool
+  default     = true
+  nullable    = false
+
+  validation {
+    condition     = var.bootstrap_cluster_creator_admin_permissions || var.authentication_mode != "CONFIG_MAP"
+    error_message = "Disabling cluster-creator admin bootstrap requires API or API_AND_CONFIG_MAP authentication."
+  }
+}
+
 variable "authentication_mode" {
   description = "The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP`"
   type        = string
